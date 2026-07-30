@@ -232,6 +232,39 @@ const SA = {
   },
 };
 
+// `wholesalers` (see SCHEMA.sql) uses real typed columns (company_name,
+// contact_name, district, sector, products_description, image_url, status),
+// unlike the generic (id, data jsonb) shape every other table above uses —
+// so it gets its own small read/write pair here instead of going through
+// SA, whose getAll/save assume a `data` jsonb column that this table does
+// not have. Falls back to localStorage the same way SA does when Supabase
+// isn't configured, so wholesaler registration still works in dev mode.
+const WS = {
+  async getAll() {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("wholesalers", "select=*&order=created_at.asc");
+        lastSyncOk = true; LS.s("wholesalers", rows); return rows;
+      } catch { lastSyncOk = false; }
+    }
+    return LS.g("wholesalers") || [];
+  },
+  async add(row) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.post("wholesalers", row);
+        lastSyncOk = true;
+        const cached = LS.g("wholesalers") || [];
+        LS.s("wholesalers", [...cached, row]);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = LS.g("wholesalers") || [];
+    LS.s("wholesalers", [...cached, row]);
+    return {ok:true};
+  },
+};
+
 const uploadImage = async (file) => {
   if (!(file instanceof File)) return file;
   if (HAS_CLOUDINARY) {
@@ -378,6 +411,28 @@ const DB = {
     try { session = await Auth.signIn(email,pw); }
     catch(e){ return {err:e.message||"Invalid email or password"}; }
     const uid = session.user?.id;
+    const meta = session.user?.user_metadata || {};
+    // Wholesaler accounts live in `wholesalers`, not `farmers` — check
+    // there first (by role) so a wholesaler's profile is looked up (and,
+    // below, rebuilt after an email-confirmation gap) in the right table.
+    if (meta.role === "wholesaler") {
+      const wholesalers = await WS.getAll();
+      let wProfile = wholesalers.find(w=>w.id===uid);
+      if (!wProfile) {
+        // Same email-confirmation gap as the farmer path below: the
+        // wholesalers row couldn't be inserted at registration time
+        // because there was no active session yet, so it's rebuilt here
+        // from the metadata that signUp preserved.
+        wProfile = {
+          id: uid, company_name: meta.name || email, contact_name: meta.name || email,
+          email, phone: meta.phone || "", district: meta.district, sector: meta.sector,
+          products_description: meta.bio, image_url: meta.image || "",
+          status: "pending", created_at: new Date().toISOString(),
+        };
+        await WS.add(wProfile);
+      }
+      return {...wProfile, role:"wholesaler"};
+    }
     const farmers = await SA.getAll("farmers");
     let profile = farmers.find(f=>f.id===uid);
     if (!profile) {
@@ -388,7 +443,6 @@ const DB = {
       // couldn't be inserted until a real session existed), or (b) an
       // account created directly in the Supabase dashboard (e.g. the
       // first admin, per SETUP.md), which has no metadata at all.
-      const meta = session.user?.user_metadata || {};
       const cameFromRegistration = Object.keys(meta).length > 0;
       profile = {
         id: uid, email, name: meta.name || email, phone: meta.phone || "",
@@ -419,6 +473,11 @@ const DB = {
     if (!HAS_SUPABASE) return null;
     const session = await Auth.restoreSession();
     if (!session?.user?.id) return null;
+    if (session.user?.user_metadata?.role === "wholesaler") {
+      const wholesalers = await WS.getAll();
+      const w = wholesalers.find(w=>w.id===session.user.id);
+      return w ? {...w, role:"wholesaler"} : null;
+    }
     const farmers = await SA.getAll("farmers");
     return farmers.find(f=>f.id===session.user.id) || null;
   },
@@ -445,11 +504,16 @@ const DB = {
   // matching public profile row in `farmers`, linked by the same id so
   // RLS policies (e.g. "a farmer can only edit their own profile/products")
   // can check `id = auth.uid()`.
-  async register(d){
+  //
+  // `role` defaults to "farmer" (unchanged original behavior). Passing
+  // role:"wholesaler" writes the profile row into `wholesalers` instead,
+  // via WS.add — same auth.signUp step, same pending-approval status, same
+  // email-confirmation handling; only the destination table differs.
+  async register(d, role="farmer"){
     if (!HAS_SUPABASE) return {err:"Registration is not configured yet — see SETUP.md"};
     let session;
     const {pw,email,...profileFields}=d;
-    try { session = await Auth.signUp(email, pw, {...profileFields, role:"farmer"}); }
+    try { session = await Auth.signUp(email, pw, {...profileFields, role}); }
     catch(e){ return {err:e.message||"Could not create account"}; }
     const uid = session.user?.id;
     if (!uid) return {err:"Could not create account"};
@@ -457,13 +521,24 @@ const DB = {
       // Email confirmation is required by this Supabase project's auth
       // settings — there is a real auth.users row now, but no active
       // session yet, so this browser is not authenticated as that user.
-      // Inserting the farmers profile row now would be rejected by the
-      // farmers_insert_self RLS policy (auth.uid() would be null, not this
-      // user's id). The rest of the registration form (name, phone,
-      // district, etc.) was passed to signUp as user_metadata above, so
-      // it survives this gap — DB.login rebuilds the full profile from it
-      // on first successful login instead, once a real session exists.
+      // Inserting the profile row now would be rejected by the
+      // insert_self RLS policy (auth.uid() would be null, not this user's
+      // id). The rest of the registration form (name, phone, district,
+      // etc.) was passed to signUp as user_metadata above, so it survives
+      // this gap — DB.login rebuilds the full profile from it on first
+      // successful login instead, once a real session exists.
       return {ok:true, pendingEmailConfirm:true};
+    }
+    if (role==="wholesaler") {
+      const {name,district,sector,phone,bio,image}=profileFields;
+      const nw={
+        id:uid, company_name:name, contact_name:name, email, phone,
+        district, sector, products_description:bio, image_url:image||"",
+        status:"pending", created_at:new Date().toISOString(),
+      };
+      const r = await WS.add(nw);
+      if (!r.ok) return {err:r.reason||"Could not save wholesaler profile"};
+      return {ok:true};
     }
     const nf={...profileFields,id:uid,email,role:"farmer",status:"pending",rating:0,rCount:0,createdAt:new Date().toISOString()};
     await this.saveFarmers([...(await this.farmers()),nf]);
@@ -811,15 +886,36 @@ function LoginModal({open,onClose,onLogin,onGoReg,onResetPassword}){
       </p>
       <Btn full onClick={submit} disabled={busy||!email||!pw}>{busy?"Signing in…":"Sign In"}</Btn>
       <p style={{textAlign:"center",marginTop:11,fontSize:13,color:G.gray5}}>
-        New farmer? <button onClick={()=>{onClose();onGoReg()}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>Register</button>
+        New here? <button onClick={()=>{onClose();onGoReg()}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>Register</button>
       </p>
     </Modal>
   );
 }
 
-function RegModal({open,onClose,onRegister,site}){
-  const[f,setF]=useState({name:"",email:"",phone:"",fType:"abahinzi",pw:"",pw2:"",district:"",sector:"",village:"",bio:""});
+// Shown first when Register is pressed, before either registration form.
+// Per spec: no second Register button anywhere else — this choice only
+// appears once Register has already been clicked.
+function RoleChoiceModal({open,onClose,onChoose,site}){
+  return(
+    <Modal open={open} onClose={onClose} title="Join Inkingi">
+      <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
+        <div style={{width:56,height:56,borderRadius:14,overflow:"hidden",boxShadow:G.sh}}><Logo size={56} site={site}/></div>
+      </div>
+      <p style={{fontSize:13,color:G.gray6,textAlign:"center",margin:"0 0 16px",fontFamily:FB}}>How would you like to register?</p>
+      <Btn full variant="gold" onClick={()=>onChoose("farmer")} icon={<Ic.farmer size={16}/>} style={{fontSize:15,padding:"13px 20px",marginBottom:10}}>Register as Farmer</Btn>
+      <Btn full variant="secondary" onClick={()=>onChoose("wholesaler")} icon={<Ic.marketplace size={16}/>} style={{fontSize:15,padding:"13px 20px"}}>Register as Wholesaler</Btn>
+    </Modal>
+  );
+}
+
+function RegModal({open,onClose,onRegister,site,role="farmer"}){
+  const isWholesaler=role==="wholesaler";
+  const[f,setF]=useState({name:"",email:"",phone:"",fType:"abahinzi",pw:"",pw2:"",district:"",sector:"",village:"",bio:"",image:""});
   const[errs,setErrs]=useState({});const[busy,setBusy]=useState(false);
+  // Reset the form whenever the modal switches role or re-opens, so
+  // leftover farmer/wholesaler-only field values from a previous open
+  // don't get silently carried over into the other role's submission.
+  useEffect(()=>{if(open){setF({name:"",email:"",phone:"",fType:"abahinzi",pw:"",pw2:"",district:"",sector:"",village:"",bio:"",image:""});setErrs({})}},[open,role]);
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
   const submit=async()=>{
     const e={};
@@ -829,27 +925,39 @@ function RegModal({open,onClose,onRegister,site}){
     if(!pwPasses(f.pw))e.pw="Password does not meet all requirements below";
     else if(f.pw2!==f.pw)e.pw2="Passwords do not match";
     if(!f.district)e.district="Required";
+    if(isWholesaler&&!f.sector)e.sector="Required";
     setErrs(e);if(Object.keys(e).length>0)return;
-    setBusy(true);const{pw2,...payload}=f;const r=await onRegister(payload);if(r?.err)setErrs({email:r.err});setBusy(false);
+    setBusy(true);
+    const{pw2,fType,village,...rest}=f;
+    // Wholesalers don't have a farming type or village field in the
+    // wholesalers table — only send what's relevant to each role.
+    const payload = isWholesaler ? rest : {...rest,fType,village};
+    const r=await onRegister(payload,role);
+    if(r?.err)setErrs({email:r.err});
+    setBusy(false);
   };
   return(
-    <Modal open={open} onClose={onClose} title="Join as Farmer">
+    <Modal open={open} onClose={onClose} title={isWholesaler?"Join as Wholesaler":"Join as Farmer"}>
       <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
         <div style={{width:56,height:56,borderRadius:14,overflow:"hidden",boxShadow:G.sh}}><Logo size={56} site={site}/></div>
       </div>
       <Inp label="Full Name *" value={f.name} onChange={e=>set("name",e.target.value)} error={errs.name}/>
       <Inp label="Email *" value={f.email} onChange={e=>set("email",e.target.value)} error={errs.email} type="email" placeholder="you@example.com"/>
       <Inp label="Phone *" value={f.phone} onChange={e=>set("phone",e.target.value)} error={errs.phone} type="tel" placeholder="07XXXXXXXX"/>
-      <Sel label="Farming Type" value={f.fType} onChange={e=>set("fType",e.target.value)}>
-        <option value="abahinzi">Abahinzi — Crops</option>
-        <option value="aborozi">Aborozi — Livestock</option>
-      </Sel>
+      {!isWholesaler&&
+        <Sel label="Farming Type" value={f.fType} onChange={e=>set("fType",e.target.value)}>
+          <option value="abahinzi">Abahinzi — Crops</option>
+          <option value="aborozi">Aborozi — Livestock</option>
+        </Sel>}
       <PasswordInput label="Password *" value={f.pw} onChange={e=>set("pw",e.target.value)} error={errs.pw} placeholder="Create a strong password"/>
       <PasswordStrengthHints value={f.pw}/>
       <PasswordInput label="Confirm Password *" value={f.pw2} onChange={e=>set("pw2",e.target.value)} error={errs.pw2} placeholder="Re-enter password"/>
-      <Txt label="Bio" value={f.bio} onChange={e=>set("bio",e.target.value)} style={{minHeight:65}}/>
+      <Txt label={isWholesaler?"Description of products sold":"Bio"} value={f.bio} onChange={e=>set("bio",e.target.value)} style={{minHeight:65}}/>
+      {isWholesaler&&
+        <ImageUpload label="Photo representing what you sell" value={f.image} onChange={v=>set("image",v)}/>}
       <LocPicker district={f.district} sector={f.sector} village={f.village} onChange={(d,s,v)=>setF(x=>({...x,district:d,sector:s,village:v}))}/>
       {errs.district&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.district}</p>}
+      {errs.sector&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.sector}</p>}
       <Btn full variant="gold" onClick={submit} disabled={busy||!pwPasses(f.pw)||f.pw2!==f.pw} style={{fontSize:15,padding:"13px 20px",boxShadow:"0 4px 14px rgba(245,158,11,.35)"}}>{busy?"Submitting…":"Register"}</Btn>
     </Modal>
   );
@@ -2121,6 +2229,11 @@ export default function App(){
   const[sort,setSort]=useState("latest");const[showFilter,setShowFilter]=useState(false);
   const[selProd,setSelProd]=useState(null);const[selFarmer,setSelFarmer]=useState(null);const[selAd,setSelAd]=useState(null);
   const[showLogin,setShowLogin]=useState(false);const[showReg,setShowReg]=useState(false);
+  const[showRoleChoice,setShowRoleChoice]=useState(false);const[regRole,setRegRole]=useState("farmer");
+  // Register buttons open the role choice first; picking a role there opens
+  // the existing RegModal with that role instead of adding a second button.
+  const openRegChoice=()=>setShowRoleChoice(true);
+  const chooseRegRole=role=>{setShowRoleChoice(false);setRegRole(role);setShowReg(true)};
   const[legalOpen,setLegalOpen]=useState(""); // "" | "terms" | "privacy" | "support"
   const[showForm,setShowForm]=useState(false);const[editP,setEditP]=useState(null);const[delP,setDelP]=useState(null);
   const[adminTab,setAdminTab]=useState("dashboard");
@@ -2191,7 +2304,7 @@ export default function App(){
     notify("Welcome, "+u.name);if(u.role==="admin")setPage("admin");return{ok:true};
   };
   const doLogout=async()=>{await DB.logout();setUser(null);setPage("home");notify("Signed out")};
-  const doRegister=async d=>{const r=await DB.register(d);if(r.ok){await reload();setShowReg(false);notify(r.pendingEmailConfirm?"Check your email to confirm your account, then sign in.":"Submitted! Await approval.")}return r};
+  const doRegister=async(d,role)=>{const r=await DB.register(d,role);if(r.ok){await reload();setShowReg(false);notify(r.pendingEmailConfirm?"Check your email to confirm your account, then sign in.":"Submitted! Await approval.")}return r};
   const viewProduct=async p=>{await DB.incView(p.id);await reload();setSelProd(p)};
 
   const navItems=[
@@ -2289,7 +2402,7 @@ export default function App(){
           <div style={{background:`linear-gradient(160deg,${G.g8} 0%,${G.g6} 100%)`,padding:"52px 20px",textAlign:"center"}}>
             <h2 style={{fontFamily:FH,fontSize:"clamp(19px,4vw,30px)",color:G.white,margin:"0 0 9px"}}>Are you a farmer in Rwanda?</h2>
             <p style={{color:"rgba(255,255,255,.82)",margin:"0 0 20px",fontSize:14}}>Join 500+ verified farmers selling nationwide on Inkingi</p>
-            <Btn size="lg" onClick={()=>setShowReg(true)} style={{background:G.white,color:G.g7}} icon={<Ic.farmer size={16}/>}>Register as Farmer</Btn>
+            <Btn size="lg" onClick={()=>chooseRegRole("farmer")} style={{background:G.white,color:G.g7}} icon={<Ic.farmer size={16}/>}>Register as Farmer</Btn>
           </div>
         )}
       </div>
@@ -2697,7 +2810,7 @@ export default function App(){
               ?<button onClick={doLogout} style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,.1)",color:G.white,border:"1px solid rgba(255,255,255,.2)",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,marginLeft:3,flexShrink:0}}><Ic.logout size={13}/> Out</button>
               :<>
                 <button onClick={()=>setShowLogin(true)} style={{background:"rgba(255,255,255,.1)",color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,flexShrink:0}}>Sign In</button>
-                <button onClick={()=>setShowReg(true)} style={{background:G.gold,color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:FB,marginLeft:3,flexShrink:0}}>Register</button>
+                <button onClick={openRegChoice} style={{background:G.gold,color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:FB,marginLeft:3,flexShrink:0}}>Register</button>
               </>}
           </div>
         </div>
@@ -2776,8 +2889,9 @@ export default function App(){
       </footer>
 
       {/* MODALS */}
-      <LoginModal open={showLogin} onClose={()=>setShowLogin(false)} onLogin={doLogin} onGoReg={()=>setShowReg(true)} onResetPassword={DB.resetPassword}/>
-      <RegModal open={showReg} onClose={()=>setShowReg(false)} onRegister={doRegister} site={site}/>
+      <LoginModal open={showLogin} onClose={()=>setShowLogin(false)} onLogin={doLogin} onGoReg={openRegChoice} onResetPassword={DB.resetPassword}/>
+      <RoleChoiceModal open={showRoleChoice} onClose={()=>setShowRoleChoice(false)} onChoose={chooseRegRole} site={site}/>
+      <RegModal open={showReg} onClose={()=>setShowReg(false)} onRegister={doRegister} site={site} role={regRole}/>
       <TermsModal open={legalOpen==="terms"} onClose={()=>setLegalOpen("")}/>
       <PrivacyModal open={legalOpen==="privacy"} onClose={()=>setLegalOpen("")}/>
       <SupportModal open={legalOpen==="support"} onClose={()=>setLegalOpen("")} site={site}/>
