@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
 import {
   Eye, EyeOff, Search, Sprout, Beef, Wheat, Calendar, TrendingUp, TrendingDown, Minus, Leaf, Bug,
   Store, Phone, LifeBuoy, ShieldCheck, LayoutDashboard, Bell, Upload, Trash2,
@@ -25,6 +25,336 @@ const Ic = {
   facebook: Facebook, instagram: Instagram, twitter: Twitter, chat: MessagesSquare, refresh: RotateCcw,
   pending: Hourglass,
 };
+
+
+/* ── TRANSLATIONS ──
+   Every user-facing string used by the pages/modals covered so far (nav,
+   homepage, marketplace header, sign-in, and registration) lives here as
+   a flat key → {en,rw,fr} object, so a new page's strings can be added the
+   same way without touching how translation itself works. Reference a
+   string in JSX with t("key") — see useLang() below. Adding a language
+   later means adding one more value per key here; nothing else changes. */
+const TRANSLATIONS = {
+  // Nav
+  nav_home:{en:"Home",rw:"Ahabanza",fr:"Accueil"},
+  nav_marketplace:{en:"Marketplace",rw:"Isoko",fr:"Marché"},
+  nav_farmers:{en:"Farmers",rw:"Abahinzi",fr:"Agriculteurs"},
+  nav_prices:{en:"Prices",rw:"Ibiciro",fr:"Prix"},
+  nav_tips:{en:"Tips",rw:"Inama",fr:"Conseils"},
+  nav_pests:{en:"Pests",rw:"Udukoko",fr:"Nuisibles"},
+  nav_calendar:{en:"Calendar",rw:"Kalindari",fr:"Calendrier"},
+  nav_dashboard:{en:"Dashboard",rw:"Imbonerahamwe",fr:"Tableau de bord"},
+  nav_admin:{en:"Admin",rw:"Ubuyobozi",fr:"Admin"},
+  nav_signin:{en:"Sign In",rw:"Injira",fr:"Se connecter"},
+  nav_register:{en:"Register",rw:"Iyandikishe",fr:"S'inscrire"},
+  nav_logout:{en:"Logout",rw:"Sohoka",fr:"Déconnexion"},
+  // Hero / Home
+  hero_title:{en:"Supporting Rwanda's Agricultural Transformation",rw:"Dushyigikiye Impinduka mu Buhinzi bw'u Rwanda",fr:"Soutenir la transformation agricole du Rwanda"},
+  hero_subtitle:{en:"Connecting verified farmers with buyers across all 30 districts",rw:"Duhuza abahinzi biyemeje n'abaguzi mu turere 30 twose",fr:"Connecter des agriculteurs vérifiés aux acheteurs dans les 30 districts"},
+  hero_explore_crops:{en:"Explore Crops",rw:"Reba Ibihingwa",fr:"Explorer les cultures"},
+  hero_browse_livestock:{en:"Browse Livestock",rw:"Reba Amatungo",fr:"Parcourir le bétail"},
+  home_resources:{en:"Farmer Resources",rw:"Ibikoresho by'Abahinzi",fr:"Ressources agricoles"},
+  home_market_prices:{en:"Market Prices",rw:"Ibiciro ku Isoko",fr:"Prix du marché"},
+  home_market_prices_desc:{en:"Live commodity prices across Rwanda",rw:"Ibiciro by'ibicuruzwa mu gihe nyacyo mu Rwanda",fr:"Prix des marchandises en direct partout au Rwanda"},
+  home_farming_tips:{en:"Farming Tips",rw:"Inama z'Ubuhinzi",fr:"Conseils agricoles"},
+  home_farming_tips_desc:{en:"Expert advice to boost productivity",rw:"Inama z'impuguke zo kongera umusaruro",fr:"Conseils d'experts pour améliorer la productivité"},
+  home_pest_center:{en:"Pest & Disease Center",rw:"Ikigo cy'Udukoko n'Indwara",fr:"Centre des nuisibles et maladies"},
+  home_pest_center_desc:{en:"Identify and treat problems early",rw:"Menya no kuvura ibibazo hakiri kare",fr:"Identifier et traiter les problèmes tôt"},
+  home_calendar:{en:"Planting Calendar",rw:"Kalindari yo Gutera",fr:"Calendrier de plantation"},
+  home_calendar_desc:{en:"Optimal planting and harvest times",rw:"Ibihe byiza byo gutera no gusarura",fr:"Meilleures périodes de plantation et de récolte"},
+  home_featured:{en:"Featured Products",rw:"Ibicuruzwa Byatoranyijwe",fr:"Produits en vedette"},
+  home_newly_listed:{en:"Newly Listed",rw:"Ibishya Byashyizweho",fr:"Récemment ajoutés"},
+  home_most_popular:{en:"Most Popular",rw:"Ibikunzwe Cyane",fr:"Les plus populaires"},
+  home_view_all:{en:"View All →",rw:"Reba Byose →",fr:"Voir tout →"},
+  home_cta_title:{en:"Are you a farmer in Rwanda?",rw:"Uri umuhinzi mu Rwanda?",fr:"Êtes-vous agriculteur au Rwanda ?"},
+  home_cta_subtitle:{en:"Join 500+ verified farmers selling nationwide on Inkingi",rw:"Ifatanye n'abahinzi 500+ biyemeje bagurisha mu Rwanda hose kuri Inkingi",fr:"Rejoignez plus de 500 agriculteurs vérifiés qui vendent partout sur Inkingi"},
+  home_cta_button:{en:"Register as Farmer",rw:"Iyandikishe nk'Umuhinzi",fr:"S'inscrire comme agriculteur"},
+  // Marketplace
+  marketplace_title:{en:"Marketplace",rw:"Isoko",fr:"Marché"},
+  // Sign in
+  signin_title:{en:"Sign In",rw:"Injira",fr:"Se connecter"},
+  signin_email:{en:"Email",rw:"Imeyili",fr:"E-mail"},
+  signin_password:{en:"Password",rw:"Ijambobanga",fr:"Mot de passe"},
+  signin_forgot:{en:"Forgot password?",rw:"Wibagiwe ijambobanga?",fr:"Mot de passe oublié ?"},
+  signin_submit:{en:"Sign In",rw:"Injira",fr:"Se connecter"},
+  signin_submitting:{en:"Signing in…",rw:"Kwinjira…",fr:"Connexion…"},
+  signin_new_here:{en:"New here?",rw:"Uri gushya hano?",fr:"Nouveau ici ?"},
+  signin_register_link:{en:"Register",rw:"Iyandikishe",fr:"S'inscrire"},
+  reset_title:{en:"Reset Password",rw:"Hindura Ijambobanga",fr:"Réinitialiser le mot de passe"},
+  reset_send:{en:"Send Reset Link",rw:"Ohereza Ihuza ryo Guhindura",fr:"Envoyer le lien de réinitialisation"},
+  reset_sending:{en:"Sending…",rw:"Kohereza…",fr:"Envoi…"},
+  reset_back:{en:"Back to Sign In",rw:"Subira ku Kwinjira",fr:"Retour à la connexion"},
+  reset_sent_msg:{en:"If that email has an account, a reset link has been sent.",rw:"Niba iyo imeyili ifite konti, ihuza ryo guhindura ryoherejwe.",fr:"Si cet e-mail correspond à un compte, un lien de réinitialisation a été envoyé."},
+  // Registration
+  reg_choice_title:{en:"Join Inkingi",rw:"Ifatanye na Inkingi",fr:"Rejoindre Inkingi"},
+  reg_choice_question:{en:"How would you like to register?",rw:"Wifuza kwiyandikisha ute?",fr:"Comment souhaitez-vous vous inscrire ?"},
+  reg_choice_farmer:{en:"Register as Farmer",rw:"Iyandikishe nk'Umuhinzi",fr:"S'inscrire comme agriculteur"},
+  reg_choice_wholesaler:{en:"Register as Wholesaler",rw:"Iyandikishe nk'Umucuruzi",fr:"S'inscrire comme grossiste"},
+  reg_title_farmer:{en:"Join as Farmer",rw:"Injira nk'Umuhinzi",fr:"Rejoindre comme agriculteur"},
+  reg_title_wholesaler:{en:"Join as Wholesaler",rw:"Injira nk'Umucuruzi",fr:"Rejoindre comme grossiste"},
+  reg_full_name:{en:"Full Name",rw:"Amazina Yombi",fr:"Nom complet"},
+  reg_email:{en:"Email",rw:"Imeyili",fr:"E-mail"},
+  reg_phone:{en:"Phone",rw:"Telefoni",fr:"Téléphone"},
+  reg_farming_type:{en:"Farming Type",rw:"Ubwoko bw'Ubuhinzi",fr:"Type d'agriculture"},
+  reg_password:{en:"Password",rw:"Ijambobanga",fr:"Mot de passe"},
+  reg_confirm_password:{en:"Confirm Password",rw:"Emeza Ijambobanga",fr:"Confirmer le mot de passe"},
+  reg_bio:{en:"Bio",rw:"Amakuru Yawe",fr:"Bio"},
+  reg_products_desc:{en:"Description of products sold",rw:"Ibisobanuro by'ibicuruzwa ugurisha",fr:"Description des produits vendus"},
+  reg_photo:{en:"Photo representing what you sell",rw:"Ifoto igaragaza ibyo ugurisha",fr:"Photo représentant ce que vous vendez"},
+  reg_submit:{en:"Register",rw:"Iyandikishe",fr:"S'inscrire"},
+  reg_submitting:{en:"Submitting…",rw:"Kohereza…",fr:"Envoi…"},
+  // Validation messages
+  err_required:{en:"Required",rw:"Birakenewe",fr:"Obligatoire"},
+  err_valid_email:{en:"Enter a valid email address",rw:"Andika imeyili nyayo",fr:"Saisissez une adresse e-mail valide"},
+  err_phone_format:{en:"Format: 07XXXXXXXX",rw:"Imiterere: 07XXXXXXXX",fr:"Format : 07XXXXXXXX"},
+  err_pw_requirements:{en:"Password does not meet all requirements below",rw:"Ijambobanga ntirisohoza ibisabwa byose hepfo",fr:"Le mot de passe ne remplit pas toutes les exigences ci-dessous"},
+  err_pw_mismatch:{en:"Passwords do not match",rw:"Amagambobanga ntahura",fr:"Les mots de passe ne correspondent pas"},
+  pw_rule_len:{en:"At least 8 characters",rw:"Byibura inyuguti 8",fr:"Au moins 8 caractères"},
+  pw_rule_upper:{en:"One uppercase letter (A-Z)",rw:"Inyuguti nkuru imwe (A-Z)",fr:"Une lettre majuscule (A-Z)"},
+  pw_rule_lower:{en:"One lowercase letter (a-z)",rw:"Inyuguti nto imwe (a-z)",fr:"Une lettre minuscule (a-z)"},
+  pw_rule_num:{en:"One number (0-9)",rw:"Umubare umwe (0-9)",fr:"Un chiffre (0-9)"},
+  pw_rule_special:{en:"One special character (!@#$…)",rw:"Ikimenyetso kidasanzwe (!@#$…)",fr:"Un caractère spécial (!@#$…)"},
+  // Market Prices page
+  prices_title:{en:"Live Market Prices",rw:"Ibiciro ku Isoko mu Gihe Nyacyo",fr:"Prix du marché en direct"},
+  prices_subtitle:{en:"Real-time agricultural commodity prices across Rwanda",rw:"Ibiciro by'ibicuruzwa mu buhinzi mu gihe nyacyo mu Rwanda",fr:"Prix des denrées agricoles en temps réel partout au Rwanda"},
+  prices_add:{en:"Add Price",rw:"Ongeraho Igiciro",fr:"Ajouter un prix"},
+  prices_search_ph:{en:"Search product or market…",rw:"Shakisha igicuruzwa cyangwa isoko…",fr:"Rechercher un produit ou un marché…"},
+  prices_all_provinces:{en:"All Provinces",rw:"Intara Zose",fr:"Toutes les provinces"},
+  prices_all_categories:{en:"All Categories",rw:"Ibyiciro Byose",fr:"Toutes les catégories"},
+  prices_clear:{en:"Clear",rw:"Siba",fr:"Effacer"},
+  prices_col_product:{en:"Product",rw:"Igicuruzwa",fr:"Produit"},
+  prices_col_category:{en:"Category",rw:"Icyiciro",fr:"Catégorie"},
+  prices_col_province:{en:"Province",rw:"Intara",fr:"Province"},
+  prices_col_district:{en:"District",rw:"Akarere",fr:"District"},
+  prices_col_market:{en:"Market",rw:"Isoko",fr:"Marché"},
+  prices_col_unit:{en:"Unit",rw:"Igipimo",fr:"Unité"},
+  prices_col_current:{en:"Current Price",rw:"Igiciro cya None",fr:"Prix actuel"},
+  prices_col_prev:{en:"Prev. Price",rw:"Igiciro cya Mbere",fr:"Prix précédent"},
+  prices_col_trend:{en:"Trend",rw:"Icyerekezo",fr:"Tendance"},
+  prices_col_updated:{en:"Updated",rw:"Byahinduwe",fr:"Mis à jour"},
+  prices_col_actions:{en:"Actions",rw:"Ibikorwa",fr:"Actions"},
+  prices_none_found:{en:"No price data found",rw:"Nta biciro byabonetse",fr:"Aucune donnée de prix trouvée"},
+  prices_edit_title:{en:"Edit Price",rw:"Hindura Igiciro",fr:"Modifier le prix"},
+  prices_add_title:{en:"Add Market Price",rw:"Ongeraho Igiciro cy'Isoko",fr:"Ajouter un prix du marché"},
+  prices_form_product:{en:"Product *",rw:"Igicuruzwa *",fr:"Produit *"},
+  prices_form_category:{en:"Category",rw:"Icyiciro",fr:"Catégorie"},
+  prices_form_province:{en:"Province",rw:"Intara",fr:"Province"},
+  prices_form_select:{en:"Select",rw:"Hitamo",fr:"Sélectionner"},
+  prices_form_district:{en:"District",rw:"Akarere",fr:"District"},
+  prices_form_market:{en:"Market Name *",rw:"Izina ry'Isoko *",fr:"Nom du marché *"},
+  prices_form_unit:{en:"Unit",rw:"Igipimo",fr:"Unité"},
+  prices_form_trend:{en:"Trend",rw:"Icyerekezo",fr:"Tendance"},
+  prices_trend_up:{en:"Up",rw:"Kuzamuka",fr:"Hausse"},
+  prices_trend_down:{en:"Down",rw:"Kumanuka",fr:"Baisse"},
+  prices_trend_stable:{en:"Stable",rw:"Bihagaze",fr:"Stable"},
+  prices_form_current:{en:"Current Price (RWF) *",rw:"Igiciro cya None (RWF) *",fr:"Prix actuel (RWF) *"},
+  prices_form_previous:{en:"Previous Price (RWF)",rw:"Igiciro cya Mbere (RWF)",fr:"Prix précédent (RWF)"},
+  prices_save:{en:"Save",rw:"Bika",fr:"Enregistrer"},
+  prices_cancel:{en:"Cancel",rw:"Hagarika",fr:"Annuler"},
+  crops_label:{en:"Crops",rw:"Ibihingwa",fr:"Cultures"},
+  livestock_label:{en:"Livestock",rw:"Amatungo",fr:"Bétail"},
+  // Shared admin CRUD feedback (prices/tips/pests/calendar)
+  confirm_delete:{en:"Delete?",rw:"Gusiba?",fr:"Supprimer ?"},
+  msg_updated:{en:"Updated!",rw:"Byahinduwe!",fr:"Mis à jour !"},
+  msg_added:{en:"Added!",rw:"Byongewemo!",fr:"Ajouté !"},
+  msg_deleted:{en:"Deleted",rw:"Byasibwe",fr:"Supprimé"},
+  msg_fill_required:{en:"Fill required fields",rw:"Uzuza ibisabwa",fr:"Remplissez les champs requis"},
+  // Farming Tips page
+  tips_title:{en:"Farming Tips",rw:"Inama z'Ubuhinzi",fr:"Conseils agricoles"},
+  tips_subtitle:{en:"Expert advice to improve your farm productivity",rw:"Inama z'impuguke zo kongera umusaruro w'ubuhinzi bwawe",fr:"Conseils d'experts pour améliorer la productivité de votre exploitation"},
+  tips_add:{en:"Add Tip",rw:"Ongeraho Inama",fr:"Ajouter un conseil"},
+  tips_search_ph:{en:"Search tips…",rw:"Shakisha inama…",fr:"Rechercher des conseils…"},
+  tips_none_found:{en:"No tips found",rw:"Nta nama zabonetse",fr:"Aucun conseil trouvé"},
+  tips_back:{en:"Back to Tips",rw:"Subira ku Nama",fr:"Retour aux conseils"},
+  tips_by:{en:"By",rw:"Na",fr:"Par"},
+  tips_related:{en:"Related Tips",rw:"Inama Zisa Nazo",fr:"Conseils similaires"},
+  tips_edit_title:{en:"Edit Tip",rw:"Hindura Inama",fr:"Modifier le conseil"},
+  tips_add_title:{en:"Add Farming Tip",rw:"Ongeraho Inama y'Ubuhinzi",fr:"Ajouter un conseil agricole"},
+  tips_form_title:{en:"Title *",rw:"Umutwe *",fr:"Titre *"},
+  tips_form_category:{en:"Category",rw:"Icyiciro",fr:"Catégorie"},
+  tips_form_image:{en:"Featured Image",rw:"Ifoto Nyamukuru",fr:"Image à la une"},
+  tips_form_content:{en:"Content * (use **text** for bold)",rw:"Ibirimo * (koresha **ijambo** kugira ngirakomeye)",fr:"Contenu * (utilisez **texte** pour le gras)"},
+  tips_publish:{en:"Publish Tip",rw:"Sohora Inama",fr:"Publier le conseil"},
+  cat_all:{en:"All",rw:"Byose",fr:"Tous"},
+  msg_title_content_required:{en:"Title and content required",rw:"Umutwe n'ibirimo birakenewe",fr:"Titre et contenu requis"},
+  msg_tip_updated:{en:"Tip updated!",rw:"Inama yahinduwe!",fr:"Conseil mis à jour !"},
+  msg_tip_published:{en:"Tip published!",rw:"Inama yasohowe!",fr:"Conseil publié !"},
+  // Severity labels (used with SEVERITY[level].label lookups)
+  severity_low:{en:"Low",rw:"Byoroheje",fr:"Faible"},
+  severity_medium:{en:"Medium",rw:"Hagati",fr:"Moyen"},
+  severity_high:{en:"High",rw:"Byinshi",fr:"Élevé"},
+  severity_critical:{en:"Critical",rw:"Byihutirwa",fr:"Critique"},
+  // Pest & Disease Center page
+  pests_title:{en:"Pest & Disease Center",rw:"Ikigo cy'Udukoko n'Indwara",fr:"Centre des nuisibles et maladies"},
+  pests_subtitle:{en:"Identify, prevent, and treat crop & livestock problems",rw:"Menya, kwirinda, no kuvura ibibazo by'ibihingwa n'amatungo",fr:"Identifier, prévenir et traiter les problèmes des cultures et du bétail"},
+  pests_add:{en:"Add Entry",rw:"Ongeraho Icyanditswe",fr:"Ajouter une entrée"},
+  pests_search_ph:{en:"Search pests or crops…",rw:"Shakisha udukoko cyangwa ibihingwa…",fr:"Rechercher des nuisibles ou des cultures…"},
+  pests_none_found:{en:"No entries found",rw:"Nta byanditswe byabonetse",fr:"Aucune entrée trouvée"},
+  pests_back:{en:"Back",rw:"Subira",fr:"Retour"},
+  pests_severity_suffix:{en:"Severity",rw:"Ubukana",fr:"Gravité"},
+  pests_affects:{en:"Affects:",rw:"Bigira ingaruka kuri:",fr:"Affecte :"},
+  pests_symptoms:{en:"Symptoms",rw:"Ibimenyetso",fr:"Symptômes"},
+  pests_causes:{en:"Causes",rw:"Impamvu",fr:"Causes"},
+  pests_prevention:{en:"Prevention",rw:"Kwirinda",fr:"Prévention"},
+  pests_treatment:{en:"Treatment",rw:"Ubuvuzi",fr:"Traitement"},
+  pests_edit_title:{en:"Edit Entry",rw:"Hindura Icyanditswe",fr:"Modifier l'entrée"},
+  pests_add_title:{en:"Add Pest/Disease",rw:"Ongeraho Udukoko/Indwara",fr:"Ajouter un nuisible/maladie"},
+  pests_form_crop_animal:{en:"Crop/Animal *",rw:"Igihingwa/Itungo *",fr:"Culture/Animal *"},
+  pests_form_name:{en:"Name *",rw:"Izina *",fr:"Nom *"},
+  pests_form_category:{en:"Category",rw:"Icyiciro",fr:"Catégorie"},
+  pests_form_severity:{en:"Severity",rw:"Ubukana",fr:"Gravité"},
+  pests_form_photo:{en:"Photo",rw:"Ifoto",fr:"Photo"},
+  pests_form_symptoms:{en:"Symptoms",rw:"Ibimenyetso",fr:"Symptômes"},
+  pests_form_causes:{en:"Causes",rw:"Impamvu",fr:"Causes"},
+  pests_form_prevention:{en:"Prevention",rw:"Kwirinda",fr:"Prévention"},
+  pests_form_treatment:{en:"Treatment",rw:"Ubuvuzi",fr:"Traitement"},
+  // Month names (indexed lookup: month_0=January … month_11=December)
+  month_0:{en:"January",rw:"Mutarama",fr:"Janvier"},
+  month_1:{en:"February",rw:"Gashyantare",fr:"Février"},
+  month_2:{en:"March",rw:"Werurwe",fr:"Mars"},
+  month_3:{en:"April",rw:"Mata",fr:"Avril"},
+  month_4:{en:"May",rw:"Gicurasi",fr:"Mai"},
+  month_5:{en:"June",rw:"Kamena",fr:"Juin"},
+  month_6:{en:"July",rw:"Nyakanga",fr:"Juillet"},
+  month_7:{en:"August",rw:"Kanama",fr:"Août"},
+  month_8:{en:"September",rw:"Nzeli",fr:"Septembre"},
+  month_9:{en:"October",rw:"Ukwakira",fr:"Octobre"},
+  month_10:{en:"November",rw:"Ugushyingo",fr:"Novembre"},
+  month_11:{en:"December",rw:"Ukuboza",fr:"Décembre"},
+  // Planting Calendar page
+  calendar_title:{en:"Seasonal Planting Calendar",rw:"Kalindari y'Ibihe byo Gutera",fr:"Calendrier saisonnier de plantation"},
+  calendar_subtitle:{en:"Optimal planting and harvest times across Rwanda",rw:"Ibihe byiza byo gutera no gusarura mu Rwanda hose",fr:"Meilleures périodes de plantation et de récolte au Rwanda"},
+  calendar_add:{en:"Add Entry",rw:"Ongeraho Icyanditswe",fr:"Ajouter une entrée"},
+  calendar_view_monthly:{en:"Monthly",rw:"Buri Kwezi",fr:"Mensuel"},
+  calendar_view_list:{en:"List",rw:"Urutonde",fr:"Liste"},
+  calendar_all_provinces:{en:"All Provinces",rw:"Intara Zose",fr:"Toutes les provinces"},
+  calendar_all_rwanda:{en:"All Rwanda",rw:"U Rwanda Hose",fr:"Tout le Rwanda"},
+  calendar_filter_crop:{en:"Filter by crop…",rw:"Shungura ku gihingwa…",fr:"Filtrer par culture…"},
+  calendar_crops_count:{en:"crops",rw:"ibihingwa",fr:"cultures"},
+  calendar_none_scheduled:{en:"No crops scheduled for",rw:"Nta bihingwa biteganyijwe kuri",fr:"Aucune culture prévue pour"},
+  calendar_plant:{en:"Plant",rw:"Tera",fr:"Planter"},
+  calendar_harvest:{en:"Harvest",rw:"Sarura",fr:"Récolter"},
+  calendar_days:{en:"days",rw:"iminsi",fr:"jours"},
+  calendar_col_crop:{en:"Crop",rw:"Igihingwa",fr:"Culture"},
+  calendar_col_province:{en:"Province",rw:"Intara",fr:"Province"},
+  calendar_col_district:{en:"District",rw:"Akarere",fr:"District"},
+  calendar_col_plant_month:{en:"Plant Month",rw:"Ukwezi ko Gutera",fr:"Mois de plantation"},
+  calendar_col_harvest_month:{en:"Harvest Month",rw:"Ukwezi ko Gusarura",fr:"Mois de récolte"},
+  calendar_col_days:{en:"Days",rw:"Iminsi",fr:"Jours"},
+  calendar_col_notes:{en:"Notes",rw:"Inyandiko",fr:"Notes"},
+  calendar_none_entries:{en:"No entries",rw:"Nta byanditswe",fr:"Aucune entrée"},
+  calendar_edit_title:{en:"Edit Entry",rw:"Hindura Icyanditswe",fr:"Modifier l'entrée"},
+  calendar_add_title:{en:"Add Planting Entry",rw:"Ongeraho Icyanditswe cyo Gutera",fr:"Ajouter une entrée de plantation"},
+  calendar_form_crop:{en:"Crop *",rw:"Igihingwa *",fr:"Culture *"},
+  calendar_form_select_crop:{en:"Select Crop",rw:"Hitamo Igihingwa",fr:"Sélectionner une culture"},
+  calendar_form_province:{en:"Province",rw:"Intara",fr:"Province"},
+  calendar_form_district:{en:"District (optional)",rw:"Akarere (si ngombwa)",fr:"District (facultatif)"},
+  calendar_form_plant_month:{en:"Planting Month",rw:"Ukwezi ko Gutera",fr:"Mois de plantation"},
+  calendar_form_harvest_month:{en:"Harvest Month",rw:"Ukwezi ko Gusarura",fr:"Mois de récolte"},
+  calendar_form_growing_days:{en:"Growing Period (days)",rw:"Igihe cyo Gukura (iminsi)",fr:"Durée de croissance (jours)"},
+  calendar_form_notes:{en:"Notes",rw:"Inyandiko",fr:"Notes"},
+  msg_crop_required:{en:"Crop name required",rw:"Izina ry'igihingwa rirakenewe",fr:"Nom de la culture requis"},
+  // Product Detail modal
+  prod_in_stock:{en:"In Stock",rw:"Birahari",fr:"En stock"},
+  prod_out_of_stock:{en:"Out of Stock",rw:"Byashize",fr:"Rupture de stock"},
+  prod_available:{en:"available",rw:"bihari",fr:"disponible"},
+  prod_views:{en:"views",rw:"abarebye",fr:"vues"},
+  prod_about:{en:"About this product",rw:"Ibijyanye n'iki gicuruzwa",fr:"À propos de ce produit"},
+  prod_no_desc:{en:"No description.",rw:"Nta bisobanuro.",fr:"Aucune description."},
+  prod_call_now:{en:"Call Now",rw:"Hamagara",fr:"Appeler"},
+  prod_whatsapp:{en:"WhatsApp",rw:"WhatsApp",fr:"WhatsApp"},
+  prod_rate_farmer:{en:"Rate this Farmer",rw:"Tanga Amanota ku Muhinzi",fr:"Évaluer cet agriculteur"},
+  prod_submit_rating:{en:"Submit Rating",rw:"Ohereza Amanota",fr:"Soumettre la note"},
+  prod_already_rated:{en:"Already rated",rw:"Wamaze gutanga amanota",fr:"Déjà noté"},
+  prod_thank_you:{en:"Thank you!",rw:"Murakoze!",fr:"Merci !"},
+  pform_name:{en:"Product Name *",rw:"Izina ry'Igicuruzwa *",fr:"Nom du produit *"},
+  pform_category:{en:"Category",rw:"Icyiciro",fr:"Catégorie"},
+  pform_type:{en:"Type *",rw:"Ubwoko *",fr:"Type *"},
+  pform_select:{en:"Select…",rw:"Hitamo…",fr:"Sélectionner…"},
+  pform_price:{en:"Price (RWF) *",rw:"Igiciro (RWF) *",fr:"Prix (RWF) *"},
+  pform_quantity:{en:"Quantity",rw:"Umubare",fr:"Quantité"},
+  pform_unit:{en:"Unit",rw:"Igipimo",fr:"Unité"},
+  pform_description:{en:"Description",rw:"Ibisobanuro",fr:"Description"},
+  pform_main_image:{en:"Main Image (cards & homepage)",rw:"Ifoto Nyamukuru (amakarita n'urupapuro rw'itangiriro)",fr:"Image principale (cartes et accueil)"},
+  pform_main_image_ph:{en:"Main product photo",rw:"Ifoto nyamukuru y'igicuruzwa",fr:"Photo principale du produit"},
+  pform_detail_image:{en:"Detail Image (full view only)",rw:"Ifoto Isesengura (kureba byuzuye gusa)",fr:"Image détaillée (vue complète uniquement)"},
+  pform_detail_image_ph:{en:"Detail/secondary photo",rw:"Ifoto isesengura/iyungirije",fr:"Photo détaillée/secondaire"},
+  pform_save:{en:"Save Changes",rw:"Bika Impinduka",fr:"Enregistrer les modifications"},
+  pform_list_product:{en:"List Product",rw:"Shyiraho Igicuruzwa",fr:"Publier le produit"},
+  err_select_type:{en:"Select type",rw:"Hitamo ubwoko",fr:"Sélectionnez un type"},
+  err_valid_price:{en:"Enter valid price",rw:"Andika igiciro nyacyo",fr:"Saisissez un prix valide"},
+  // Terms of Use
+  terms_title:{en:"Terms of Use",rw:"Amabwiriza yo Gukoresha",fr:"Conditions d'utilisation"},
+  terms_sec1_title:{en:"Using Inkingi Responsibly",rw:"Gukoresha Inkingi mu Buryo Bwiza",fr:"Utiliser Inkingi de manière responsable"},
+  terms_sec1_item1:{en:"Everyone is welcome to use the Inkingi platform responsibly.",rw:"Buri wese arakwiriye gukoresha urubuga rwa Inkingi mu buryo bwiza.",fr:"Chacun est invité à utiliser la plateforme Inkingi de manière responsable."},
+  terms_sec1_item2:{en:"Users are responsible for protecting their account credentials.",rw:"Abakoresha barashinzwe kurinda amakuru y'ukwinjira kwabo.",fr:"Les utilisateurs sont responsables de la protection de leurs identifiants de compte."},
+  terms_sec1_item3:{en:"Buyers and sellers must provide truthful information.",rw:"Abaguzi n'abagurisha bagomba gutanga amakuru y'ukuri.",fr:"Les acheteurs et vendeurs doivent fournir des informations véridiques."},
+  terms_sec1_item4:{en:"Users should verify products, livestock, sellers, buyers and payment details before completing transactions.",rw:"Abakoresha bagomba kwemeza ibicuruzwa, amatungo, abagurisha, abaguzi n'amakuru y'ubwishyu mbere yo gusoza igikorwa.",fr:"Les utilisateurs doivent vérifier les produits, le bétail, les vendeurs, les acheteurs et les informations de paiement avant de conclure une transaction."},
+  terms_sec1_item5:{en:"Inkingi provides a digital agricultural marketplace but cannot guarantee every transaction.",rw:"Inkingi itanga isoko ry'ikoranabuhanga ry'ubuhinzi ariko ntishobora kwemeza buri gikorwa.",fr:"Inkingi propose un marché agricole numérique mais ne peut garantir chaque transaction."},
+  terms_sec1_item6:{en:"Users must use the platform honestly and respectfully.",rw:"Abakoresha bagomba gukoresha urubuga mu kuri no mu cyubahiro.",fr:"Les utilisateurs doivent utiliser la plateforme honnêtement et avec respect."},
+  terms_sec1_item7:{en:"Fraud, scams, fake listings, impersonation, identity theft, hacking attempts, misinformation, abusive behaviour and illegal activities are strictly prohibited.",rw:"Uburiganya, uburyarya, ibyanditswe by'ikinyoma, kwiyita undi muntu, kwiba indangamuntu, kugerageza guhungabanya sisitemu, amakuru y'ibinyoma, imyitwarire mibi n'ibikorwa binyuranyije n'amategeko birabujijwe rwose.",fr:"La fraude, les escroqueries, les fausses annonces, l'usurpation d'identité, le vol d'identité, les tentatives de piratage, la désinformation, les comportements abusifs et les activités illégales sont strictement interdits."},
+  terms_sec2_title:{en:"Fraud Prevention",rw:"Kurwanya Uburiganya",fr:"Prévention de la fraude"},
+  terms_sec2_p1:{en:"Inkingi is committed to providing a safe and trustworthy agricultural marketplace.",rw:"Inkingi yiyemeje gutanga isoko ry'ubuhinzi ryizewe kandi ritekanye.",fr:"Inkingi s'engage à fournir un marché agricole sûr et fiable."},
+  terms_sec2_p2:{en:"Users are responsible for verifying the identity, products, livestock, services and payment information of anyone they choose to transact with.",rw:"Abakoresha barashinzwe kwemeza indangamuntu, ibicuruzwa, amatungo, serivisi n'amakuru y'ubwishyu by'uwo bahisemo gukorana nawe.",fr:"Les utilisateurs sont responsables de la vérification de l'identité, des produits, du bétail, des services et des informations de paiement de toute personne avec qui ils choisissent de transiger."},
+  terms_sec2_p3:{en:"Any user found engaging in fraud, scams, fake listings, impersonation, identity theft, misinformation or criminal activity may have their account permanently suspended or terminated.",rw:"Umukoresha uwo ari we wese uzasangwa akora uburiganya, uburyarya, ibyanditswe by'ikinyoma, kwiyita undi muntu, kwiba indangamuntu, amakuru y'ibinyoma cyangwa ibikorwa by'ubugizi bwa nabi, konti ye irashobora guhagarikwa burundu.",fr:"Tout utilisateur reconnu coupable de fraude, d'escroquerie, de fausses annonces, d'usurpation d'identité, de vol d'identité, de désinformation ou d'activité criminelle peut voir son compte suspendu ou résilié définitivement."},
+  terms_sec2_p4:{en:"Where there is reasonable evidence of criminal activity, Inkingi may report the matter to the Rwanda National Police or other competent authorities for investigation in accordance with the laws of the Republic of Rwanda.",rw:"Iyo hari ibimenyetso bifatika by'ibikorwa by'ubugizi bwa nabi, Inkingi ishobora kubimenyesha Polisi y'Igihugu y'u Rwanda cyangwa izindi nzego zibifitiye ububasha kugira ngo bakore iperereza hakurikijwe amategeko ya Repubulika y'u Rwanda.",fr:"En cas de preuves raisonnables d'activité criminelle, Inkingi peut signaler l'affaire à la Police Nationale du Rwanda ou à d'autres autorités compétentes pour enquête, conformément aux lois de la République du Rwanda."},
+  terms_sec2_p5:{en:"By using Inkingi, every user agrees to act honestly, responsibly and in compliance with the laws of Rwanda.",rw:"Mu gukoresha Inkingi, buri mukoresha yemera gukora mu kuri, mu buryo bwiza no mu bwubahirizwa bw'amategeko y'u Rwanda.",fr:"En utilisant Inkingi, chaque utilisateur accepte d'agir honnêtement, de manière responsable et conformément aux lois du Rwanda."},
+  // Privacy Policy
+  privacy_title:{en:"Privacy Policy",rw:"Politiki y'Ibanga",fr:"Politique de confidentialité"},
+  privacy_sec1_title:{en:"Information We Collect",rw:"Amakuru Dukusanya",fr:"Informations que nous collectons"},
+  privacy_sec1_item1:{en:"Name, phone number, and location (district, sector, village)",rw:"Izina, nimero ya telefoni, n'aho uba (akarere, umurenge, umudugudu)",fr:"Nom, numéro de téléphone et localisation (district, secteur, village)"},
+  privacy_sec1_item2:{en:"Farmer or buyer profile details, product and livestock listings",rw:"Amakuru y'umwirondoro w'umuhinzi cyangwa umuguzi, ibyanditswe by'ibicuruzwa n'amatungo",fr:"Détails du profil de l'agriculteur ou de l'acheteur, annonces de produits et de bétail"},
+  privacy_sec1_item3:{en:"Basic usage data such as pages visited and searches performed",rw:"Amakuru y'ibanze y'ikoreshwa nk'amapaji yasuwe n'ubushakashatsi bwakozwe",fr:"Données d'utilisation de base telles que les pages visitées et les recherches effectuées"},
+  privacy_sec2_title:{en:"Why We Collect It",rw:"Impamvu Tubikusanya",fr:"Pourquoi nous les collectons"},
+  privacy_sec2_item1:{en:"To operate and improve the marketplace",rw:"Kugira ngo dukoreshe kandi tunoze isoko",fr:"Pour exploiter et améliorer le marché"},
+  privacy_sec2_item2:{en:"To verify farmer and buyer identities",rw:"Kwemeza indangamuntu z'abahinzi n'abaguzi",fr:"Pour vérifier l'identité des agriculteurs et des acheteurs"},
+  privacy_sec2_item3:{en:"To connect buyers with sellers",rw:"Guhuza abaguzi n'abagurisha",fr:"Pour mettre en relation acheteurs et vendeurs"},
+  privacy_sec2_item4:{en:"To provide market prices, farming tips and alerts relevant to your area",rw:"Gutanga ibiciro by'isoko, inama z'ubuhinzi n'imenyesha bijyanye n'aho uba",fr:"Pour fournir les prix du marché, des conseils agricoles et des alertes pertinentes pour votre région"},
+  privacy_sec3_title:{en:"How Information Is Stored & Secured",rw:"Uburyo Amakuru Abikwa Kandi Arindwa",fr:"Comment les informations sont stockées et sécurisées"},
+  privacy_sec3_p:{en:"Information is stored using access-controlled systems, with administrator actions logged for accountability and safeguards to protect against unauthorized access.",rw:"Amakuru abikwa hakoreshejwe sisitemu zigengwa n'uburenganzira bwo kuyageraho, ibikorwa by'abayobozi bikanditswe kugira ngo hagire ubwishingizi n'uburinzi bw'uburenganzira budasabwe.",fr:"Les informations sont stockées à l'aide de systèmes à accès contrôlé, les actions des administrateurs étant enregistrées pour la responsabilisation et la protection contre les accès non autorisés."},
+  privacy_sec4_title:{en:"How Information Is Used",rw:"Uburyo Amakuru Akoreshwa",fr:"Comment les informations sont utilisées"},
+  privacy_sec4_p:{en:"Information is used only to operate the Inkingi platform — connecting farmers and buyers, verifying accounts, and improving services. It is never sold to third parties.",rw:"Amakuru akoreshwa gusa mu gukoresha urubuga rwa Inkingi — guhuza abahinzi n'abaguzi, kwemeza konti, no kunoza serivisi. Ntabwo agurishwa ku bandi.",fr:"Les informations sont utilisées uniquement pour exploiter la plateforme Inkingi — connecter agriculteurs et acheteurs, vérifier les comptes et améliorer les services. Elles ne sont jamais vendues à des tiers."},
+  privacy_sec5_title:{en:"Who Can Access Information",rw:"Ababona Amakuru",fr:"Qui peut accéder aux informations"},
+  privacy_sec5_p:{en:"Only authorized Inkingi administrators can access account records. Buyers and sellers only see the profile and listing information users choose to make public.",rw:"Abayobozi ba Inkingi babifitiye uburenganzira gusa ni bo babona amakuru ya konti. Abaguzi n'abagurisha babona gusa amakuru y'umwirondoro n'ibyanditswe abakoresha bahisemo kumenyekanisha.",fr:"Seuls les administrateurs autorisés d'Inkingi peuvent accéder aux dossiers de compte. Les acheteurs et vendeurs ne voient que les informations de profil et d'annonces que les utilisateurs choisissent de rendre publiques."},
+  privacy_sec6_title:{en:"Your Privacy Rights",rw:"Uburenganzira Bwawe ku Bwigenge",fr:"Vos droits en matière de confidentialité"},
+  privacy_sec6_item1:{en:"You may request to view, correct, or delete your personal information",rw:"Ushobora gusaba kureba, gukosora, cyangwa gusiba amakuru yawe bwite",fr:"Vous pouvez demander à consulter, corriger ou supprimer vos informations personnelles"},
+  privacy_sec6_item2:{en:"You may ask about how your data is used at any time",rw:"Ushobora kubaza uburyo amakuru yawe akoreshwa igihe cyose",fr:"Vous pouvez vous renseigner sur l'utilisation de vos données à tout moment"},
+  privacy_sec7_title:{en:"Cookies",rw:"Cookies",fr:"Cookies"},
+  privacy_sec7_p:{en:"Inkingi may use basic local storage on your device to keep you signed in and remember your preferences. This is not shared with third parties.",rw:"Inkingi ishobora gukoresha ububiko bw'ibanze kuri telefoni yawe kugira ngo ugume winjiye no kwibuka ibyo uhisemo. Ibi ntibisangirwa n'abandi.",fr:"Inkingi peut utiliser un stockage local de base sur votre appareil pour vous garder connecté et mémoriser vos préférences. Ceci n'est pas partagé avec des tiers."},
+  privacy_sec8_title:{en:"Contact for Privacy Enquiries",rw:"Aho Wamenyera Ibijyanye n'Ibanga",fr:"Contact pour les questions de confidentialité"},
+  // Support modal
+  support_title:{en:"Support",rw:"Ubufasha",fr:"Assistance"},
+  support_location:{en:"Location",rw:"Aho Turi",fr:"Emplacement"},
+  support_phone:{en:"Phone",rw:"Telefoni",fr:"Téléphone"},
+  support_hours:{en:"Hours",rw:"Amasaha",fr:"Heures"},
+  support_email:{en:"Email",rw:"Imeyili",fr:"E-mail"},
+  support_default_hours:{en:"Open 24 Hours / 7 Days a Week (24/7)",rw:"Bifunguye Amasaha 24 / Iminsi 7 mu Cyumweru (24/7)",fr:"Ouvert 24h/24 et 7j/7"},
+  // Footer
+  footer_our_vision:{en:"Our Vision",rw:"Icyerekezo Cyacu",fr:"Notre vision"},
+  footer_our_mission:{en:"Our Mission",rw:"Intego Yacu",fr:"Notre mission"},
+  footer_quick_links:{en:"Quick Links",rw:"Aho Wihuta Ujya",fr:"Liens rapides"},
+  footer_contact_support:{en:"Contact & Support",rw:"Aho Twafasha n'Ubufasha",fr:"Contact et assistance"},
+  footer_email:{en:"Email",rw:"Imeyili",fr:"E-mail"},
+  footer_rights:{en:"All rights reserved. · Built for Rwanda's agricultural future.",rw:"Uburenganzira bwose burarindwa. · Byakorewe ejo hazaza h'ubuhinzi bw'u Rwanda.",fr:"Tous droits réservés. · Conçu pour l'avenir agricole du Rwanda."},
+  footer_privacy:{en:"Privacy Policy",rw:"Politiki y'Ibanga",fr:"Politique de confidentialité"},
+  footer_terms:{en:"Terms of Use",rw:"Amabwiriza yo Gukoresha",fr:"Conditions d'utilisation"},
+  footer_support:{en:"Support",rw:"Ubufasha",fr:"Assistance"},
+};
+
+const LangContext = createContext(null);
+
+// Wraps the app so any component can call useLang() to read the active
+// language and translate strings, without threading a `lang` prop through
+// every level. Persists the choice via the same LS (localStorage) helper
+// every other saved preference in this app already uses, under its own
+// "ik_lang" key, so it doesn't collide with or disturb any existing data.
+function LangProvider({children}){
+  const[lang,setLang]=useState(()=>LS.g("lang")||"en");
+  useEffect(()=>{LS.s("lang",lang)},[lang]);
+  const t=key=>TRANSLATIONS[key]?.[lang] ?? TRANSLATIONS[key]?.en ?? key;
+  return <LangContext.Provider value={{lang,setLang,t}}>{children}</LangContext.Provider>;
+}
+const useLang=()=>useContext(LangContext);
 
 
 /* ── ENV ──
@@ -634,6 +964,7 @@ function PasswordInput({label,value,onChange,error,placeholder}){
 }
 
 function PasswordStrengthHints({value}){
+  const{t}=useLang();
   if(value===undefined)return null;
   return(
     <div style={{marginTop:-7,marginBottom:13,padding:"9px 11px",background:G.gray1,borderRadius:G.r}}>
@@ -641,7 +972,7 @@ function PasswordStrengthHints({value}){
         const ok=r.test(value||"");
         return(
           <div key={r.k} style={{display:"flex",alignItems:"center",gap:6,fontSize:11.5,color:ok?"#15803d":G.gray5,fontWeight:600,padding:"1.5px 0"}}>
-            <span style={{display:"inline-flex",width:14,height:14,borderRadius:4,background:ok?"#15803d":"transparent",border:ok?"none":`1.5px solid ${G.gray3}`,alignItems:"center",justifyContent:"center",flexShrink:0}}>{ok&&<Ic.check size={10} color="#fff" strokeWidth={3}/>}</span>{r.label}
+            <span style={{display:"inline-flex",width:14,height:14,borderRadius:4,background:ok?"#15803d":"transparent",border:ok?"none":`1.5px solid ${G.gray3}`,alignItems:"center",justifyContent:"center",flexShrink:0}}>{ok&&<Ic.check size={10} color="#fff" strokeWidth={3}/>}</span>{t("pw_rule_"+r.k)}
           </div>
         );
       })}
@@ -819,37 +1150,38 @@ function PCard({product:p,user,onView,onEdit,onDel,onFeat}){
 
 /* ── PRODUCT FORM ── */
 function PForm({initial,farmer,onSave,onCancel}){
+  const{t}=useLang();
   const[f,setF]=useState(initial||{name:"",type:"crop",sub:"",price:"",desc:"",qty:"",unit:"kg",inStock:true,district:farmer?.district||"",sector:farmer?.sector||"",village:farmer?.village||"",img1:"",img2:""});
   const[errs,setErrs]=useState({});
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
-  const validate=()=>{const e={};if(!f.name.trim())e.name="Required";if(!f.price||isNaN(f.price)||f.price<=0)e.price="Enter valid price";if(!f.sub)e.sub="Select type";setErrs(e);return Object.keys(e).length===0};
+  const validate=()=>{const e={};if(!f.name.trim())e.name=t("err_required");if(!f.price||isNaN(f.price)||f.price<=0)e.price=t("err_valid_price");if(!f.sub)e.sub=t("err_select_type");setErrs(e);return Object.keys(e).length===0};
   const submit=()=>{if(!validate())return;onSave({...f,price:parseFloat(f.price),qty:parseFloat(f.qty)||0,fid:farmer?.id,fname:farmer?.name,fphone:farmer?.phone})};
   const types=f.type==="crop"?CROPS:ANIMALS;
   return(
     <div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-        <div style={{gridColumn:"1/-1"}}><Inp label="Product Name *" value={f.name} onChange={e=>set("name",e.target.value)} error={errs.name}/></div>
-        <Sel label="Category" value={f.type} onChange={e=>set("type",e.target.value)}><option value="crop">Crops</option><option value="animal">Livestock</option></Sel>
-        <Sel label="Type *" value={f.sub} onChange={e=>set("sub",e.target.value)} style={{borderColor:errs.sub?G.red:undefined}}><option value="">Select…</option>{types.map(x=><option key={x} value={x}>{x}</option>)}</Sel>
-        <Inp label="Price (RWF) *" type="number" value={f.price} onChange={e=>set("price",e.target.value)} error={errs.price}/>
+        <div style={{gridColumn:"1/-1"}}><Inp label={t("pform_name")} value={f.name} onChange={e=>set("name",e.target.value)} error={errs.name}/></div>
+        <Sel label={t("pform_category")} value={f.type} onChange={e=>set("type",e.target.value)}><option value="crop">Crops</option><option value="animal">Livestock</option></Sel>
+        <Sel label={t("pform_type")} value={f.sub} onChange={e=>set("sub",e.target.value)} style={{borderColor:errs.sub?G.red:undefined}}><option value="">{t("pform_select")}</option>{types.map(x=><option key={x} value={x}>{x}</option>)}</Sel>
+        <Inp label={t("pform_price")} type="number" value={f.price} onChange={e=>set("price",e.target.value)} error={errs.price}/>
         <div style={{display:"flex",gap:7}}>
-          <div style={{flex:1}}><Inp label="Quantity" type="number" value={f.qty} onChange={e=>set("qty",e.target.value)}/></div>
-          <Sel label="Unit" value={f.unit} onChange={e=>set("unit",e.target.value)} style={{width:90}}>{"kg,head,liter,piece,ton,bag,box,crate".split(",").map(u=><option key={u} value={u}>{u}</option>)}</Sel>
+          <div style={{flex:1}}><Inp label={t("pform_quantity")} type="number" value={f.qty} onChange={e=>set("qty",e.target.value)}/></div>
+          <Sel label={t("pform_unit")} value={f.unit} onChange={e=>set("unit",e.target.value)} style={{width:90}}>{"kg,head,liter,piece,ton,bag,box,crate".split(",").map(u=><option key={u} value={u}>{u}</option>)}</Sel>
         </div>
       </div>
-      <Txt label="Description" value={f.desc} onChange={e=>set("desc",e.target.value)}/>
-      <ImageUpload label="Main Image (cards & homepage)" value={f.img1} onChange={v=>set("img1",v)} placeholder="Main product photo"/>
-      <ImageUpload label="Detail Image (full view only)" value={f.img2} onChange={v=>set("img2",v)} placeholder="Detail/secondary photo"/>
+      <Txt label={t("pform_description")} value={f.desc} onChange={e=>set("desc",e.target.value)}/>
+      <ImageUpload label={t("pform_main_image")} value={f.img1} onChange={v=>set("img1",v)} placeholder={t("pform_main_image_ph")}/>
+      <ImageUpload label={t("pform_detail_image")} value={f.img2} onChange={v=>set("img2",v)} placeholder={t("pform_detail_image_ph")}/>
       <label style={{display:"flex",alignItems:"center",gap:9,marginBottom:13,cursor:"pointer"}}>
         <div style={{width:40,height:21,background:f.inStock?G.g5:G.gray3,borderRadius:99,position:"relative",transition:"background .2s"}} onClick={()=>set("inStock",!f.inStock)}>
           <div style={{width:17,height:17,background:G.white,borderRadius:99,position:"absolute",top:2,left:f.inStock?21:2,transition:"left .2s",boxShadow:G.sh}}/>
         </div>
-        <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{f.inStock?"In Stock":"Out of Stock"}</span>
+        <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{f.inStock?t("prod_in_stock"):t("prod_out_of_stock")}</span>
       </label>
       <LocPicker district={f.district} sector={f.sector} village={f.village} onChange={(d,s,v)=>setF(x=>({...x,district:d,sector:s,village:v}))}/>
       <div style={{display:"flex",gap:9,marginTop:6}}>
-        <Btn onClick={submit} full>{initial?"Save Changes":"List Product"}</Btn>
-        <Btn variant="secondary" onClick={onCancel}>Cancel</Btn>
+        <Btn onClick={submit} full>{initial?t("pform_save"):t("pform_list_product")}</Btn>
+        <Btn variant="secondary" onClick={onCancel}>{t("prices_cancel")}</Btn>
       </div>
     </div>
   );
@@ -857,36 +1189,37 @@ function PForm({initial,farmer,onSave,onCancel}){
 
 /* ── AUTH MODALS ── */
 function LoginModal({open,onClose,onLogin,onGoReg,onResetPassword}){
+  const{t}=useLang();
   const[email,setEmail]=useState("");const[pw,setPw]=useState("");const[err,setErr]=useState("");const[busy,setBusy]=useState(false);
   const[resetMode,setResetMode]=useState(false);const[resetMsg,setResetMsg]=useState("");
   const submit=async()=>{setErr("");setBusy(true);const r=await onLogin(email,pw);if(r?.err)setErr(r.err);setBusy(false)};
   const submitReset=async()=>{
     setBusy(true);setResetMsg("");
     const r=await onResetPassword(email);
-    setResetMsg(r?.err?r.err:"If that email has an account, a reset link has been sent.");
+    setResetMsg(r?.err?r.err:t("reset_sent_msg"));
     setBusy(false);
   };
   if(resetMode) return(
-    <Modal open={open} onClose={()=>{onClose();setResetMode(false);setResetMsg("")}} title="Reset Password">
-      {resetMsg&&<div style={{background:resetMsg.includes("sent")?G.g1:G.redL,color:resetMsg.includes("sent")?G.g7:G.red,padding:"8px 12px",borderRadius:G.r,marginBottom:12,fontSize:13,fontWeight:600}}>{resetMsg}</div>}
-      <Inp label="Email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email"/>
-      <Btn full onClick={submitReset} disabled={busy||!email}>{busy?"Sending…":"Send Reset Link"}</Btn>
+    <Modal open={open} onClose={()=>{onClose();setResetMode(false);setResetMsg("")}} title={t("reset_title")}>
+      {resetMsg&&<div style={{background:resetMsg===t("reset_sent_msg")?G.g1:G.redL,color:resetMsg===t("reset_sent_msg")?G.g7:G.red,padding:"8px 12px",borderRadius:G.r,marginBottom:12,fontSize:13,fontWeight:600}}>{resetMsg}</div>}
+      <Inp label={t("signin_email")} value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email"/>
+      <Btn full onClick={submitReset} disabled={busy||!email}>{busy?t("reset_sending"):t("reset_send")}</Btn>
       <p style={{textAlign:"center",marginTop:11,fontSize:13,color:G.gray5}}>
-        <button onClick={()=>{setResetMode(false);setResetMsg("")}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>Back to Sign In</button>
+        <button onClick={()=>{setResetMode(false);setResetMsg("")}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>{t("reset_back")}</button>
       </p>
     </Modal>
   );
   return(
-    <Modal open={open} onClose={onClose} title="Sign In">
+    <Modal open={open} onClose={onClose} title={t("signin_title")}>
       {err&&<div style={{background:G.redL,color:G.red,padding:"8px 12px",borderRadius:G.r,marginBottom:12,fontSize:13,fontWeight:600}}>{err}</div>}
-      <Inp label="Email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email"/>
-      <PasswordInput label="Password" value={pw} onChange={e=>setPw(e.target.value)} placeholder="••••••••"/>
+      <Inp label={t("signin_email")} value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" type="email"/>
+      <PasswordInput label={t("signin_password")} value={pw} onChange={e=>setPw(e.target.value)} placeholder="••••••••"/>
       <p style={{textAlign:"right",margin:"-8px 0 13px"}}>
-        <button onClick={()=>setResetMode(true)} style={{color:G.gray5,fontSize:12,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>Forgot password?</button>
+        <button onClick={()=>setResetMode(true)} style={{color:G.gray5,fontSize:12,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>{t("signin_forgot")}</button>
       </p>
-      <Btn full onClick={submit} disabled={busy||!email||!pw}>{busy?"Signing in…":"Sign In"}</Btn>
+      <Btn full onClick={submit} disabled={busy||!email||!pw}>{busy?t("signin_submitting"):t("signin_submit")}</Btn>
       <p style={{textAlign:"center",marginTop:11,fontSize:13,color:G.gray5}}>
-        New here? <button onClick={()=>{onClose();onGoReg()}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>Register</button>
+        {t("signin_new_here")} <button onClick={()=>{onClose();onGoReg()}} style={{color:G.g6,fontWeight:700,background:"none",border:"none",cursor:"pointer",fontFamily:FB}}>{t("signin_register_link")}</button>
       </p>
     </Modal>
   );
@@ -896,19 +1229,21 @@ function LoginModal({open,onClose,onLogin,onGoReg,onResetPassword}){
 // Per spec: no second Register button anywhere else — this choice only
 // appears once Register has already been clicked.
 function RoleChoiceModal({open,onClose,onChoose,site}){
+  const{t}=useLang();
   return(
-    <Modal open={open} onClose={onClose} title="Join Inkingi">
+    <Modal open={open} onClose={onClose} title={t("reg_choice_title")}>
       <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
         <div style={{width:56,height:56,borderRadius:14,overflow:"hidden",boxShadow:G.sh}}><Logo size={56} site={site}/></div>
       </div>
-      <p style={{fontSize:13,color:G.gray6,textAlign:"center",margin:"0 0 16px",fontFamily:FB}}>How would you like to register?</p>
-      <Btn full variant="gold" onClick={()=>onChoose("farmer")} icon={<Ic.farmer size={16}/>} style={{fontSize:15,padding:"13px 20px",marginBottom:10}}>Register as Farmer</Btn>
-      <Btn full variant="secondary" onClick={()=>onChoose("wholesaler")} icon={<Ic.marketplace size={16}/>} style={{fontSize:15,padding:"13px 20px"}}>Register as Wholesaler</Btn>
+      <p style={{fontSize:13,color:G.gray6,textAlign:"center",margin:"0 0 16px",fontFamily:FB}}>{t("reg_choice_question")}</p>
+      <Btn full variant="gold" onClick={()=>onChoose("farmer")} icon={<Ic.farmer size={16}/>} style={{fontSize:15,padding:"13px 20px",marginBottom:10}}>{t("reg_choice_farmer")}</Btn>
+      <Btn full variant="secondary" onClick={()=>onChoose("wholesaler")} icon={<Ic.marketplace size={16}/>} style={{fontSize:15,padding:"13px 20px"}}>{t("reg_choice_wholesaler")}</Btn>
     </Modal>
   );
 }
 
 function RegModal({open,onClose,onRegister,site,role="farmer"}){
+  const{t}=useLang();
   const isWholesaler=role==="wholesaler";
   const[f,setF]=useState({name:"",email:"",phone:"",fType:"abahinzi",pw:"",pw2:"",district:"",sector:"",village:"",bio:"",image:""});
   const[errs,setErrs]=useState({});const[busy,setBusy]=useState(false);
@@ -919,13 +1254,13 @@ function RegModal({open,onClose,onRegister,site,role="farmer"}){
   const set=(k,v)=>setF(x=>({...x,[k]:v}));
   const submit=async()=>{
     const e={};
-    if(!f.name.trim())e.name="Required";
-    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email))e.email="Enter a valid email address";
-    if(!/^07\d{8}$/.test(f.phone))e.phone="Format: 07XXXXXXXX";
-    if(!pwPasses(f.pw))e.pw="Password does not meet all requirements below";
-    else if(f.pw2!==f.pw)e.pw2="Passwords do not match";
-    if(!f.district)e.district="Required";
-    if(isWholesaler&&!f.sector)e.sector="Required";
+    if(!f.name.trim())e.name=t("err_required");
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email))e.email=t("err_valid_email");
+    if(!/^07\d{8}$/.test(f.phone))e.phone=t("err_phone_format");
+    if(!pwPasses(f.pw))e.pw=t("err_pw_requirements");
+    else if(f.pw2!==f.pw)e.pw2=t("err_pw_mismatch");
+    if(!f.district)e.district=t("err_required");
+    if(isWholesaler&&!f.sector)e.sector=t("err_required");
     setErrs(e);if(Object.keys(e).length>0)return;
     setBusy(true);
     const{pw2,fType,village,...rest}=f;
@@ -937,28 +1272,28 @@ function RegModal({open,onClose,onRegister,site,role="farmer"}){
     setBusy(false);
   };
   return(
-    <Modal open={open} onClose={onClose} title={isWholesaler?"Join as Wholesaler":"Join as Farmer"}>
+    <Modal open={open} onClose={onClose} title={isWholesaler?t("reg_title_wholesaler"):t("reg_title_farmer")}>
       <div style={{display:"flex",justifyContent:"center",marginBottom:16}}>
         <div style={{width:56,height:56,borderRadius:14,overflow:"hidden",boxShadow:G.sh}}><Logo size={56} site={site}/></div>
       </div>
-      <Inp label="Full Name *" value={f.name} onChange={e=>set("name",e.target.value)} error={errs.name}/>
-      <Inp label="Email *" value={f.email} onChange={e=>set("email",e.target.value)} error={errs.email} type="email" placeholder="you@example.com"/>
-      <Inp label="Phone *" value={f.phone} onChange={e=>set("phone",e.target.value)} error={errs.phone} type="tel" placeholder="07XXXXXXXX"/>
+      <Inp label={t("reg_full_name")+" *"} value={f.name} onChange={e=>set("name",e.target.value)} error={errs.name}/>
+      <Inp label={t("reg_email")+" *"} value={f.email} onChange={e=>set("email",e.target.value)} error={errs.email} type="email" placeholder="you@example.com"/>
+      <Inp label={t("reg_phone")+" *"} value={f.phone} onChange={e=>set("phone",e.target.value)} error={errs.phone} type="tel" placeholder="07XXXXXXXX"/>
       {!isWholesaler&&
-        <Sel label="Farming Type" value={f.fType} onChange={e=>set("fType",e.target.value)}>
+        <Sel label={t("reg_farming_type")} value={f.fType} onChange={e=>set("fType",e.target.value)}>
           <option value="abahinzi">Abahinzi — Crops</option>
           <option value="aborozi">Aborozi — Livestock</option>
         </Sel>}
-      <PasswordInput label="Password *" value={f.pw} onChange={e=>set("pw",e.target.value)} error={errs.pw} placeholder="Create a strong password"/>
+      <PasswordInput label={t("reg_password")+" *"} value={f.pw} onChange={e=>set("pw",e.target.value)} error={errs.pw} placeholder="Create a strong password"/>
       <PasswordStrengthHints value={f.pw}/>
-      <PasswordInput label="Confirm Password *" value={f.pw2} onChange={e=>set("pw2",e.target.value)} error={errs.pw2} placeholder="Re-enter password"/>
-      <Txt label={isWholesaler?"Description of products sold":"Bio"} value={f.bio} onChange={e=>set("bio",e.target.value)} style={{minHeight:65}}/>
+      <PasswordInput label={t("reg_confirm_password")+" *"} value={f.pw2} onChange={e=>set("pw2",e.target.value)} error={errs.pw2} placeholder="Re-enter password"/>
+      <Txt label={isWholesaler?t("reg_products_desc"):t("reg_bio")} value={f.bio} onChange={e=>set("bio",e.target.value)} style={{minHeight:65}}/>
       {isWholesaler&&
-        <ImageUpload label="Photo representing what you sell" value={f.image} onChange={v=>set("image",v)}/>}
+        <ImageUpload label={t("reg_photo")} value={f.image} onChange={v=>set("image",v)}/>}
       <LocPicker district={f.district} sector={f.sector} village={f.village} onChange={(d,s,v)=>setF(x=>({...x,district:d,sector:s,village:v}))}/>
       {errs.district&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.district}</p>}
       {errs.sector&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.sector}</p>}
-      <Btn full variant="gold" onClick={submit} disabled={busy||!pwPasses(f.pw)||f.pw2!==f.pw} style={{fontSize:15,padding:"13px 20px",boxShadow:"0 4px 14px rgba(245,158,11,.35)"}}>{busy?"Submitting…":"Register"}</Btn>
+      <Btn full variant="gold" onClick={submit} disabled={busy||!pwPasses(f.pw)||f.pw2!==f.pw} style={{fontSize:15,padding:"13px 20px",boxShadow:"0 4px 14px rgba(245,158,11,.35)"}}>{busy?t("reg_submitting"):t("reg_submit")}</Btn>
     </Modal>
   );
 }
@@ -981,55 +1316,57 @@ function LegalList({items}){
 }
 
 function TermsModal({open,onClose}){
+  const{t}=useLang();
   return(
-    <Modal open={open} onClose={onClose} title="Terms of Use" maxW={640}>
-      <LegalSection title="Using Inkingi Responsibly">
+    <Modal open={open} onClose={onClose} title={t("terms_title")} maxW={640}>
+      <LegalSection title={t("terms_sec1_title")}>
         <LegalList items={[
-          "Everyone is welcome to use the Inkingi platform responsibly.",
-          "Users are responsible for protecting their account credentials.",
-          "Buyers and sellers must provide truthful information.",
-          "Users should verify products, livestock, sellers, buyers and payment details before completing transactions.",
-          "Inkingi provides a digital agricultural marketplace but cannot guarantee every transaction.",
-          "Users must use the platform honestly and respectfully.",
-          "Fraud, scams, fake listings, impersonation, identity theft, hacking attempts, misinformation, abusive behaviour and illegal activities are strictly prohibited.",
+          t("terms_sec1_item1"),
+          t("terms_sec1_item2"),
+          t("terms_sec1_item3"),
+          t("terms_sec1_item4"),
+          t("terms_sec1_item5"),
+          t("terms_sec1_item6"),
+          t("terms_sec1_item7"),
         ]}/>
       </LegalSection>
-      <LegalSection title="Fraud Prevention">
-        <p style={{marginBottom:8}}>Inkingi is committed to providing a safe and trustworthy agricultural marketplace.</p>
-        <p style={{marginBottom:8}}>Users are responsible for verifying the identity, products, livestock, services and payment information of anyone they choose to transact with.</p>
-        <p style={{marginBottom:8}}>Any user found engaging in fraud, scams, fake listings, impersonation, identity theft, misinformation or criminal activity may have their account permanently suspended or terminated.</p>
-        <p style={{marginBottom:8}}>Where there is reasonable evidence of criminal activity, Inkingi may report the matter to the Rwanda National Police or other competent authorities for investigation in accordance with the laws of the Republic of Rwanda.</p>
-        <p style={{margin:0}}>By using Inkingi, every user agrees to act honestly, responsibly and in compliance with the laws of Rwanda.</p>
+      <LegalSection title={t("terms_sec2_title")}>
+        <p style={{marginBottom:8}}>{t("terms_sec2_p1")}</p>
+        <p style={{marginBottom:8}}>{t("terms_sec2_p2")}</p>
+        <p style={{marginBottom:8}}>{t("terms_sec2_p3")}</p>
+        <p style={{marginBottom:8}}>{t("terms_sec2_p4")}</p>
+        <p style={{margin:0}}>{t("terms_sec2_p5")}</p>
       </LegalSection>
     </Modal>
   );
 }
 
 function PrivacyModal({open,onClose}){
+  const{t}=useLang();
   return(
-    <Modal open={open} onClose={onClose} title="Privacy Policy" maxW={640}>
-      <LegalSection title="Information We Collect">
-        <LegalList items={["Name, phone number, and location (district, sector, village)","Farmer or buyer profile details, product and livestock listings","Basic usage data such as pages visited and searches performed"]}/>
+    <Modal open={open} onClose={onClose} title={t("privacy_title")} maxW={640}>
+      <LegalSection title={t("privacy_sec1_title")}>
+        <LegalList items={[t("privacy_sec1_item1"),t("privacy_sec1_item2"),t("privacy_sec1_item3")]}/>
       </LegalSection>
-      <LegalSection title="Why We Collect It">
-        <LegalList items={["To operate and improve the marketplace","To verify farmer and buyer identities","To connect buyers with sellers","To provide market prices, farming tips and alerts relevant to your area"]}/>
+      <LegalSection title={t("privacy_sec2_title")}>
+        <LegalList items={[t("privacy_sec2_item1"),t("privacy_sec2_item2"),t("privacy_sec2_item3"),t("privacy_sec2_item4")]}/>
       </LegalSection>
-      <LegalSection title="How Information Is Stored & Secured">
-        <p style={{margin:0}}>Information is stored using access-controlled systems, with administrator actions logged for accountability and safeguards to protect against unauthorized access.</p>
+      <LegalSection title={t("privacy_sec3_title")}>
+        <p style={{margin:0}}>{t("privacy_sec3_p")}</p>
       </LegalSection>
-      <LegalSection title="How Information Is Used">
-        <p style={{margin:0}}>Information is used only to operate the Inkingi platform — connecting farmers and buyers, verifying accounts, and improving services. It is never sold to third parties.</p>
+      <LegalSection title={t("privacy_sec4_title")}>
+        <p style={{margin:0}}>{t("privacy_sec4_p")}</p>
       </LegalSection>
-      <LegalSection title="Who Can Access Information">
-        <p style={{margin:0}}>Only authorized Inkingi administrators can access account records. Buyers and sellers only see the profile and listing information users choose to make public.</p>
+      <LegalSection title={t("privacy_sec5_title")}>
+        <p style={{margin:0}}>{t("privacy_sec5_p")}</p>
       </LegalSection>
-      <LegalSection title="Your Privacy Rights">
-        <LegalList items={["You may request to view, correct, or delete your personal information","You may ask about how your data is used at any time"]}/>
+      <LegalSection title={t("privacy_sec6_title")}>
+        <LegalList items={[t("privacy_sec6_item1"),t("privacy_sec6_item2")]}/>
       </LegalSection>
-      <LegalSection title="Cookies">
-        <p style={{margin:0}}>Inkingi may use basic local storage on your device to keep you signed in and remember your preferences. This is not shared with third parties.</p>
+      <LegalSection title={t("privacy_sec7_title")}>
+        <p style={{margin:0}}>{t("privacy_sec7_p")}</p>
       </LegalSection>
-      <LegalSection title="Contact for Privacy Enquiries">
+      <LegalSection title={t("privacy_sec8_title")}>
         <p style={{margin:0,display:"flex",alignItems:"center",gap:14,flexWrap:"wrap"}}><span style={{display:"flex",alignItems:"center",gap:5}}><Ic.contact size={13}/> +250 788 835 195</span><span style={{display:"flex",alignItems:"center",gap:5}}><Ic.email size={13}/> info@inkingi.rw</span><span style={{display:"flex",alignItems:"center",gap:5}}><Ic.location size={13}/> Kigali, Rwanda</span></p>
       </LegalSection>
     </Modal>
@@ -1037,24 +1374,25 @@ function PrivacyModal({open,onClose}){
 }
 
 function SupportModal({open,onClose,site}){
+  const{t}=useLang();
   return(
-    <Modal open={open} onClose={onClose} title="Support" maxW={420}>
+    <Modal open={open} onClose={onClose} title={t("support_title")} maxW={420}>
       <div style={{display:"flex",flexDirection:"column",gap:14}}>
         <div style={{display:"flex",gap:11,alignItems:"flex-start"}}>
           <div style={{width:36,height:36,background:G.g1,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:G.g7}}><Ic.location size={16}/></div>
-          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>Location</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.address)||"Kigali, Rwanda"}</p></div>
+          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{t("support_location")}</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.address)||"Kigali, Rwanda"}</p></div>
         </div>
         <div style={{display:"flex",gap:11,alignItems:"flex-start"}}>
           <div style={{width:36,height:36,background:G.g1,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:G.g7}}><Ic.contact size={16}/></div>
-          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>Phone</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.phone)||"+250 788 835 195"}</p></div>
+          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{t("support_phone")}</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.phone)||"+250 788 835 195"}</p></div>
         </div>
         <div style={{display:"flex",gap:11,alignItems:"flex-start"}}>
           <div style={{width:36,height:36,background:G.g1,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:G.g7}}><Ic.hours size={16}/></div>
-          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>Hours</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.hours)||"Open 24 Hours / 7 Days a Week (24/7)"}</p></div>
+          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{t("support_hours")}</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>{(site&&site.hours)||t("support_default_hours")}</p></div>
         </div>
         <div style={{display:"flex",gap:11,alignItems:"flex-start"}}>
           <div style={{width:36,height:36,background:G.g1,borderRadius:9,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:G.g7}}><Ic.email size={16}/></div>
-          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>Email</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>info@inkingi.rw</p></div>
+          <div><p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{t("support_email")}</p><p style={{margin:"2px 0 0",fontSize:13,color:G.gray6}}>info@inkingi.rw</p></div>
         </div>
       </div>
     </Modal>
@@ -1104,11 +1442,12 @@ function AdDetailModal({ad,open,onClose}){
 
 /* ── PRODUCT DETAIL MODAL ── */
 function ProductDetailModal({product,farmers,open,onClose,onReload}){
+  const{t}=useLang();
   const[rating,setRating]=useState(0);const[rMsg,setRMsg]=useState("");
   if(!product)return null;
   const farmer=farmers.find(f=>f.id===product.fid);
   const sid=()=>{let s=localStorage.getItem("ik_sid");if(!s){s="s"+Date.now();localStorage.setItem("ik_sid",s)}return s};
-  const submitRating=async()=>{if(!rating)return;const r=await DB.rateFarmer(product.fid,rating,sid());if(r.err)setRMsg("Already rated");else{onReload();setRMsg("Thank you!")}};
+  const submitRating=async()=>{if(!rating)return;const r=await DB.rateFarmer(product.fid,rating,sid());if(r.err)setRMsg(t("prod_already_rated"));else{onReload();setRMsg(t("prod_thank_you"))}};
   return(
     <Modal open={open} onClose={onClose} title={product.name} maxW={700}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20}}>
@@ -1116,16 +1455,16 @@ function ProductDetailModal({product,farmers,open,onClose,onReload}){
           <div style={{borderRadius:G.r,overflow:"hidden",marginBottom:13}}><PImg product={product} h={200} detail={true}/></div>
           <p style={{margin:"0 0 4px",fontSize:24,fontWeight:800,color:G.g7,fontFamily:FH}}>RWF {product.price?.toLocaleString()}<span style={{fontSize:12,fontWeight:400,color:G.gray5}}>/{product.unit}</span></p>
           <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:7}}>
-            <Badge color={product.inStock?"green":"gray"}>{product.inStock?"In Stock":"Out of Stock"}</Badge>
+            <Badge color={product.inStock?"green":"gray"}>{product.inStock?t("prod_in_stock"):t("prod_out_of_stock")}</Badge>
             {product.sub&&<Badge color="gray">{product.sub}</Badge>}
           </div>
           <p style={{margin:"0 0 3px",fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.location size={12}/> {product.village}, {product.sector}, {product.district}</p>
-          <p style={{margin:"0 0 3px",fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.listings size={12}/> {product.qty} {product.unit} available</p>
-          <p style={{margin:0,fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.users size={12}/> {product.views} views</p>
+          <p style={{margin:"0 0 3px",fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.listings size={12}/> {product.qty} {product.unit} {t("prod_available")}</p>
+          <p style={{margin:0,fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.users size={12}/> {product.views} {t("prod_views")}</p>
         </div>
         <div>
-          <h3 style={{margin:"0 0 7px",fontSize:14,fontWeight:700,color:G.gray9}}>About this product</h3>
-          <p style={{margin:"0 0 16px",fontSize:13,color:G.gray5,lineHeight:1.7}}>{product.desc||"No description."}</p>
+          <h3 style={{margin:"0 0 7px",fontSize:14,fontWeight:700,color:G.gray9}}>{t("prod_about")}</h3>
+          <p style={{margin:"0 0 16px",fontSize:13,color:G.gray5,lineHeight:1.7}}>{product.desc||t("prod_no_desc")}</p>
           {farmer&&(
             <div style={{background:G.g0,border:`1px solid #c8e6c9`,borderRadius:G.rL,padding:13}}>
               <div style={{display:"flex",gap:9,alignItems:"center",marginBottom:9}}>
@@ -1136,14 +1475,14 @@ function ProductDetailModal({product,farmers,open,onClose,onReload}){
                 </div>
               </div>
               <div style={{display:"flex",gap:7,marginBottom:11,flexWrap:"wrap"}}>
-                <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.contact size={13}/> Call Now</a>
-                <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.whatsapp size={13}/> WhatsApp</a>
+                <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.contact size={13}/> {t("prod_call_now")}</a>
+                <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>
               </div>
               <div style={{borderTop:`1px solid #c8e6c9`,paddingTop:9}}>
-                <p style={{margin:"0 0 5px",fontSize:12,fontWeight:700,color:G.gray7}}>Rate this Farmer</p>
+                <p style={{margin:"0 0 5px",fontSize:12,fontWeight:700,color:G.gray7}}>{t("prod_rate_farmer")}</p>
                 <Stars value={rating} size={20} interactive onChange={setRating}/>
-                {rating>0&&!rMsg&&<Btn size="sm" onClick={submitRating} style={{marginTop:7}}>Submit Rating</Btn>}
-                {rMsg&&<p style={{margin:"5px 0 0",fontSize:12,color:rMsg.includes("Already")?G.red:G.g6,fontWeight:600}}>{rMsg}</p>}
+                {rating>0&&!rMsg&&<Btn size="sm" onClick={submitRating} style={{marginTop:7}}>{t("prod_submit_rating")}</Btn>}
+                {rMsg&&<p style={{margin:"5px 0 0",fontSize:12,color:rMsg===t("prod_already_rated")?G.red:G.g6,fontWeight:600}}>{rMsg}</p>}
               </div>
             </div>
           )}
@@ -1157,6 +1496,7 @@ function ProductDetailModal({product,farmers,open,onClose,onReload}){
    MARKET PRICES
 ════════════════════════════════════ */
 function MarketPricesPage({user,notify}){
+  const{t}=useLang();
   const[prices,setPrices]=useState([]);
   const[search,setSearch]=useState("");const[fProv,setFProv]=useState("");const[fCat,setFCat]=useState("");
   const[showForm,setShowForm]=useState(false);const[editing,setEditing]=useState(null);
@@ -1166,15 +1506,15 @@ function MarketPricesPage({user,notify}){
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=async()=>{
-    if(!form.product||!form.current){notify("Fill required fields","error");return}
+    if(!form.product||!form.current){notify(t("msg_fill_required"),"error");return}
     const entry={...form,current:parseFloat(form.current),previous:parseFloat(form.previous)||0,updatedAt:new Date().toISOString()};
     const ps=await DB.prices();
-    if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify("Updated!")}
-    else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify("Added!")}
+    if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify(t("msg_updated"))}
+    else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify(t("msg_added"))}
     reload();setShowForm(false);setEditing(null);
     setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});
   };
-  const del=async id=>{if(!window.confirm("Delete?"))return;await DB.savePrices((await DB.prices()).filter(p=>p.id!==id));reload();notify("Deleted")};
+  const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePrices((await DB.prices()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const trendIcon=t=>t==="up"?<Ic.trendUp size={13}/>:t==="down"?<Ic.trendDown size={13}/>:<Ic.trendFlat size={13}/>;
   const trendColor=t=>t==="up"?G.g6:t==="down"?G.red:G.gray5;
   const filtered=prices.filter(p=>{
@@ -1188,30 +1528,30 @@ function MarketPricesPage({user,notify}){
       <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:22,flexWrap:"wrap",gap:10}}>
           <div>
-            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.prices size={22} color={G.g6}/> Live Market Prices</h1>
-            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>Real-time agricultural commodity prices across Rwanda</p>
+            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.prices size={22} color={G.g6}/> {t("prices_title")}</h1>
+            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>{t("prices_subtitle")}</p>
           </div>
-          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});setShowForm(true)}}>Add Price</Btn>}
+          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});setShowForm(true)}}>{t("prices_add")}</Btn>}
         </div>
         <div style={{background:G.white,borderRadius:G.rL,padding:14,marginBottom:16,boxShadow:G.sh,border:`1px solid ${G.gray1}`,display:"flex",gap:9,flexWrap:"wrap"}}>
-          <Inp placeholder="Search product or market…" value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:160,marginBottom:0}}/>
-          <Sel value={fProv} onChange={e=>setFProv(e.target.value)} style={{minWidth:140,marginBottom:0}}><option value="">All Provinces</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
-          <Sel value={fCat} onChange={e=>setFCat(e.target.value)} style={{minWidth:130,marginBottom:0}}><option value="">All Categories</option><option>Crops</option><option>Livestock</option></Sel>
-          <Btn variant="secondary" size="sm" onClick={()=>{setSearch("");setFProv("");setFCat("")}}>Clear</Btn>
+          <Inp placeholder={t("prices_search_ph")} value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:160,marginBottom:0}}/>
+          <Sel value={fProv} onChange={e=>setFProv(e.target.value)} style={{minWidth:140,marginBottom:0}}><option value="">{t("prices_all_provinces")}</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
+          <Sel value={fCat} onChange={e=>setFCat(e.target.value)} style={{minWidth:130,marginBottom:0}}><option value="">{t("prices_all_categories")}</option><option>Crops</option><option>Livestock</option></Sel>
+          <Btn variant="secondary" size="sm" onClick={()=>{setSearch("");setFProv("");setFCat("")}}>{t("prices_clear")}</Btn>
         </div>
         <div style={{background:G.white,borderRadius:G.rL,boxShadow:G.sh,border:`1px solid ${G.gray1}`,overflow:"hidden"}}>
           <div style={{overflowX:"auto"}}>
             <table style={{width:"100%",borderCollapse:"collapse",fontFamily:FB,fontSize:13}}>
               <thead>
                 <tr style={{background:G.g8,color:G.white}}>
-                  {["Product","Category","Province","District","Market","Unit","Current Price","Prev. Price","Trend","Updated",...(isAdmin?["Actions"]:[])].map(h=>(
+                  {[t("prices_col_product"),t("prices_col_category"),t("prices_col_province"),t("prices_col_district"),t("prices_col_market"),t("prices_col_unit"),t("prices_col_current"),t("prices_col_prev"),t("prices_col_trend"),t("prices_col_updated"),...(isAdmin?[t("prices_col_actions")]:[])].map(h=>(
                     <th key={h} style={{padding:"11px 14px",textAlign:"left",fontWeight:700,fontSize:12,whiteSpace:"nowrap"}}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.length===0
-                  ?<tr><td colSpan={11} style={{textAlign:"center",padding:"40px",color:G.gray5}}>No price data found</td></tr>
+                  ?<tr><td colSpan={11} style={{textAlign:"center",padding:"40px",color:G.gray5}}>{t("prices_none_found")}</td></tr>
                   :filtered.map((p,i)=>(
                     <tr key={p.id} style={{borderBottom:`1px solid ${G.gray1}`,background:i%2===0?G.white:G.pageBg}}>
                       <td style={{padding:"11px 14px",fontWeight:700,color:G.gray9}}>{p.product}</td>
@@ -1231,19 +1571,19 @@ function MarketPricesPage({user,notify}){
             </table>
           </div>
         </div>
-        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?"Edit Price":"Add Market Price"} maxW={580}>
+        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?t("prices_edit_title"):t("prices_add_title")} maxW={580}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            <Inp label="Product *" value={form.product} onChange={e=>set("product",e.target.value)}/>
-            <Sel label="Category" value={form.category} onChange={e=>set("category",e.target.value)}><option>Crops</option><option>Livestock</option></Sel>
-            <Sel label="Province" value={form.province} onChange={e=>set("province",e.target.value)}><option value="">Select</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
-            <Inp label="District" value={form.district} onChange={e=>set("district",e.target.value)}/>
-            <div style={{gridColumn:"1/-1"}}><Inp label="Market Name *" value={form.market} onChange={e=>set("market",e.target.value)}/></div>
-            <Sel label="Unit" value={form.unit} onChange={e=>set("unit",e.target.value)}>{"kg,ton,bag,crate,head,liter,piece".split(",").map(u=><option key={u} value={u}>{u}</option>)}</Sel>
-            <Sel label="Trend" value={form.trend} onChange={e=>set("trend",e.target.value)}><option value="up">Up</option><option value="down">Down</option><option value="stable">Stable</option></Sel>
-            <Inp label="Current Price (RWF) *" type="number" value={form.current} onChange={e=>set("current",e.target.value)}/>
-            <Inp label="Previous Price (RWF)" type="number" value={form.previous} onChange={e=>set("previous",e.target.value)}/>
+            <Inp label={t("prices_form_product")} value={form.product} onChange={e=>set("product",e.target.value)}/>
+            <Sel label={t("prices_form_category")} value={form.category} onChange={e=>set("category",e.target.value)}><option>Crops</option><option>Livestock</option></Sel>
+            <Sel label={t("prices_form_province")} value={form.province} onChange={e=>set("province",e.target.value)}><option value="">{t("prices_form_select")}</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
+            <Inp label={t("prices_form_district")} value={form.district} onChange={e=>set("district",e.target.value)}/>
+            <div style={{gridColumn:"1/-1"}}><Inp label={t("prices_form_market")} value={form.market} onChange={e=>set("market",e.target.value)}/></div>
+            <Sel label={t("prices_form_unit")} value={form.unit} onChange={e=>set("unit",e.target.value)}>{"kg,ton,bag,crate,head,liter,piece".split(",").map(u=><option key={u} value={u}>{u}</option>)}</Sel>
+            <Sel label={t("prices_form_trend")} value={form.trend} onChange={e=>set("trend",e.target.value)}><option value="up">{t("prices_trend_up")}</option><option value="down">{t("prices_trend_down")}</option><option value="stable">{t("prices_trend_stable")}</option></Sel>
+            <Inp label={t("prices_form_current")} type="number" value={form.current} onChange={e=>set("current",e.target.value)}/>
+            <Inp label={t("prices_form_previous")} type="number" value={form.previous} onChange={e=>set("previous",e.target.value)}/>
           </div>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?"Save":"Add Price"}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>Cancel</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("prices_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -1254,6 +1594,7 @@ function MarketPricesPage({user,notify}){
    FARMING TIPS
 ════════════════════════════════════ */
 function FarmingTipsPage({user,notify}){
+  const{t:tr}=useLang();
   const[tips,setTips]=useState([]);const[selTip,setSelTip]=useState(null);
   const[showForm,setShowForm]=useState(false);const[editing,setEditing]=useState(null);
   const[search,setSearch]=useState("");const[fCat,setFCat]=useState("");
@@ -1263,14 +1604,14 @@ function FarmingTipsPage({user,notify}){
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=async()=>{
-    if(!form.title||!form.content){notify("Title and content required","error");return}
+    if(!form.title||!form.content){notify(tr("msg_title_content_required"),"error");return}
     const entry={...form,publishedAt:editing?.publishedAt||new Date().toISOString()};
     const ts=await DB.tips();
-    if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify("Tip updated!")}
-    else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify("Tip published!")}
+    if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify(tr("msg_tip_updated"))}
+    else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify(tr("msg_tip_published"))}
     reload();setShowForm(false);setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});
   };
-  const del=async id=>{if(!window.confirm("Delete?"))return;await DB.saveTips((await DB.tips()).filter(t=>t.id!==id));reload();notify("Deleted")};
+  const del=async id=>{if(!window.confirm(tr("confirm_delete")))return;await DB.saveTips((await DB.tips()).filter(t=>t.id!==id));reload();notify(tr("msg_deleted"))};
   const cats=["All","Crops","Livestock","Soil","Water","Business"];
   const filtered=tips.filter(t=>{
     if(search&&!t.title.toLowerCase().includes(search.toLowerCase()))return false;
@@ -1282,11 +1623,11 @@ function FarmingTipsPage({user,notify}){
     return(
       <div style={{background:G.sectionAlt,minHeight:"60vh"}}>
         <div style={{maxWidth:800,margin:"0 auto",padding:"28px 20px"}}>
-          <Btn variant="ghost" icon="←" onClick={()=>setSelTip(null)} style={{marginBottom:18}}>Back to Tips</Btn>
+          <Btn variant="ghost" icon="←" onClick={()=>setSelTip(null)} style={{marginBottom:18}}>{tr("tips_back")}</Btn>
           {selTip.image&&<div style={{borderRadius:G.rL,overflow:"hidden",height:240,marginBottom:20}}><img src={selTip.image} alt={selTip.title} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/></div>}
           <Badge color="green" style={{marginBottom:10}}>{selTip.category}</Badge>
           <h1 style={{fontFamily:FH,fontSize:24,fontWeight:900,color:G.gray9,margin:"0 0 7px",lineHeight:1.3}}>{selTip.title}</h1>
-          <p style={{color:G.gray5,fontSize:13,margin:"0 0 20px"}}>By {selTip.author} · {new Date(selTip.publishedAt).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</p>
+          <p style={{color:G.gray5,fontSize:13,margin:"0 0 20px"}}>{tr("tips_by")} {selTip.author} · {new Date(selTip.publishedAt).toLocaleDateString("en-GB",{day:"numeric",month:"long",year:"numeric"})}</p>
           <div style={{background:G.white,borderRadius:G.rL,padding:22,boxShadow:G.shM,marginBottom:24}}>
             {selTip.content.split("\n").map((para,i)=>(
               <p key={i} style={{margin:"0 0 11px",fontSize:14,color:para.startsWith("**")?G.gray9:G.gray7,fontWeight:para.startsWith("**")?700:400,lineHeight:1.8}}>{para.replace(/\*\*/g,"")}</p>
@@ -1294,7 +1635,7 @@ function FarmingTipsPage({user,notify}){
           </div>
           {related.length>0&&(
             <div>
-              <h3 style={{fontFamily:FH,fontSize:16,fontWeight:800,marginBottom:13,color:G.gray9}}>Related Tips</h3>
+              <h3 style={{fontFamily:FH,fontSize:16,fontWeight:800,marginBottom:13,color:G.gray9}}>{tr("tips_related")}</h3>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:13}}>
                 {related.map(t=>(
                   <div key={t.id} style={{background:G.white,borderRadius:G.rL,overflow:"hidden",cursor:"pointer",boxShadow:G.sh,border:`1px solid ${G.gray1}`,transition:"transform .2s"}} onClick={()=>setSelTip(t)} onMouseEnter={e=>e.currentTarget.style.transform="translateY(-3px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}>
@@ -1314,21 +1655,21 @@ function FarmingTipsPage({user,notify}){
       <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
           <div>
-            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.tips size={22} color={G.g6}/> Farming Tips</h1>
-            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>Expert advice to improve your farm productivity</p>
+            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.tips size={22} color={G.g6}/> {tr("tips_title")}</h1>
+            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>{tr("tips_subtitle")}</p>
           </div>
-          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});setShowForm(true)}}>Add Tip</Btn>}
+          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});setShowForm(true)}}>{tr("tips_add")}</Btn>}
         </div>
         <div style={{display:"flex",gap:8,marginBottom:18,flexWrap:"wrap",alignItems:"center"}}>
-          <Inp placeholder="Search tips…" value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:180,marginBottom:0}}/>
+          <Inp placeholder={tr("tips_search_ph")} value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:180,marginBottom:0}}/>
           <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
             {cats.map(c=>(
-              <button key={c} onClick={()=>setFCat(c==="All"?"":c)} style={{padding:"6px 14px",borderRadius:99,border:`1.5px solid ${fCat===(c==="All"?"":c)?G.g6:G.gray3}`,background:fCat===(c==="All"?"":c)?G.g6:G.white,color:fCat===(c==="All"?"":c)?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{c}</button>
+              <button key={c} onClick={()=>setFCat(c==="All"?"":c)} style={{padding:"6px 14px",borderRadius:99,border:`1.5px solid ${fCat===(c==="All"?"":c)?G.g6:G.gray3}`,background:fCat===(c==="All"?"":c)?G.g6:G.white,color:fCat===(c==="All"?"":c)?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{c==="All"?tr("cat_all"):c}</button>
             ))}
           </div>
         </div>
         {filtered.length===0
-          ?<div style={{textAlign:"center",padding:"60px",color:G.gray5}}><div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><Ic.tips size={48}/></div><p>No tips found</p></div>
+          ?<div style={{textAlign:"center",padding:"60px",color:G.gray5}}><div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><Ic.tips size={48}/></div><p>{tr("tips_none_found")}</p></div>
           :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(290px,1fr))",gap:18}}>
               {filtered.map(tip=>(
                 <div key={tip.id} style={{background:G.white,borderRadius:G.rL,overflow:"hidden",boxShadow:G.sh,border:`1px solid ${G.gray1}`,transition:"transform .25s,box-shadow .25s",cursor:"pointer"}} onClick={()=>setSelTip(tip)} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=G.shL;e.currentTarget.style.borderColor="#a5d6a7"}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=G.sh;e.currentTarget.style.borderColor=G.gray1}}>
@@ -1338,7 +1679,7 @@ function FarmingTipsPage({user,notify}){
                     <h3 style={{margin:"0 0 5px",fontSize:14,fontFamily:FH,fontWeight:700,color:G.gray9,lineHeight:1.35}}>{tip.title}</h3>
                     <p style={{margin:"0 0 8px",fontSize:12,color:G.gray5,lineHeight:1.6}}>{tip.content.slice(0,100)}…</p>
                     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:5}}>
-                      <span style={{fontSize:11,color:G.gray5}}>By {tip.author} · {new Date(tip.publishedAt).toLocaleDateString()}</span>
+                      <span style={{fontSize:11,color:G.gray5}}>{tr("tips_by")} {tip.author} · {new Date(tip.publishedAt).toLocaleDateString()}</span>
                       {isAdmin&&(
                         <div style={{display:"flex",gap:5}} onClick={e=>e.stopPropagation()}>
                           <Btn size="sm" variant="secondary" onClick={()=>{setEditing(tip);setForm({...tip});setShowForm(true)}} icon={<Ic.edit size={14}/>}/>
@@ -1350,12 +1691,12 @@ function FarmingTipsPage({user,notify}){
                 </div>
               ))}
             </div>}
-        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?"Edit Tip":"Add Farming Tip"} maxW={640}>
-          <Inp label="Title *" value={form.title} onChange={e=>set("title",e.target.value)}/>
-          <Sel label="Category" value={form.category} onChange={e=>set("category",e.target.value)}>{"Crops,Livestock,Soil,Water,Business".split(",").map(c=><option key={c} value={c}>{c}</option>)}</Sel>
-          <ImageUpload label="Featured Image" value={form.image} onChange={v=>set("image",v)}/>
-          <Txt label="Content * (use **text** for bold)" value={form.content} onChange={e=>set("content",e.target.value)} style={{minHeight:170}}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?"Save":"Publish Tip"}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>Cancel</Btn></div>
+        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?tr("tips_edit_title"):tr("tips_add_title")} maxW={640}>
+          <Inp label={tr("tips_form_title")} value={form.title} onChange={e=>set("title",e.target.value)}/>
+          <Sel label={tr("tips_form_category")} value={form.category} onChange={e=>set("category",e.target.value)}>{"Crops,Livestock,Soil,Water,Business".split(",").map(c=><option key={c} value={c}>{c}</option>)}</Sel>
+          <ImageUpload label={tr("tips_form_image")} value={form.image} onChange={v=>set("image",v)}/>
+          <Txt label={tr("tips_form_content")} value={form.content} onChange={e=>set("content",e.target.value)} style={{minHeight:170}}/>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?tr("prices_save"):tr("tips_publish")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{tr("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -1366,6 +1707,7 @@ function FarmingTipsPage({user,notify}){
    PESTS & DISEASES
 ════════════════════════════════════ */
 function PestsCenterPage({user,notify}){
+  const{t}=useLang();
   const[pests,setPests]=useState([]);const[selPest,setSelPest]=useState(null);
   const[showForm,setShowForm]=useState(false);const[editing,setEditing]=useState(null);
   const[search,setSearch]=useState("");const[fCat,setFCat]=useState("");
@@ -1375,14 +1717,14 @@ function PestsCenterPage({user,notify}){
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=async()=>{
-    if(!form.name||!form.cropOrAnimal){notify("Fill required fields","error");return}
+    if(!form.name||!form.cropOrAnimal){notify(t("msg_fill_required"),"error");return}
     const ps=await DB.pests();
-    if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify("Updated!")}
-    else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify("Added!")}
+    if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify(t("msg_updated"))}
+    else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify(t("msg_added"))}
     reload();setShowForm(false);setEditing(null);
     setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});
   };
-  const del=async id=>{if(!window.confirm("Delete?"))return;await DB.savePests((await DB.pests()).filter(p=>p.id!==id));reload();notify("Deleted")};
+  const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePests((await DB.pests()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=pests.filter(p=>{
     if(search&&!p.name.toLowerCase().includes(search.toLowerCase())&&!p.cropOrAnimal.toLowerCase().includes(search.toLowerCase()))return false;
     if(fCat&&p.category!==fCat)return false;
@@ -1392,15 +1734,15 @@ function PestsCenterPage({user,notify}){
     return(
       <div style={{background:G.white,minHeight:"60vh"}}>
         <div style={{maxWidth:800,margin:"0 auto",padding:"28px 20px"}}>
-          <Btn variant="ghost" icon="←" onClick={()=>setSelPest(null)} style={{marginBottom:18}}>Back</Btn>
+          <Btn variant="ghost" icon="←" onClick={()=>setSelPest(null)} style={{marginBottom:18}}>{t("pests_back")}</Btn>
           {selPest.images?.[0]&&<div style={{borderRadius:G.rL,overflow:"hidden",height:210,marginBottom:18}}><img src={selPest.images[0]} alt={selPest.name} style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/></div>}
           <div style={{display:"flex",gap:7,flexWrap:"wrap",marginBottom:9}}>
             <Badge color={selPest.category==="Crops"?"green":"blue"}>{selPest.category}</Badge>
-            <span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 9px",borderRadius:99,fontSize:11,fontWeight:700,background:SEVERITY[selPest.severity]?.bg,color:SEVERITY[selPest.severity]?.color}}><Ic.alert size={11}/> {SEVERITY[selPest.severity]?.label} Severity</span>
+            <span style={{display:"inline-flex",alignItems:"center",gap:4,padding:"3px 9px",borderRadius:99,fontSize:11,fontWeight:700,background:SEVERITY[selPest.severity]?.bg,color:SEVERITY[selPest.severity]?.color}}><Ic.alert size={11}/> {t("severity_"+selPest.severity)} {t("pests_severity_suffix")}</span>
           </div>
           <h1 style={{fontFamily:FH,fontSize:22,fontWeight:900,color:G.gray9,margin:"0 0 4px"}}>{selPest.name}</h1>
-          <p style={{color:G.gray5,fontSize:13,margin:"0 0 20px"}}>Affects: <strong>{selPest.cropOrAnimal}</strong></p>
-          {[["Symptoms",selPest.symptoms],["Causes",selPest.causes],["Prevention",selPest.prevention],["Treatment",selPest.treatment]].map(([head,content])=>content&&(
+          <p style={{color:G.gray5,fontSize:13,margin:"0 0 20px"}}>{t("pests_affects")} <strong>{selPest.cropOrAnimal}</strong></p>
+          {[[t("pests_symptoms"),selPest.symptoms],[t("pests_causes"),selPest.causes],[t("pests_prevention"),selPest.prevention],[t("pests_treatment"),selPest.treatment]].map(([head,content])=>content&&(
             <div key={head} style={{background:G.white,borderRadius:G.rL,padding:16,boxShadow:G.sh,border:`1px solid ${G.gray1}`,marginBottom:12}}>
               <h3 style={{margin:"0 0 7px",fontSize:14,fontWeight:800,fontFamily:FH,color:G.gray9}}>{head}</h3>
               <p style={{margin:0,fontSize:13,color:G.gray7,lineHeight:1.75}}>{content}</p>
@@ -1415,19 +1757,19 @@ function PestsCenterPage({user,notify}){
       <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
           <div>
-            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.pests size={22} color={G.g6}/> Pest & Disease Center</h1>
-            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>Identify, prevent, and treat crop & livestock problems</p>
+            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.pests size={22} color={G.g6}/> {t("pests_title")}</h1>
+            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>{t("pests_subtitle")}</p>
           </div>
-          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});setShowForm(true)}}>Add Entry</Btn>}
+          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});setShowForm(true)}}>{t("pests_add")}</Btn>}
         </div>
         <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap",alignItems:"center"}}>
-          <Inp placeholder="Search pests or crops…" value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:180,marginBottom:0}}/>
+          <Inp placeholder={t("pests_search_ph")} value={search} onChange={e=>setSearch(e.target.value)} style={{flex:1,minWidth:180,marginBottom:0}}/>
           {["","Crops","Livestock"].map(c=>(
-            <button key={c} onClick={()=>setFCat(c)} style={{padding:"6px 14px",borderRadius:99,border:`1.5px solid ${fCat===c?G.g6:G.gray3}`,background:fCat===c?G.g6:G.white,color:fCat===c?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{c||"All"}</button>
+            <button key={c} onClick={()=>setFCat(c)} style={{padding:"6px 14px",borderRadius:99,border:`1.5px solid ${fCat===c?G.g6:G.gray3}`,background:fCat===c?G.g6:G.white,color:fCat===c?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{c||t("cat_all")}</button>
           ))}
         </div>
         {filtered.length===0
-          ?<div style={{textAlign:"center",padding:"60px",color:G.gray5}}><div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><Ic.pests size={48}/></div><p>No entries found</p></div>
+          ?<div style={{textAlign:"center",padding:"60px",color:G.gray5}}><div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><Ic.pests size={48}/></div><p>{t("pests_none_found")}</p></div>
           :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(270px,1fr))",gap:16}}>
               {filtered.map(p=>(
                 <div key={p.id} style={{background:G.white,borderRadius:G.rL,overflow:"hidden",boxShadow:G.sh,border:`1px solid ${G.gray1}`,transition:"transform .25s,box-shadow .25s",cursor:"pointer"}} onClick={()=>setSelPest(p)} onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-4px)";e.currentTarget.style.boxShadow=G.shL;e.currentTarget.style.borderColor="#a5d6a7"}} onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=G.sh;e.currentTarget.style.borderColor=G.gray1}}>
@@ -1435,10 +1777,10 @@ function PestsCenterPage({user,notify}){
                   <div style={{padding:"12px 14px"}}>
                     <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:6}}>
                       <Badge color={p.category==="Crops"?"green":"blue"}>{p.category}</Badge>
-                      <span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:99,fontSize:10,fontWeight:700,background:SEVERITY[p.severity]?.bg,color:SEVERITY[p.severity]?.color}}>{SEVERITY[p.severity]?.label}</span>
+                      <span style={{display:"inline-flex",alignItems:"center",padding:"3px 8px",borderRadius:99,fontSize:10,fontWeight:700,background:SEVERITY[p.severity]?.bg,color:SEVERITY[p.severity]?.color}}>{t("severity_"+p.severity)}</span>
                     </div>
                     <h3 style={{margin:"0 0 4px",fontSize:14,fontFamily:FH,fontWeight:700,color:G.gray9}}>{p.name}</h3>
-                    <p style={{margin:"0 0 6px",fontSize:11,color:G.gray5}}>Affects: {p.cropOrAnimal}</p>
+                    <p style={{margin:"0 0 6px",fontSize:11,color:G.gray5}}>{t("pests_affects")} {p.cropOrAnimal}</p>
                     <p style={{margin:"0 0 8px",fontSize:11,color:G.gray5,lineHeight:1.5}}>{p.symptoms?.slice(0,80)}…</p>
                     {isAdmin&&(
                       <div style={{display:"flex",gap:5}} onClick={e=>e.stopPropagation()}>
@@ -1450,19 +1792,19 @@ function PestsCenterPage({user,notify}){
                 </div>
               ))}
             </div>}
-        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?"Edit Entry":"Add Pest/Disease"} maxW={620}>
+        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?t("pests_edit_title"):t("pests_add_title")} maxW={620}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            <Inp label="Crop/Animal *" value={form.cropOrAnimal} onChange={e=>set("cropOrAnimal",e.target.value)}/>
-            <Inp label="Name *" value={form.name} onChange={e=>set("name",e.target.value)}/>
-            <Sel label="Category" value={form.category} onChange={e=>set("category",e.target.value)}><option>Crops</option><option>Livestock</option></Sel>
-            <Sel label="Severity" value={form.severity} onChange={e=>set("severity",e.target.value)}>{Object.entries(SEVERITY).map(([k,v])=><option key={k} value={k}>{v.label}</option>)}</Sel>
+            <Inp label={t("pests_form_crop_animal")} value={form.cropOrAnimal} onChange={e=>set("cropOrAnimal",e.target.value)}/>
+            <Inp label={t("pests_form_name")} value={form.name} onChange={e=>set("name",e.target.value)}/>
+            <Sel label={t("pests_form_category")} value={form.category} onChange={e=>set("category",e.target.value)}><option>Crops</option><option>Livestock</option></Sel>
+            <Sel label={t("pests_form_severity")} value={form.severity} onChange={e=>set("severity",e.target.value)}>{Object.keys(SEVERITY).map(k=><option key={k} value={k}>{t("severity_"+k)}</option>)}</Sel>
           </div>
-          <ImageUpload label="Photo" value={form.images?.[0]||""} onChange={v=>set("images",[v])}/>
-          <Txt label="Symptoms" value={form.symptoms} onChange={e=>set("symptoms",e.target.value)}/>
-          <Txt label="Causes" value={form.causes} onChange={e=>set("causes",e.target.value)}/>
-          <Txt label="Prevention" value={form.prevention} onChange={e=>set("prevention",e.target.value)}/>
-          <Txt label="Treatment" value={form.treatment} onChange={e=>set("treatment",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?"Save":"Add Entry"}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>Cancel</Btn></div>
+          <ImageUpload label={t("pests_form_photo")} value={form.images?.[0]||""} onChange={v=>set("images",[v])}/>
+          <Txt label={t("pests_form_symptoms")} value={form.symptoms} onChange={e=>set("symptoms",e.target.value)}/>
+          <Txt label={t("pests_form_causes")} value={form.causes} onChange={e=>set("causes",e.target.value)}/>
+          <Txt label={t("pests_form_prevention")} value={form.prevention} onChange={e=>set("prevention",e.target.value)}/>
+          <Txt label={t("pests_form_treatment")} value={form.treatment} onChange={e=>set("treatment",e.target.value)}/>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("pests_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -1473,6 +1815,7 @@ function PestsCenterPage({user,notify}){
    PLANTING CALENDAR
 ════════════════════════════════════ */
 function PlantingCalendarPage({user,notify}){
+  const{t}=useLang();
   const[entries,setEntries]=useState([]);const[view,setView]=useState("monthly");const[selMonth,setSelMonth]=useState(new Date().getMonth()+1);
   const[showForm,setShowForm]=useState(false);const[editing,setEditing]=useState(null);
   const[fProv,setFProv]=useState("");const[fCrop,setFCrop]=useState("");
@@ -1482,13 +1825,13 @@ function PlantingCalendarPage({user,notify}){
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=async()=>{
-    if(!form.crop){notify("Crop name required","error");return}
+    if(!form.crop){notify(t("msg_crop_required"),"error");return}
     const cs=await DB.calendar();
-    if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify("Updated!")}
-    else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify("Added!")}
+    if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify(t("msg_updated"))}
+    else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify(t("msg_added"))}
     reload();setShowForm(false);setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});
   };
-  const del=async id=>{if(!window.confirm("Delete?"))return;await DB.saveCalendar((await DB.calendar()).filter(c=>c.id!==id));reload();notify("Deleted")};
+  const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.saveCalendar((await DB.calendar()).filter(c=>c.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=entries.filter(e=>{
     if(fProv&&e.province!==fProv&&e.province!=="All")return false;
     if(fCrop&&!e.crop.toLowerCase().includes(fCrop.toLowerCase()))return false;
@@ -1502,19 +1845,19 @@ function PlantingCalendarPage({user,notify}){
       <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20,flexWrap:"wrap",gap:10}}>
           <div>
-            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.calendar size={22} color={G.g6}/> Seasonal Planting Calendar</h1>
-            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>Optimal planting and harvest times across Rwanda</p>
+            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.calendar size={22} color={G.g6}/> {t("calendar_title")}</h1>
+            <p style={{margin:"3px 0 0",color:G.gray5,fontSize:13}}>{t("calendar_subtitle")}</p>
           </div>
-          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});setShowForm(true)}}>Add Entry</Btn>}
+          {isAdmin&&<Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});setShowForm(true)}}>{t("calendar_add")}</Btn>}
         </div>
         <div style={{background:G.white,borderRadius:G.rL,padding:13,marginBottom:16,boxShadow:G.sh,border:`1px solid ${G.gray1}`,display:"flex",gap:9,flexWrap:"wrap",alignItems:"center"}}>
           <div style={{display:"flex",gap:6}}>
-            {[["monthly","Monthly"],["list","List"]].map(([v,l])=>(
+            {[["monthly",t("calendar_view_monthly")],["list",t("calendar_view_list")]].map(([v,l])=>(
               <button key={v} onClick={()=>setView(v)} style={{padding:"7px 14px",borderRadius:99,border:`1.5px solid ${view===v?G.g6:G.gray3}`,background:view===v?G.g6:G.white,color:view===v?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{l}</button>
             ))}
           </div>
-          <Sel value={fProv} onChange={e=>setFProv(e.target.value)} style={{minWidth:140,marginBottom:0}}><option value="">All Provinces</option><option value="All">All Rwanda</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
-          <Inp placeholder="Filter by crop…" value={fCrop} onChange={e=>setFCrop(e.target.value)} style={{flex:1,minWidth:130,marginBottom:0}}/>
+          <Sel value={fProv} onChange={e=>setFProv(e.target.value)} style={{minWidth:140,marginBottom:0}}><option value="">{t("calendar_all_provinces")}</option><option value="All">{t("calendar_all_rwanda")}</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
+          <Inp placeholder={t("calendar_filter_crop")} value={fCrop} onChange={e=>setFCrop(e.target.value)} style={{flex:1,minWidth:130,marginBottom:0}}/>
         </div>
         {view==="monthly"&&(
           <>
@@ -1524,15 +1867,15 @@ function PlantingCalendarPage({user,notify}){
                 const count=filtered.filter(e=>e.plantMonth===mn||e.harvestMonth===mn).length;
                 return(
                   <button key={m} onClick={()=>setSelMonth(mn)} style={{padding:"9px 5px",borderRadius:G.r,border:`2px solid ${selMonth===mn?G.g6:G.gray3}`,background:selMonth===mn?G.g6:count>0?G.g0:G.white,color:selMonth===mn?G.white:G.gray7,fontWeight:selMonth===mn?700:500,fontSize:11,cursor:"pointer",fontFamily:FB,transition:"all .2s"}}>
-                    <div style={{fontSize:10,marginBottom:2}}>{m.slice(0,3)}</div>
-                    {count>0&&<div style={{fontSize:9,background:selMonth===mn?"rgba(255,255,255,.2)":G.g1,color:selMonth===mn?G.white:G.g6,borderRadius:99,padding:"1px 5px"}}>{count} crops</div>}
+                    <div style={{fontSize:10,marginBottom:2}}>{t("month_"+i).slice(0,3)}</div>
+                    {count>0&&<div style={{fontSize:9,background:selMonth===mn?"rgba(255,255,255,.2)":G.g1,color:selMonth===mn?G.white:G.g6,borderRadius:99,padding:"1px 5px"}}>{count} {t("calendar_crops_count")}</div>}
                   </button>
                 );
               })}
             </div>
-            <h3 style={{fontFamily:FH,fontSize:15,fontWeight:800,color:G.gray9,marginBottom:13,display:"flex",alignItems:"center",gap:7}}><Ic.calendar size={15} color={G.g6}/> {MONTHS[selMonth-1]}</h3>
+            <h3 style={{fontFamily:FH,fontSize:15,fontWeight:800,color:G.gray9,marginBottom:13,display:"flex",alignItems:"center",gap:7}}><Ic.calendar size={15} color={G.g6}/> {t("month_"+(selMonth-1))}</h3>
             {monthEntries.length===0
-              ?<div style={{textAlign:"center",padding:"36px",background:G.white,borderRadius:G.rL,boxShadow:G.sh,color:G.gray5}}>No crops scheduled for {MONTHS[selMonth-1]}</div>
+              ?<div style={{textAlign:"center",padding:"36px",background:G.white,borderRadius:G.rL,boxShadow:G.sh,color:G.gray5}}>{t("calendar_none_scheduled")} {t("month_"+(selMonth-1))}</div>
               :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(250px,1fr))",gap:13}}>
                   {monthEntries.map(e=>{
                     const isPlant=e.plantMonth===selMonth, isHarvest=e.harvestMonth===selMonth;
@@ -1540,10 +1883,10 @@ function PlantingCalendarPage({user,notify}){
                       <div key={e.id} style={{background:G.white,borderRadius:G.rL,padding:15,boxShadow:G.sh,border:`1px solid ${G.gray1}`,borderLeft:`4px solid ${getCC(e.crop)}`}}>
                         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:7}}>
                           <h3 style={{margin:0,fontSize:14,fontFamily:FH,fontWeight:700,color:G.gray9}}>{e.crop}</h3>
-                          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{isPlant&&<Badge color="green"><Ic.crops size={10}/> Plant</Badge>}{isHarvest&&<Badge color="gold"><Ic.calendar size={10}/> Harvest</Badge>}</div>
+                          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{isPlant&&<Badge color="green"><Ic.crops size={10}/> {t("calendar_plant")}</Badge>}{isHarvest&&<Badge color="gold"><Ic.calendar size={10}/> {t("calendar_harvest")}</Badge>}</div>
                         </div>
                         <p style={{margin:"0 0 3px",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4}}><Ic.location size={11}/> {e.province}{e.district&&" · "+e.district}</p>
-                        <p style={{margin:"0 0 3px",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Clock size={11}/> {e.growingDays} days <span>·</span> <Ic.crops size={11}/> {MONTHS[e.plantMonth-1]} <Ic.next size={11}/> <Ic.calendar size={11}/> {MONTHS[e.harvestMonth-1]}</p>
+                        <p style={{margin:"0 0 3px",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Clock size={11}/> {e.growingDays} {t("calendar_days")} <span>·</span> <Ic.crops size={11}/> {t("month_"+(e.plantMonth-1))} <Ic.next size={11}/> <Ic.calendar size={11}/> {t("month_"+(e.harvestMonth-1))}</p>
                         {e.notes&&<p style={{margin:"7px 0 0",fontSize:11,color:G.gray7,lineHeight:1.5,borderTop:`1px solid ${G.gray1}`,paddingTop:6}}>{e.notes}</p>}
                         {isAdmin&&<div style={{display:"flex",gap:5,marginTop:9}}><Btn size="sm" variant="secondary" onClick={()=>{setEditing(e);setForm({...e});setShowForm(true)}} icon={<Ic.edit size={14}/>}/><Btn size="sm" variant="danger" onClick={()=>del(e.id)} icon={<Ic.delete size={14}/>}/></div>}
                       </div>
@@ -1558,21 +1901,21 @@ function PlantingCalendarPage({user,notify}){
               <table style={{width:"100%",borderCollapse:"collapse",fontFamily:FB,fontSize:13}}>
                 <thead>
                   <tr style={{background:G.g8,color:G.white}}>
-                    {["Crop","Province","District","Plant Month","Harvest Month","Days","Notes",...(isAdmin?["Actions"]:[])].map(h=>(
+                    {[t("calendar_col_crop"),t("calendar_col_province"),t("calendar_col_district"),t("calendar_col_plant_month"),t("calendar_col_harvest_month"),t("calendar_col_days"),t("calendar_col_notes"),...(isAdmin?[t("prices_col_actions")]:[])].map(h=>(
                       <th key={h} style={{padding:"10px 13px",textAlign:"left",fontWeight:700,fontSize:12,whiteSpace:"nowrap"}}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filtered.length===0
-                    ?<tr><td colSpan={8} style={{textAlign:"center",padding:"40px",color:G.gray5}}>No entries</td></tr>
+                    ?<tr><td colSpan={8} style={{textAlign:"center",padding:"40px",color:G.gray5}}>{t("calendar_none_entries")}</td></tr>
                     :filtered.map((e,i)=>(
                       <tr key={e.id} style={{borderBottom:`1px solid ${G.gray1}`,background:i%2===0?G.white:G.pageBg}}>
                         <td style={{padding:"10px 13px",fontWeight:700,color:G.gray9,borderLeft:`3px solid ${getCC(e.crop)}`}}>{e.crop}</td>
                         <td style={{padding:"10px 13px",color:G.gray7}}>{e.province}</td>
                         <td style={{padding:"10px 13px",color:G.gray5}}>{e.district||"—"}</td>
-                        <td style={{padding:"10px 13px"}}><Badge color="green"><Ic.crops size={10}/> {MONTHS[e.plantMonth-1]}</Badge></td>
-                        <td style={{padding:"10px 13px"}}><Badge color="gold"><Ic.calendar size={10}/> {MONTHS[e.harvestMonth-1]}</Badge></td>
+                        <td style={{padding:"10px 13px"}}><Badge color="green"><Ic.crops size={10}/> {t("month_"+(e.plantMonth-1))}</Badge></td>
+                        <td style={{padding:"10px 13px"}}><Badge color="gold"><Ic.calendar size={10}/> {t("month_"+(e.harvestMonth-1))}</Badge></td>
                         <td style={{padding:"10px 13px",color:G.gray5}}>{e.growingDays}d</td>
                         <td style={{padding:"10px 13px",color:G.gray5,maxWidth:180}}>{e.notes||"—"}</td>
                         {isAdmin&&<td style={{padding:"10px 13px"}}><div style={{display:"flex",gap:5}}><Btn size="sm" variant="secondary" onClick={()=>{setEditing(e);setForm({...e});setShowForm(true)}} icon={<Ic.edit size={14}/>}/><Btn size="sm" variant="danger" onClick={()=>del(e.id)} icon={<Ic.delete size={14}/>}/></div></td>}
@@ -1583,17 +1926,17 @@ function PlantingCalendarPage({user,notify}){
             </div>
           </div>
         )}
-        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?"Edit Entry":"Add Planting Entry"} maxW={560}>
+        <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?t("calendar_edit_title"):t("calendar_add_title")} maxW={560}>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            <div style={{gridColumn:"1/-1"}}><Sel label="Crop *" value={form.crop} onChange={e=>set("crop",e.target.value)}><option value="">Select Crop</option>{CROPS.map(c=><option key={c} value={c}>{c}</option>)}</Sel></div>
-            <Sel label="Province" value={form.province} onChange={e=>set("province",e.target.value)}><option value="">All Provinces</option><option value="All">All Rwanda</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
-            <Inp label="District (optional)" value={form.district} onChange={e=>set("district",e.target.value)}/>
-            <Sel label="Planting Month" value={form.plantMonth} onChange={e=>set("plantMonth",parseInt(e.target.value))}>{MONTHS.map((m,i)=><option key={i} value={i+1}>{m}</option>)}</Sel>
-            <Sel label="Harvest Month" value={form.harvestMonth} onChange={e=>set("harvestMonth",parseInt(e.target.value))}>{MONTHS.map((m,i)=><option key={i} value={i+1}>{m}</option>)}</Sel>
-            <div style={{gridColumn:"1/-1"}}><Inp label="Growing Period (days)" type="number" value={form.growingDays} onChange={e=>set("growingDays",e.target.value)}/></div>
+            <div style={{gridColumn:"1/-1"}}><Sel label={t("calendar_form_crop")} value={form.crop} onChange={e=>set("crop",e.target.value)}><option value="">{t("calendar_form_select_crop")}</option>{CROPS.map(c=><option key={c} value={c}>{c}</option>)}</Sel></div>
+            <Sel label={t("calendar_form_province")} value={form.province} onChange={e=>set("province",e.target.value)}><option value="">{t("calendar_all_provinces")}</option><option value="All">{t("calendar_all_rwanda")}</option>{Object.keys(LOC).map(p=><option key={p} value={p}>{p}</option>)}</Sel>
+            <Inp label={t("calendar_form_district")} value={form.district} onChange={e=>set("district",e.target.value)}/>
+            <Sel label={t("calendar_form_plant_month")} value={form.plantMonth} onChange={e=>set("plantMonth",parseInt(e.target.value))}>{MONTHS.map((m,i)=><option key={i} value={i+1}>{t("month_"+i)}</option>)}</Sel>
+            <Sel label={t("calendar_form_harvest_month")} value={form.harvestMonth} onChange={e=>set("harvestMonth",parseInt(e.target.value))}>{MONTHS.map((m,i)=><option key={i} value={i+1}>{t("month_"+i)}</option>)}</Sel>
+            <div style={{gridColumn:"1/-1"}}><Inp label={t("calendar_form_growing_days")} type="number" value={form.growingDays} onChange={e=>set("growingDays",e.target.value)}/></div>
           </div>
-          <Txt label="Notes" value={form.notes} onChange={e=>set("notes",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?"Save":"Add Entry"}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>Cancel</Btn></div>
+          <Txt label={t("calendar_form_notes")} value={form.notes} onChange={e=>set("notes",e.target.value)}/>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("calendar_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2212,7 +2555,8 @@ function AnimatedHeading({text,style:s}){
 /* ════════════════════════════════════
    MAIN APP
 ════════════════════════════════════ */
-export default function App(){
+function AppInner(){
+  const{lang,setLang,t}=useLang();
   const[user,setUser]=useState(null);
   const[page,setPage]=useState("home");
   const[products,setProducts]=useState([]);
@@ -2308,10 +2652,10 @@ export default function App(){
   const viewProduct=async p=>{await DB.incView(p.id);await reload();setSelProd(p)};
 
   const navItems=[
-    {k:"home",l:"Home"},{k:"marketplace",l:"Marketplace",ic:Ic.marketplace},{k:"farmers",l:"Farmers",ic:Ic.farmer},
-    {k:"prices",l:"Prices",ic:Ic.prices},{k:"tips",l:"Tips",ic:Ic.tips},{k:"pests",l:"Pests",ic:Ic.pests},{k:"calendar",l:"Calendar",ic:Ic.calendar},
-    ...(user?.role==="farmer"?[{k:"dashboard",l:"Dashboard",ic:Ic.dashboard}]:[]),
-    ...(user?.role==="admin"?[{k:"admin",l:"Admin",ic:Ic.admin}]:[]),
+    {k:"home",l:t("nav_home")},{k:"marketplace",l:t("nav_marketplace"),ic:Ic.marketplace},{k:"farmers",l:t("nav_farmers"),ic:Ic.farmer},
+    {k:"prices",l:t("nav_prices"),ic:Ic.prices},{k:"tips",l:t("nav_tips"),ic:Ic.tips},{k:"pests",l:t("nav_pests"),ic:Ic.pests},{k:"calendar",l:t("nav_calendar"),ic:Ic.calendar},
+    ...(user?.role==="farmer"?[{k:"dashboard",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
+    ...(user?.role==="admin"?[{k:"admin",l:t("nav_admin"),ic:Ic.admin}]:[]),
   ];
 
   /* ── HOME ── */
@@ -2325,11 +2669,11 @@ export default function App(){
           <div style={{position:"absolute",inset:0,background:"linear-gradient(to right,rgba(10,46,10,.88),rgba(27,94,32,.55))"}}/>
           <div style={{position:"relative",maxWidth:1100,margin:"0 auto",padding:"68px 20px 68px",width:"100%",display:"flex",alignItems:"center",gap:30,flexWrap:"wrap"}}>
             <div style={{flex:1,minWidth:270}}>
-              <AnimatedHeading text="Supporting Rwanda's Agricultural Transformation" style={{fontFamily:FH,fontSize:"clamp(26px,5vw,50px)",fontWeight:900,color:G.white,margin:"0 0 12px",lineHeight:1.15}}/>
-              <p style={{fontSize:"clamp(12px,2vw,15px)",color:"rgba(255,255,255,.82)",margin:"0 0 30px",lineHeight:1.7}}>Connecting verified farmers with buyers across all 30 districts</p>
+              <AnimatedHeading text={t("hero_title")} style={{fontFamily:FH,fontSize:"clamp(26px,5vw,50px)",fontWeight:900,color:G.white,margin:"0 0 12px",lineHeight:1.15}}/>
+              <p style={{fontSize:"clamp(12px,2vw,15px)",color:"rgba(255,255,255,.82)",margin:"0 0 30px",lineHeight:1.7}}>{t("hero_subtitle")}</p>
               <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
-                <Btn size="lg" onClick={()=>{setFCat("crop");doSearch("")}} style={{background:G.white,color:G.g7}} icon={<Ic.crops size={16}/>}>Explore Crops</Btn>
-                <Btn size="lg" onClick={()=>{setFCat("animal");doSearch("")}} style={{background:"rgba(255,255,255,.12)",color:G.white,border:"2px solid rgba(255,255,255,.3)"}} icon={<Ic.livestock size={16}/>}>Browse Livestock</Btn>
+                <Btn size="lg" onClick={()=>{setFCat("crop");doSearch("")}} style={{background:G.white,color:G.g7}} icon={<Ic.crops size={16}/>}>{t("hero_explore_crops")}</Btn>
+                <Btn size="lg" onClick={()=>{setFCat("animal");doSearch("")}} style={{background:"rgba(255,255,255,.12)",color:G.white,border:"2px solid rgba(255,255,255,.3)"}} icon={<Ic.livestock size={16}/>}>{t("hero_browse_livestock")}</Btn>
               </div>
             </div>
             <HeroCarousel isAdmin={user?.role==="admin"} onNav={nav}/>
@@ -2357,9 +2701,9 @@ export default function App(){
         {/* RESOURCE CARDS */}
         <div style={{background:G.white}}>
           <div style={{maxWidth:1100,margin:"0 auto",padding:"44px 20px 36px"}}>
-            <h2 style={{margin:"0 0 16px",fontSize:18,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:8}}><Ic.dashboard size={18} color={G.g6}/> Farmer Resources</h2>
+            <h2 style={{margin:"0 0 16px",fontSize:18,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:8}}><Ic.dashboard size={18} color={G.g6}/> {t("home_resources")}</h2>
             <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(210px,1fr))",gap:13,marginBottom:0}}>
-              {[{page:"prices",icon:Ic.prices,title:"Market Prices",desc:"Live commodity prices across Rwanda"},{page:"tips",icon:Ic.tips,title:"Farming Tips",desc:"Expert advice to boost productivity"},{page:"pests",icon:Ic.pests,title:"Pest & Disease Center",desc:"Identify and treat problems early"},{page:"calendar",icon:Ic.calendar,title:"Planting Calendar",desc:"Optimal planting and harvest times"}].map(m=>(
+              {[{page:"prices",icon:Ic.prices,title:t("home_market_prices"),desc:t("home_market_prices_desc")},{page:"tips",icon:Ic.tips,title:t("home_farming_tips"),desc:t("home_farming_tips_desc")},{page:"pests",icon:Ic.pests,title:t("home_pest_center"),desc:t("home_pest_center_desc")},{page:"calendar",icon:Ic.calendar,title:t("home_calendar"),desc:t("home_calendar_desc")}].map(m=>(
                 <div key={m.page} onClick={()=>nav(m.page)} style={{background:G.white,borderRadius:G.rL,padding:"18px 16px",cursor:"pointer",border:`1px solid ${G.gray1}`,boxShadow:G.sh,transition:"transform .22s,box-shadow .22s,border-color .22s"}}
                   onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-3px)";e.currentTarget.style.boxShadow=G.shL;e.currentTarget.style.borderColor="#a5d6a7"}}
                   onMouseLeave={e=>{e.currentTarget.style.transform="";e.currentTarget.style.boxShadow=G.sh;e.currentTarget.style.borderColor=G.gray1}}>
@@ -2374,15 +2718,15 @@ export default function App(){
 
         {/* PRODUCT SECTIONS — alternating bg */}
         {[
-          {label:"Featured Products",items:approvedProds.filter(p=>p.featured),alt:false},
-          {label:"Newly Listed",items:[...approvedProds].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4),alt:true},
-          {label:"Most Popular",items:[...approvedProds].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4),alt:false},
+          {label:t("home_featured"),items:approvedProds.filter(p=>p.featured),alt:false},
+          {label:t("home_newly_listed"),items:[...approvedProds].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt)).slice(0,4),alt:true},
+          {label:t("home_most_popular"),items:[...approvedProds].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,4),alt:false},
         ].map(({label,items,alt})=>items.length>0&&(
           <div key={label} style={{background:alt?G.sectionAlt:G.white}}>
             <div style={{maxWidth:1100,margin:"0 auto",padding:"36px 20px"}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
                 <h2 style={{margin:0,fontSize:18,fontWeight:800,fontFamily:FH,color:G.gray9}}>{label}</h2>
-                <Btn variant="secondary" size="sm" onClick={()=>doSearch("")}>View All →</Btn>
+                <Btn variant="secondary" size="sm" onClick={()=>doSearch("")}>{t("home_view_all")}</Btn>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:16}}>
                 {items.slice(0,4).map(p=>(
@@ -2400,9 +2744,9 @@ export default function App(){
         {/* CTA */}
         {!user&&(
           <div style={{background:`linear-gradient(160deg,${G.g8} 0%,${G.g6} 100%)`,padding:"52px 20px",textAlign:"center"}}>
-            <h2 style={{fontFamily:FH,fontSize:"clamp(19px,4vw,30px)",color:G.white,margin:"0 0 9px"}}>Are you a farmer in Rwanda?</h2>
-            <p style={{color:"rgba(255,255,255,.82)",margin:"0 0 20px",fontSize:14}}>Join 500+ verified farmers selling nationwide on Inkingi</p>
-            <Btn size="lg" onClick={()=>chooseRegRole("farmer")} style={{background:G.white,color:G.g7}} icon={<Ic.farmer size={16}/>}>Register as Farmer</Btn>
+            <h2 style={{fontFamily:FH,fontSize:"clamp(19px,4vw,30px)",color:G.white,margin:"0 0 9px"}}>{t("home_cta_title")}</h2>
+            <p style={{color:"rgba(255,255,255,.82)",margin:"0 0 20px",fontSize:14}}>{t("home_cta_subtitle")}</p>
+            <Btn size="lg" onClick={()=>chooseRegRole("farmer")} style={{background:G.white,color:G.g7}} icon={<Ic.farmer size={16}/>}>{t("home_cta_button")}</Btn>
           </div>
         )}
       </div>
@@ -2416,7 +2760,7 @@ export default function App(){
       <div style={{background:G.white,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
-            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.marketplace size={22} color={G.g6}/> Marketplace</h1>
+            <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.marketplace size={22} color={G.g6}/> {t("marketplace_title")}</h1>
             <div style={{display:"flex",gap:7}}>
               <Btn variant="secondary" size="sm" icon={<Ic.edit size={13}/>} onClick={()=>setShowFilter(!showFilter)}>Filters</Btn>
               {user?.role==="farmer"&&user?.status==="approved"&&<Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>List Product</Btn>}
@@ -2806,11 +3150,16 @@ export default function App(){
             {navItems.map(n=>(
               <button key={n.k} onClick={()=>nav(n.k)} style={{display:"inline-flex",alignItems:"center",gap:5,background:page===n.k?"rgba(255,255,255,.16)":"none",color:G.white,border:"none",padding:"6px 9px",borderRadius:7,cursor:"pointer",fontWeight:page===n.k?700:500,fontSize:11,fontFamily:FB,whiteSpace:"nowrap",flexShrink:0}}>{n.ic&&<n.ic size={13}/>}{n.l}</button>
             ))}
+            <select value={lang} onChange={e=>setLang(e.target.value)} aria-label="Language" style={{background:"rgba(255,255,255,.1)",color:G.white,border:"1px solid rgba(255,255,255,.2)",borderRadius:7,padding:"5px 6px",fontSize:11,fontFamily:FB,cursor:"pointer",flexShrink:0,marginLeft:3}}>
+              <option value="en" style={{color:"#000"}}>EN</option>
+              <option value="rw" style={{color:"#000"}}>RW</option>
+              <option value="fr" style={{color:"#000"}}>FR</option>
+            </select>
             {user
-              ?<button onClick={doLogout} style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,.1)",color:G.white,border:"1px solid rgba(255,255,255,.2)",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,marginLeft:3,flexShrink:0}}><Ic.logout size={13}/> Out</button>
+              ?<button onClick={doLogout} style={{display:"inline-flex",alignItems:"center",gap:5,background:"rgba(255,255,255,.1)",color:G.white,border:"1px solid rgba(255,255,255,.2)",borderRadius:7,padding:"5px 9px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,marginLeft:3,flexShrink:0}}><Ic.logout size={13}/> {t("nav_logout")}</button>
               :<>
-                <button onClick={()=>setShowLogin(true)} style={{background:"rgba(255,255,255,.1)",color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,flexShrink:0}}>Sign In</button>
-                <button onClick={openRegChoice} style={{background:G.gold,color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:FB,marginLeft:3,flexShrink:0}}>Register</button>
+                <button onClick={()=>setShowLogin(true)} style={{background:"rgba(255,255,255,.1)",color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:600,fontFamily:FB,flexShrink:0}}>{t("nav_signin")}</button>
+                <button onClick={openRegChoice} style={{background:G.gold,color:G.white,border:"none",borderRadius:7,padding:"6px 10px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:FB,marginLeft:3,flexShrink:0}}>{t("nav_register")}</button>
               </>}
           </div>
         </div>
@@ -2844,14 +3193,14 @@ export default function App(){
               </div>
               <p style={{color:"rgba(255,255,255,.65)",fontSize:12.5,lineHeight:1.8,marginBottom:18,maxWidth:380}}>{site.about}</p>
               <div style={{borderTop:"1px solid rgba(255,255,255,.1)",paddingTop:16,marginBottom:14}}>
-                <p style={{margin:"0 0 6px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>Our Vision</p>
+                <p style={{margin:"0 0 6px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>{t("footer_our_vision")}</p>
                 <p style={{margin:"0 0 14px",color:"rgba(255,255,255,.6)",fontSize:12,lineHeight:1.7}}>{site.vision}</p>
-                <p style={{margin:"0 0 6px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>Our Mission</p>
+                <p style={{margin:"0 0 6px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>{t("footer_our_mission")}</p>
                 <p style={{margin:0,color:"rgba(255,255,255,.6)",fontSize:12,lineHeight:1.7}}>{site.mission}</p>
               </div>
             </div>
             <div>
-              <h4 style={{margin:"0 0 18px",color:"#a5d6a7",fontSize:11,fontWeight:700,letterSpacing:.7,textTransform:"uppercase"}}>Quick Links</h4>
+              <h4 style={{margin:"0 0 18px",color:"#a5d6a7",fontSize:11,fontWeight:700,letterSpacing:.7,textTransform:"uppercase"}}>{t("footer_quick_links")}</h4>
               {(site.quickLinks||[]).map(l=>{
                 const k=QUICK_LINK_MAP[l];
                 return(
@@ -2864,7 +3213,7 @@ export default function App(){
               })}
             </div>
             <div>
-              <h4 style={{margin:"0 0 18px",color:"#a5d6a7",fontSize:11,fontWeight:700,letterSpacing:.7,textTransform:"uppercase"}}>Contact & Support</h4>
+              <h4 style={{margin:"0 0 18px",color:"#a5d6a7",fontSize:11,fontWeight:700,letterSpacing:.7,textTransform:"uppercase"}}>{t("footer_contact_support")}</h4>
               {[[Ic.location,site.address],[Ic.contact,site.phone],[Ic.hours,site.hours]].map(([IcC,val],idx)=>(
                 <div key={idx} style={{display:"flex",gap:10,marginBottom:16,alignItems:"flex-start"}}>
                   <div style={{width:32,height:32,background:"rgba(255,255,255,.07)",borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,color:"#a5d6a7"}}><IcC size={15}/></div>
@@ -2872,15 +3221,15 @@ export default function App(){
                 </div>
               ))}
               <div style={{marginTop:10}}>
-                <p style={{margin:"0 0 10px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>Email</p>
+                <p style={{margin:"0 0 10px",fontSize:11,fontWeight:700,color:"#a5d6a7",letterSpacing:.6,textTransform:"uppercase"}}>{t("footer_email")}</p>
                 <a href="mailto:info@inkingi.rw" style={{color:"rgba(255,255,255,.6)",fontSize:12.5,textDecoration:"none",transition:"color 200ms"}} onMouseEnter={e=>e.target.style.color=G.g3} onMouseLeave={e=>e.target.style.color="rgba(255,255,255,.6)"}>info@inkingi.rw</a>
               </div>
             </div>
           </div>
           <div style={{borderTop:"1px solid rgba(255,255,255,.08)",padding:"16px 0 20px",display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:10}}>
-            <p style={{margin:0,color:"rgba(255,255,255,.3)",fontSize:11}}>© {new Date().getFullYear()} Inkingi. All rights reserved. · Built for Rwanda's agricultural future.</p>
+            <p style={{margin:0,color:"rgba(255,255,255,.3)",fontSize:11}}>© {new Date().getFullYear()} Inkingi. {t("footer_rights")}</p>
             <div style={{display:"flex",gap:16}}>
-              {[["Privacy Policy","privacy"],["Terms of Use","terms"],["Support","support"]].map(([x,k])=>(
+              {[[t("footer_privacy"),"privacy"],[t("footer_terms"),"terms"],[t("footer_support"),"support"]].map(([x,k])=>(
                 <span key={x} onClick={()=>setLegalOpen(k)} style={{color:"rgba(255,255,255,.3)",fontSize:11,cursor:"pointer",transition:"color 200ms"}} onMouseEnter={e=>e.target.style.color="rgba(255,255,255,.7)"} onMouseLeave={e=>e.target.style.color="rgba(255,255,255,.3)"}>{x}</span>
               ))}
             </div>
@@ -2924,4 +3273,12 @@ export default function App(){
       </Modal>
     </div>
   );
+}
+
+// Thin wrapper so every component in the tree can call useLang() — the
+// actual app (state, pages, all existing logic) is unchanged, just now
+// rendered inside the language context instead of being the default
+// export directly.
+export default function App(){
+  return <LangProvider><AppInner/></LangProvider>;
 }
