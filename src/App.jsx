@@ -339,6 +339,159 @@ const TRANSLATIONS = {
   footer_privacy:{en:"Privacy Policy",rw:"Politiki y'Ibanga",fr:"Politique de confidentialité"},
   footer_terms:{en:"Terms of Use",rw:"Amabwiriza yo Gukoresha",fr:"Conditions d'utilisation"},
   footer_support:{en:"Support",rw:"Ubufasha",fr:"Assistance"},
+  // Shared admin
+  admin_access_required:{en:"Admin Access Required",rw:"Uruhushya rw'Ubuyobozi Rirakenewe",fr:"Accès administrateur requis"},
+  admin_panel:{en:"Admin Panel",rw:"Ikibaho cy'Ubuyobozi",fr:"Panneau d'administration"},
+  admin_manage_platform:{en:"Manage your platform",rw:"Genzura urubuga rwawe",fr:"Gérez votre plateforme"},
+  admin_db_connected:{en:"Database Connected",rw:"Ububiko Buhujwe",fr:"Base de données connectée"},
+  admin_sync_issue:{en:"Sync Issue — check connection",rw:"Ikibazo cyo Guhuza — reba ukwihuza",fr:"Problème de synchronisation — vérifiez la connexion"},
+  admin_dev_mode:{en:"Development Mode (localStorage)",rw:"Uburyo bwo Kwigeragereza (localStorage)",fr:"Mode développement (localStorage)"},
+  admin_local_images:{en:"Local Images",rw:"Amafoto y'Aho Uri",fr:"Images locales"},
+  admin_tab_dashboard:{en:"Dashboard",rw:"Imbonerahamwe",fr:"Tableau de bord"},
+  admin_tab_farmers:{en:"Farmers",rw:"Abahinzi",fr:"Agriculteurs"},
+  admin_tab_products:{en:"Products",rw:"Ibicuruzwa",fr:"Produits"},
+  admin_tab_prices:{en:"Prices",rw:"Ibiciro",fr:"Prix"},
+  admin_tab_tips:{en:"Tips",rw:"Inama",fr:"Conseils"},
+  admin_tab_pests:{en:"Pests",rw:"Udukoko",fr:"Nuisibles"},
+  admin_tab_calendar:{en:"Calendar",rw:"Kalindari",fr:"Calendrier"},
+  admin_tab_slideshow:{en:"Slideshow",rw:"Amashusho Ahindagurika",fr:"Diaporama"},
+  admin_tab_ads:{en:"Ads",rw:"Ubwamamaza",fr:"Publicités"},
+  admin_tab_site:{en:"Site Settings",rw:"Igenamiterere ry'Urubuga",fr:"Paramètres du site"},
+  admin_total_farmers:{en:"Total Farmers",rw:"Abahinzi Bose",fr:"Total agriculteurs"},
+  admin_listings:{en:"Listings",rw:"Ibyanditswe",fr:"Annonces"},
+  admin_pending:{en:"Pending",rw:"Bitegereje",fr:"En attente"},
+  admin_total_views:{en:"Total Views",rw:"Abarebye Bose",fr:"Total des vues"},
+  admin_pending_approvals:{en:"Pending Farmer Approvals",rw:"Abahinzi Bategereje Kwemezwa",fr:"Approbations d'agriculteurs en attente"},
+  admin_no_pending:{en:"No pending approvals!",rw:"Nta bategereje kwemezwa!",fr:"Aucune approbation en attente !"},
+  admin_verify:{en:"Verify",rw:"Emeza",fr:"Vérifier"},
+  admin_block:{en:"Block",rw:"Buza",fr:"Bloquer"},
+  msg_farmer_verified:{en:"verified!",rw:"yemejwe!",fr:"vérifié !"},
+  admin_pending_farmers:{en:"Pending Farmers",rw:"Abahinzi Bategereje",fr:"Agriculteurs en attente"},
+  admin_all_farmers:{en:"All Farmers",rw:"Abahinzi Bose",fr:"Tous les agriculteurs"},
+  admin_clear_filter:{en:"Clear filter",rw:"Siba Akayunguruzo",fr:"Effacer le filtre"},
+  admin_no_farmers_match:{en:"No farmers match this filter.",rw:"Nta muhinzi uhuye n'aka kayunguruzo.",fr:"Aucun agriculteur ne correspond à ce filtre."},
+  admin_verified:{en:"Verified",rw:"Yemejwe",fr:"Vérifié"},
+  admin_blocked:{en:"Blocked",rw:"Yabujijwe",fr:"Bloqué"},
+  admin_listings_count:{en:"listings",rw:"ibyanditswe",fr:"annonces"},
+  admin_photo:{en:"Photo",rw:"Ifoto",fr:"Photo"},
+  admin_delete:{en:"Delete",rw:"Siba",fr:"Supprimer"},
+  admin_confirm_delete_farmer:{en:"Delete farmer?",rw:"Gusiba umuhinzi?",fr:"Supprimer l'agriculteur ?"},
+  admin_all_listings:{en:"All Listings",rw:"Ibyanditswe Byose",fr:"Toutes les annonces"},
+  admin_add:{en:"Add",rw:"Ongeraho",fr:"Ajouter"},
+  admin_in_stock:{en:"In Stock",rw:"Birahari",fr:"En stock"},
+  admin_out:{en:"Out",rw:"Byashize",fr:"Épuisé"},
+  admin_unfeature:{en:"Unfeature",rw:"Kuraho Itsinda",fr:"Retirer la mise en avant"},
+  admin_feature:{en:"Feature",rw:"Shyira mu Itsinda",fr:"Mettre en avant"},
+  admin_edit:{en:"Edit",rw:"Hindura",fr:"Modifier"},
+  admin_del:{en:"Del",rw:"Siba",fr:"Suppr."},
+  loading_text:{en:"Loading Inkingi…",rw:"Inkingi Iratangira…",fr:"Chargement d'Inkingi…"},
+  // Farmer Detail modal
+  fdm_ratings:{en:"ratings",rw:"amanota",fr:"avis"},
+  fdm_call:{en:"Call",rw:"Hamagara",fr:"Appeler"},
+  fdm_listings:{en:"Listings",rw:"Ibyanditswe",fr:"Annonces"},
+  fdm_no_listings:{en:"No active listings",rw:"Nta byanditswe biriho",fr:"Aucune annonce active"},
+  // Ad Manager
+  adm_title:{en:"Advertisement Manager",rw:"Igenzura ry'Ubwamamaza",fr:"Gestionnaire de publicités"},
+  adm_subtitle:{en:"Ads display in the full-width banner carousel above the footer",rw:"Ubwamamaza bugaragara ku ishusho ihindagurika hejuru y'ibirangira",fr:"Les publicités s'affichent dans le carrousel en haut de page au-dessus du pied de page"},
+  adm_new_ad:{en:"New Ad",rw:"Itangazo Rishya",fr:"Nouvelle publicité"},
+  adm_none_yet:{en:"No ads yet.",rw:"Nta bwamamaza burakorwa.",fr:"Aucune publicité pour le moment."},
+  adm_live:{en:"Live",rw:"Birakora",fr:"En ligne"},
+  adm_scheduled:{en:"Scheduled",rw:"Byateganyijwe",fr:"Programmé"},
+  adm_inactive:{en:"Inactive",rw:"Ntibikora",fr:"Inactif"},
+  adm_pause:{en:"Pause",rw:"Hagarika",fr:"Suspendre"},
+  adm_activate:{en:"Activate",rw:"Tangiza",fr:"Activer"},
+  adm_edit_ad:{en:"Edit Ad",rw:"Hindura Itangazo",fr:"Modifier la publicité"},
+  adm_new_advertisement:{en:"New Advertisement",rw:"Itangazo Rishya",fr:"Nouvelle publicité"},
+  adm_title_field:{en:"Title *",rw:"Umutwe *",fr:"Titre *"},
+  adm_description:{en:"Description",rw:"Ibisobanuro",fr:"Description"},
+  adm_button_label:{en:"Button Label",rw:"Izina ry'Akabuto",fr:"Libellé du bouton"},
+  adm_website_link:{en:"Website Link",rw:"Ihuza ry'Urubuga",fr:"Lien du site web"},
+  adm_phone_call_btn:{en:"Phone (for Call button)",rw:"Telefoni (ku kabuto ko Guhamagara)",fr:"Téléphone (pour le bouton Appeler)"},
+  adm_display_duration:{en:"Display Duration (seconds)",rw:"Igihe cyo Kwerekana (amasegonda)",fr:"Durée d'affichage (secondes)"},
+  adm_active:{en:"Active",rw:"Birakora",fr:"Actif"},
+  adm_show_after:{en:"Show After (optional)",rw:"Erekana Nyuma ya (si ngombwa)",fr:"Afficher après (facultatif)"},
+  adm_hide_after:{en:"Hide After (optional)",rw:"Hisha Nyuma ya (si ngombwa)",fr:"Masquer après (facultatif)"},
+  adm_main_banner:{en:"Main Banner Image",rw:"Ifoto Nyamukuru y'Itangazo",fr:"Image principale de la bannière"},
+  adm_gallery_images:{en:"Additional Gallery Images (shown in the ad details view)",rw:"Andi Mafoto (agaragara mu isesengura ry'itangazo)",fr:"Images de galerie supplémentaires (affichées dans les détails de l'annonce)"},
+  adm_add_image:{en:"Add Image",rw:"Ongeraho Ifoto",fr:"Ajouter une image"},
+  adm_gallery_image_n:{en:"Gallery image",rw:"Ifoto y'igaleri",fr:"Image de galerie"},
+  adm_save_changes:{en:"Save Changes",rw:"Bika Impinduka",fr:"Enregistrer les modifications"},
+  adm_publish_ad:{en:"Publish Ad",rw:"Sohora Itangazo",fr:"Publier la publicité"},
+  msg_title_required:{en:"Title required",rw:"Umutwe urakenewe",fr:"Titre requis"},
+  msg_published:{en:"Published!",rw:"Byasohowe!",fr:"Publié !"},
+  msg_removed:{en:"Removed",rw:"Byavanyweho",fr:"Supprimé"},
+  confirm_delete_ad:{en:"Delete ad?",rw:"Gusiba itangazo?",fr:"Supprimer la publicité ?"},
+  // Site Settings
+  ss_db_connected_title:{en:"Connected to central database",rw:"Guhuzwa n'Ububiko Nyamukuru",fr:"Connecté à la base de données centrale"},
+  ss_dev_mode_title:{en:"Running in development mode",rw:"Birakora mu Buryo bwo Kwigeragereza",fr:"Fonctionne en mode développement"},
+  ss_db_connected_desc:{en:"All content — farmers, products, prices, tips, pests, calendar, ads, slideshow, and site settings — is being saved to Supabase and is instantly visible to every visitor and device after they refresh.",rw:"Ibirimo byose — abahinzi, ibicuruzwa, ibiciro, inama, udukoko, kalindari, ubwamamaza, amashusho, n'igenamiterere ry'urubuga — babikwa muri Supabase kandi bigaragara ako kanya ku bantu bose nyuma yo kongera gufungura.",fr:"Tout le contenu — agriculteurs, produits, prix, conseils, nuisibles, calendrier, publicités, diaporama et paramètres du site — est enregistré dans Supabase et instantanément visible par chaque visiteur après actualisation."},
+  ss_dev_mode_desc:{en:"No Supabase credentials are configured, so all content is stored in this browser's localStorage only. Other visitors and devices won't see admin changes made here. See the README setup section for how to connect a real database before going live.",rw:"Nta makuru ya Supabase yashyizweho, bityo ibirimo byose bibikwa muri localStorage ya iyi porogaramu gusa. Abandi bakoresha ntibazabona impinduka zakorewe hano. Reba igice cya README kugira ngo umenye uko wahuza ububiko nyakuri mbere yo gutangira gukoresha urubuga mu buzima nyabwo.",fr:"Aucun identifiant Supabase n'est configuré, donc tout le contenu est stocké uniquement dans le localStorage de ce navigateur. Les autres visiteurs ne verront pas les modifications faites ici. Consultez la section README pour connecter une vraie base de données avant la mise en ligne."},
+  ss_pushing:{en:"Pushing…",rw:"Byoherezwa…",fr:"Envoi en cours…"},
+  ss_push_local:{en:"Push this browser's local data to the database",rw:"Ohereza amakuru y'iyi porogaramu ku bubiko",fr:"Envoyer les données locales de ce navigateur vers la base de données"},
+  ss_official_logo:{en:"Official Logo",rw:"Ikirango Nyamukuru",fr:"Logo officiel"},
+  ss_logo_desc:{en:"Used in the navigation bar, footer, login, registration, and admin panel. Leave blank to keep the official Inkingi logo.",rw:"Gikoreshwa ku murongo w'ibuganduro, ibirangira, kwinjira, kwiyandikisha, n'ikibaho cy'ubuyobozi. Reka nta kimo niba ushaka gukomeza gukoresha ikirango nyamukuru cya Inkingi.",fr:"Utilisé dans la barre de navigation, le pied de page, la connexion, l'inscription et le panneau d'administration. Laissez vide pour conserver le logo officiel d'Inkingi."},
+  ss_upload_logo:{en:"Upload or paste logo URL",rw:"Ohereza cyangwa Shyiramo Ihuza ry'Ikirango",fr:"Téléchargez ou collez l'URL du logo"},
+  ss_favicon:{en:"Browser Favicon",rw:"Agashusho ko kuri Munara",fr:"Favicon du navigateur"},
+  ss_favicon_desc:{en:"The small icon shown in the browser tab. Leave blank to use the official logo.",rw:"Agashusho gato kagaragara kuri munara. Reka nta kimo niba ushaka gukoresha ikirango nyamukuru.",fr:"La petite icône affichée dans l'onglet du navigateur. Laissez vide pour utiliser le logo officiel."},
+  ss_upload_favicon:{en:"Upload or paste favicon URL",rw:"Ohereza cyangwa Shyiramo Ihuza ry'Agashusho",fr:"Téléchargez ou collez l'URL du favicon"},
+  ss_about_vision_mission:{en:"About, Vision & Mission",rw:"Ibijyanye, Icyerekezo & Intego",fr:"À propos, vision et mission"},
+  ss_about:{en:"About Inkingi",rw:"Ibijyanye na Inkingi",fr:"À propos d'Inkingi"},
+  ss_vision:{en:"Vision",rw:"Icyerekezo",fr:"Vision"},
+  ss_mission:{en:"Mission",rw:"Intego",fr:"Mission"},
+  ss_contact_hours:{en:"Contact & Hours",rw:"Aho Twafasha n'Amasaha",fr:"Contact et horaires"},
+  ss_address:{en:"Address",rw:"Aho Turi",fr:"Adresse"},
+  ss_phone:{en:"Phone",rw:"Telefoni",fr:"Téléphone"},
+  ss_working_hours:{en:"Working Hours",rw:"Amasaha y'Akazi",fr:"Heures d'ouverture"},
+  ss_quick_links:{en:"Quick Links",rw:"Aho Wihuta Ujya",fr:"Liens rapides"},
+  ss_quick_links_desc:{en:"One per line. Options: Marketplace, Farmers, Market Prices, Farming Tips, Pest & Disease Center, Seasonal Planting Calendar",rw:"Umurongo umwe kuri buri kimwe. Amahitamo: Isoko, Abahinzi, Ibiciro by'Isoko, Inama z'Ubuhinzi, Ikigo cy'Udukoko n'Indwara, Kalindari y'Ibihe byo Gutera",fr:"Un par ligne. Options : Marché, Agriculteurs, Prix du marché, Conseils agricoles, Centre des nuisibles et maladies, Calendrier saisonnier de plantation"},
+  ss_save_all:{en:"Save All Settings",rw:"Bika Igenamiterere Ryose",fr:"Enregistrer tous les paramètres"},
+  msg_site_saved:{en:"Site settings saved!",rw:"Igenamiterere ry'urubuga ryabitswe!",fr:"Paramètres du site enregistrés !"},
+  msg_saved_locally:{en:"Saved locally — database sync failed, check connection",rw:"Byabitswe aho uri — guhuza n'ububiko byanze, reba ukwihuza",fr:"Enregistré localement — échec de la synchronisation, vérifiez la connexion"},
+  msg_migration_pushed:{en:"Local data pushed to the database!",rw:"Amakuru yo hano yoherejwe ku bubiko!",fr:"Données locales envoyées vers la base de données !"},
+  msg_migration_failed:{en:"Migration failed:",rw:"Kohereza byanze:",fr:"Échec de la migration :"},
+  // Carousel Manager
+  cm_title:{en:"Slideshow Manager",rw:"Igenzura ry'Amashusho Ahindagurika",fr:"Gestionnaire du diaporama"},
+  cm_slides:{en:"slides",rw:"amashusho",fr:"diapositives"},
+  cm_live:{en:"live",rw:"birakora",fr:"en ligne"},
+  cm_drag_reorder:{en:"drag to reorder",rw:"kurura kugira ngo uhindure urutonde",fr:"glisser pour réorganiser"},
+  cm_new_slide:{en:"New Slide",rw:"Ishusho Nshya",fr:"Nouvelle diapositive"},
+  cm_none_yet:{en:"No slides yet.",rw:"Nta mashusho arakorwa.",fr:"Aucune diapositive pour le moment."},
+  cm_untitled:{en:"Untitled",rw:"Nta Mutwe",fr:"Sans titre"},
+  cm_scheduled:{en:"Scheduled",rw:"Byateganyijwe",fr:"Programmé"},
+  cm_draft:{en:"Draft",rw:"Igishushanyo",fr:"Brouillon"},
+  cm_unpublish:{en:"Unpublish",rw:"Kuraho Gutangaza",fr:"Dépublier"},
+  cm_publish:{en:"Publish",rw:"Tangaza",fr:"Publier"},
+  cm_edit_slide:{en:"Edit",rw:"Hindura",fr:"Modifier"},
+  cm_new_slide_title:{en:"New",rw:"Nshya",fr:"Nouvelle"},
+  cm_slide_suffix:{en:"Slide",rw:"Ishusho",fr:"diapositive"},
+  cm_slide_type:{en:"Slide Type",rw:"Ubwoko bw'Ishusho",fr:"Type de diapositive"},
+  cm_type_welcome:{en:"Welcome / Image",rw:"Ikaze / Ifoto",fr:"Bienvenue / Image"},
+  cm_type_map:{en:"Map / Regions",rw:"Ikarita / Uturere",fr:"Carte / Régions"},
+  cm_type_crops:{en:"Crops Grid",rw:"Imbonerahamwe y'Ibihingwa",fr:"Grille de cultures"},
+  cm_type_livestock:{en:"Livestock Grid",rw:"Imbonerahamwe y'Amatungo",fr:"Grille de bétail"},
+  cm_title_field:{en:"Title",rw:"Umutwe",fr:"Titre"},
+  cm_subtitle:{en:"Subtitle",rw:"Ikirunzi",fr:"Sous-titre"},
+  cm_interval:{en:"Interval (seconds)",rw:"Igihe (amasegonda)",fr:"Intervalle (secondes)"},
+  cm_published:{en:"Published",rw:"Byasohowe",fr:"Publié"},
+  cm_show_after:{en:"Show After (optional)",rw:"Erekana Nyuma ya (si ngombwa)",fr:"Afficher après (facultatif)"},
+  cm_hide_after:{en:"Hide After (optional)",rw:"Hisha Nyuma ya (si ngombwa)",fr:"Masquer après (facultatif)"},
+  cm_description:{en:"Description",rw:"Ibisobanuro",fr:"Description"},
+  cm_main_image:{en:"Main Image",rw:"Ifoto Nyamukuru",fr:"Image principale"},
+  cm_regions:{en:"Agricultural Regions",rw:"Uturere tw'Ubuhinzi",fr:"Régions agricoles"},
+  cm_add_region:{en:"Add Region",rw:"Ongeraho Akarere",fr:"Ajouter une région"},
+  cm_region_name:{en:"Region Name",rw:"Izina ry'Akarere",fr:"Nom de la région"},
+  cm_color:{en:"Color",rw:"Ibara",fr:"Couleur"},
+  cm_crops_livestock:{en:"Crops / Livestock",rw:"Ibihingwa / Amatungo",fr:"Cultures / Bétail"},
+  cm_grid_items:{en:"Grid Items",rw:"Ibintu by'Imbonerahamwe",fr:"Éléments de la grille"},
+  cm_add_item:{en:"Add Item",rw:"Ongeraho Ikintu",fr:"Ajouter un élément"},
+  cm_item_desc_ph:{en:"Short caption shown on hover",rw:"Umwandiko mugufi ugaragara igihe utereye",fr:"Légende courte affichée au survol"},
+  cm_item_desc_label:{en:"Description (optional)",rw:"Ibisobanuro (si ngombwa)",fr:"Description (facultatif)"},
+  cm_image:{en:"Image",rw:"Ifoto",fr:"Image"},
+  cm_save_slide:{en:"Save Slide",rw:"Bika Ishusho",fr:"Enregistrer la diapositive"},
+  msg_slide_updated:{en:"Slide updated!",rw:"Ishusho yahinduwe!",fr:"Diapositive mise à jour !"},
+  msg_slide_created:{en:"Slide created!",rw:"Ishusho yaremwe!",fr:"Diapositive créée !"},
+  msg_status_updated:{en:"Status updated",rw:"Uko bihagaze byahinduwe",fr:"Statut mis à jour"},
+  confirm_delete_slide:{en:"Delete slide permanently?",rw:"Gusiba burundu iyi shusho?",fr:"Supprimer définitivement cette diapositive ?"},
 };
 
 const LangContext = createContext(null);
@@ -505,7 +658,7 @@ const SA = {
   // one browser would never disappear for anyone else using the site.
   async save(table, rows) {
     LS.s(table, rows); // keep the local cache current for instant UI + offline fallback
-    if (!HAS_SUPABASE) { lastSyncOk=true; return; }
+    if (!HAS_SUPABASE) { lastSyncOk=true; return {ok:true}; }
     try {
       const existing = await SB.get(table, "select=id");
       const keepIds = new Set(rows.map(r=>r.id));
@@ -516,7 +669,8 @@ const SA = {
         await SB.upsert(table, payload);
       }
       lastSyncOk = true;
-    } catch { lastSyncOk = false; }
+      return {ok:true};
+    } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
   },
   async getKV(key) {
     if (HAS_SUPABASE) {
@@ -592,6 +746,73 @@ const WS = {
     const cached = LS.g("wholesalers") || [];
     LS.s("wholesalers", [...cached, row]);
     return {ok:true};
+  },
+  // Used by Admin's existing Pending Approvals list to approve/block a
+  // wholesaler the same way a farmer's status is changed — updates just
+  // the one row (wholesalers is a flat table, not the jsonb-wrapped
+  // pattern the other tables use via SA), and keeps the local cache in
+  // sync the same way add() does.
+  async setStatus(id, status) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("wholesalers", `id=eq.${id}`, {status});
+        lastSyncOk = true;
+        const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,status}:w);
+        LS.s("wholesalers", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,status}:w);
+    LS.s("wholesalers", cached);
+    return {ok:true};
+  },
+  // Used by the Wholesaler panel to update their own profile picture
+  // after registration — same single-row PATCH pattern as setStatus.
+  async updateImage(id, image_url) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("wholesalers", `id=eq.${id}`, {image_url});
+        lastSyncOk = true;
+        const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,image_url}:w);
+        LS.s("wholesalers", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,image_url}:w);
+    LS.s("wholesalers", cached);
+    return {ok:true};
+  },
+};
+
+// Dedicated Admin profile lookup — deliberately read-only from the app.
+// Admin accounts live in their own `admins` table (separate from
+// `farmers`/`wholesalers` on purpose) so that farmer/wholesaler
+// management actions (delete/block/edit) can never touch an Admin
+// account, structurally, by construction. There is no add/update/delete
+// here: per the RLS policy this table uses, only the Supabase service
+// role can write to it — admin accounts are provisioned via SQL in the
+// Supabase dashboard, the same way the very first admin account was.
+//
+// The `admins` table itself has NO select policy for authenticated
+// users (see admin-table-migration.sql) — a farmer/wholesaler cannot
+// read it directly. The only way to check "is the current user an
+// admin?" is this security-definer RPC, which uses auth.uid() from the
+// caller's own verified session server-side (never a client-supplied
+// value) and returns only the caller's own row, or nothing. The `uid`
+// parameter here is used purely to keep this function's call signature
+// consistent with the rest of the file (WS.getOne-style lookups) — the
+// database ignores it entirely and answers strictly for whoever is
+// actually logged in.
+const AdminTbl = {
+  async getOne(uid) {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.post("rpc/get_my_admin_profile", {});
+        lastSyncOk = true;
+        return rows?.[0] || null;
+      } catch { lastSyncOk = false; return null; }
+    }
+    return null;
   },
 };
 
@@ -742,6 +963,14 @@ const DB = {
     catch(e){ return {err:e.message||"Invalid email or password"}; }
     const uid = session.user?.id;
     const meta = session.user?.user_metadata || {};
+    // Admin accounts live in their own `admins` table — checked first,
+    // before wholesaler/farmer, so an admin is identified from a table
+    // that farmer/wholesaler management operations never touch. This
+    // check works whether or not the account has any user_metadata
+    // (the original admin account, created directly in Supabase, has
+    // none — see SETUP.md), unlike the farmer fallback below.
+    const adminProfile = await AdminTbl.getOne(uid);
+    if (adminProfile) return {...adminProfile, role:"admin"};
     // Wholesaler accounts live in `wholesalers`, not `farmers` — check
     // there first (by role) so a wholesaler's profile is looked up (and,
     // below, rebuilt after an email-confirmation gap) in the right table.
@@ -803,6 +1032,9 @@ const DB = {
     if (!HAS_SUPABASE) return null;
     const session = await Auth.restoreSession();
     if (!session?.user?.id) return null;
+    // Same admin-first check as login() above, for the same reason.
+    const adminProfile = await AdminTbl.getOne(session.user.id);
+    if (adminProfile) return {...adminProfile, role:"admin"};
     if (session.user?.user_metadata?.role === "wholesaler") {
       const wholesalers = await WS.getAll();
       const w = wholesalers.find(w=>w.id===session.user.id);
@@ -820,7 +1052,7 @@ const DB = {
   async ads(){return (await SA.getKV("ads"))||[]},
   async carousel(){return (await SA.getKV("carousel"))||DEFAULT_CAROUSEL},
   async site(){return (await SA.getKV("site"))||DEFAULT_SITE},
-  async saveFarmers(v){await SA.save("farmers",v)},
+  async saveFarmers(v){return await SA.save("farmers",v)},
   async saveProducts(v){await SA.save("products",v)},
   async savePrices(v){await SA.save("prices",v)},
   async saveTips(v){await SA.save("tips",v)},
@@ -871,7 +1103,8 @@ const DB = {
       return {ok:true};
     }
     const nf={...profileFields,id:uid,email,role:"farmer",status:"pending",rating:0,rCount:0,createdAt:new Date().toISOString()};
-    await this.saveFarmers([...(await this.farmers()),nf]);
+    const r = await this.saveFarmers([...(await this.farmers()),nf]);
+    if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     return {ok:true};
   },
   async addProduct(d){const ps=await this.products();const np={...d,id:"p"+Date.now(),views:0,img1:d.img1||"",img2:d.img2||"",createdAt:new Date().toISOString()};await this.saveProducts([...ps,np]);return np},
@@ -1072,17 +1305,28 @@ function ImageUpload({label,value,onChange,placeholder}){
       {preview
         ?<div style={{position:"relative",borderRadius:G.r,overflow:"hidden",height:130,background:G.gray1}}>
             <img src={preview} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={()=>setPreview("")}/>
-            <button onClick={clear} style={{position:"absolute",top:6,right:6,background:"rgba(0,0,0,.6)",color:G.white,border:"none",width:26,height:26,borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic.close size={14}/></button>
+            {uploading
+              ?<div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.55)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:6,color:G.white}}>
+                  <Ic.refresh size={22} className="ik-spinner"/>
+                  <span style={{fontSize:11,fontWeight:600,fontFamily:FB}}>Uploading…</span>
+                </div>
+              :<>
+                  <label style={{position:"absolute",bottom:6,left:6,background:"rgba(0,0,0,.6)",color:G.white,border:"none",padding:"5px 9px",borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",gap:5,fontSize:11,fontWeight:600,fontFamily:FB}}>
+                    <Ic.upload size={12}/> Replace
+                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFile} style={{display:"none"}}/>
+                  </label>
+                  <button onClick={clear} style={{position:"absolute",top:6,right:6,background:"rgba(0,0,0,.6)",color:G.white,border:"none",width:26,height:26,borderRadius:6,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}><Ic.close size={14}/></button>
+                </>}
           </div>
         :<div style={{border:`2px dashed ${G.gray3}`,borderRadius:G.r,padding:"16px",textAlign:"center",background:G.g0}}>
-            <div style={{marginBottom:5,color:G.gray5,display:"flex",justifyContent:"center"}}><Ic.camera size={26}/></div>
-            <p style={{fontSize:12,color:G.gray5,margin:"0 0 8px"}}>{placeholder||"Upload or paste URL"}</p>
+            <div style={{marginBottom:5,color:G.gray5,display:"flex",justifyContent:"center"}}>{uploading?<Ic.refresh size={26} className="ik-spinner"/>:<Ic.camera size={26}/>}</div>
+            <p style={{fontSize:12,color:G.gray5,margin:"0 0 8px"}}>{uploading?"Uploading image…":(placeholder||"Upload or paste URL")}</p>
             <div style={{display:"flex",gap:7,justifyContent:"center",flexWrap:"wrap"}}>
               <label style={{display:"inline-flex",alignItems:"center",gap:5,padding:"6px 12px",background:uploading?G.gray1:G.g1,borderRadius:8,cursor:uploading?"not-allowed":"pointer",fontSize:12,fontWeight:600,color:G.g7,border:`1px solid ${G.gray3}`,opacity:uploading?.6:1}}>
-                {uploading?"Uploading…":<><Ic.upload size={13}/> Browse</>}
+                {uploading?<><Ic.refresh size={13} className="ik-spinner"/> Uploading…</>:<><Ic.upload size={13}/> Browse</>}
                 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleFile} style={{display:"none"}} disabled={uploading}/>
               </label>
-              <Inp placeholder="Paste image URL…" style={{margin:0,flex:1,minWidth:140,padding:"6px 10px",fontSize:12}} onChange={e=>handleUrl(e.target.value)}/>
+              <Inp placeholder="Paste image URL…" style={{margin:0,flex:1,minWidth:140,padding:"6px 10px",fontSize:12}} onChange={e=>handleUrl(e.target.value)} disabled={uploading}/>
             </div>
           </div>}
     </div>
@@ -2012,19 +2256,20 @@ function AdBannerCarousel({ads,onSelectAd}){
    AD MANAGER (admin)
 ════════════════════════════════════ */
 function AdManager({notify}){
+  const{t}=useLang();
   const BLANK={title:"",text:"",link:"",phone:"",btnLabel:"",image:"",images:[],active:true,order:0,scheduleStart:"",scheduleEnd:"",duration:5};
   const[ads,setAds]=useState([]);const[form,setForm]=useState(BLANK);const[editing,setEditing]=useState(null);const[showForm,setShowForm]=useState(false);
   const reload=async()=>setAds(await DB.ads());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
   const save=async()=>{
-    if(!form.title){notify("Title required","error");return}
+    if(!form.title){notify(t("msg_title_required"),"error");return}
     const all=await DB.ads();
-    if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify("Updated!")}
-    else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify("Published!")}
+    if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify(t("msg_updated"))}
+    else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify(t("msg_published"))}
     reload();setShowForm(false);setEditing(null);setForm(BLANK);
   };
-  const del=async id=>{if(!window.confirm("Delete ad?"))return;await DB.saveAds((await DB.ads()).filter(a=>a.id!==id));reload();notify("Removed")};
+  const del=async id=>{if(!window.confirm(t("confirm_delete_ad")))return;await DB.saveAds((await DB.ads()).filter(a=>a.id!==id));reload();notify(t("msg_removed"))};
   const toggle=async id=>{await DB.saveAds((await DB.ads()).map(a=>a.id===id?{...a,active:!a.active}:a));reload()};
   const move=async(id,dir)=>{const arr=[...ads];const i=arr.findIndex(a=>a.id===id);const ni=i+dir;if(ni<0||ni>=arr.length)return;[arr[i],arr[ni]]=[arr[ni],arr[i]];await DB.saveAds(arr.map((a,idx)=>({...a,order:idx})));reload()};
   const galImages=form.images&&form.images.length?form.images:[""];
@@ -2034,60 +2279,60 @@ function AdManager({notify}){
   return(
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
-        <div><h3 style={{margin:0,fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.alert size={16} color={G.g6}/> Advertisement Manager</h3><p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>Ads display in the full-width banner carousel above the footer</p></div>
-        <Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm(BLANK);setShowForm(true)}}>New Ad</Btn>
+        <div><h3 style={{margin:0,fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.alert size={16} color={G.g6}/> {t("adm_title")}</h3><p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>{t("adm_subtitle")}</p></div>
+        <Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditing(null);setForm(BLANK);setShowForm(true)}}>{t("adm_new_ad")}</Btn>
       </div>
       {ads.length===0
-        ?<div style={{textAlign:"center",padding:"40px",color:G.gray5,background:G.gray1,borderRadius:G.rL}}>No ads yet.</div>
+        ?<div style={{textAlign:"center",padding:"40px",color:G.gray5,background:G.gray1,borderRadius:G.rL}}>{t("adm_none_yet")}</div>
         :<div style={{display:"flex",flexDirection:"column",gap:8}}>
             {ads.map((a,i)=>(
               <div key={a.id} style={{background:G.white,borderRadius:G.r,padding:"11px 14px",boxShadow:G.sh,border:`2px solid ${isAdLive(a)?"#dcfce7":G.gray1}`,display:"flex",alignItems:"center",gap:11,flexWrap:"wrap"}}>
                 <div style={{width:60,height:42,borderRadius:8,overflow:"hidden",background:G.gray1,flexShrink:0}}>{a.image&&<img src={a.image} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>}</div>
                 <div style={{flex:1,minWidth:0}}>
-                  <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:2}}><strong style={{fontSize:13,color:G.gray9}}>{a.title}</strong><Badge color={isAdLive(a)?"green":a.active?"gold":"gray"}>{isAdLive(a)?<><Ic.check size={10}/> Live</>:a.active?<><Ic.hours size={10}/> Scheduled</>:<><Ic.close size={10}/> Inactive</>}</Badge></div>
+                  <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:2}}><strong style={{fontSize:13,color:G.gray9}}>{a.title}</strong><Badge color={isAdLive(a)?"green":a.active?"gold":"gray"}>{isAdLive(a)?<><Ic.check size={10}/> {t("adm_live")}</>:a.active?<><Ic.hours size={10}/> {t("adm_scheduled")}</>:<><Ic.close size={10}/> {t("adm_inactive")}</>}</Badge></div>
                   <p style={{margin:0,fontSize:11,color:G.gray5}}>⏱ {a.duration||5}s{a.scheduleStart?` · From ${new Date(a.scheduleStart).toLocaleDateString()}`:""}{a.scheduleEnd?` · Until ${new Date(a.scheduleEnd).toLocaleDateString()}`:""}</p>
                 </div>
                 <div style={{display:"flex",gap:5,flexShrink:0,flexWrap:"wrap"}}>
-                  <Btn size="sm" variant={a.active?"secondary":"primary"} onClick={()=>toggle(a.id)}>{a.active?"Pause":"Activate"}</Btn>
+                  <Btn size="sm" variant={a.active?"secondary":"primary"} onClick={()=>toggle(a.id)}>{a.active?t("adm_pause"):t("adm_activate")}</Btn>
                   <Btn size="sm" variant="ghost" onClick={()=>move(a.id,-1)} disabled={i===0}>↑</Btn>
                   <Btn size="sm" variant="ghost" onClick={()=>move(a.id,1)} disabled={i===ads.length-1}>↓</Btn>
-                  <Btn size="sm" variant="secondary" onClick={()=>{setEditing(a);setForm({...a});setShowForm(true)}} icon={<Ic.edit size={14}/>}>Edit</Btn>
+                  <Btn size="sm" variant="secondary" onClick={()=>{setEditing(a);setForm({...a});setShowForm(true)}} icon={<Ic.edit size={14}/>}>{t("admin_edit")}</Btn>
                   <Btn size="sm" variant="danger" onClick={()=>del(a.id)} icon={<Ic.delete size={14}/>}/>
                 </div>
               </div>
             ))}
           </div>}
-      <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?"Edit Ad":"New Advertisement"} maxW={600}>
+      <Modal open={showForm} onClose={()=>{setShowForm(false);setEditing(null)}} title={editing?t("adm_edit_ad"):t("adm_new_advertisement")} maxW={600}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <div style={{gridColumn:"1/-1"}}><Inp label="Title *" value={form.title} onChange={e=>set("title",e.target.value)}/></div>
-          <div style={{gridColumn:"1/-1"}}><Txt label="Description" value={form.text} onChange={e=>set("text",e.target.value)} style={{minHeight:70}}/></div>
-          <Inp label="Button Label" value={form.btnLabel} onChange={e=>set("btnLabel",e.target.value)} placeholder="Apply Now"/>
-          <Inp label="Website Link" value={form.link} onChange={e=>set("link",e.target.value)} placeholder="https://"/>
-          <Inp label="Phone (for Call button)" value={form.phone||""} onChange={e=>set("phone",e.target.value)} placeholder="07XXXXXXXX"/>
-          <Inp label="Display Duration (seconds)" type="number" value={form.duration} onChange={e=>set("duration",parseInt(e.target.value)||5)}/>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("adm_title_field")} value={form.title} onChange={e=>set("title",e.target.value)}/></div>
+          <div style={{gridColumn:"1/-1"}}><Txt label={t("adm_description")} value={form.text} onChange={e=>set("text",e.target.value)} style={{minHeight:70}}/></div>
+          <Inp label={t("adm_button_label")} value={form.btnLabel} onChange={e=>set("btnLabel",e.target.value)} placeholder="Apply Now"/>
+          <Inp label={t("adm_website_link")} value={form.link} onChange={e=>set("link",e.target.value)} placeholder="https://"/>
+          <Inp label={t("adm_phone_call_btn")} value={form.phone||""} onChange={e=>set("phone",e.target.value)} placeholder="07XXXXXXXX"/>
+          <Inp label={t("adm_display_duration")} type="number" value={form.duration} onChange={e=>set("duration",parseInt(e.target.value)||5)}/>
           <div style={{display:"flex",alignItems:"center",gap:9,paddingTop:18}}>
             <div style={{width:40,height:21,background:form.active?G.g5:G.gray3,borderRadius:99,position:"relative",cursor:"pointer",transition:"background .2s"}} onClick={()=>set("active",!form.active)}>
               <div style={{width:17,height:17,background:G.white,borderRadius:99,position:"absolute",top:2,left:form.active?21:2,transition:"left .2s",boxShadow:G.sh}}/>
             </div>
-            <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{form.active?"Active":"Inactive"}</span>
+            <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{form.active?t("adm_active"):t("adm_inactive")}</span>
           </div>
-          <Inp label="Show After (optional)" type="datetime-local" value={form.scheduleStart||""} onChange={e=>set("scheduleStart",e.target.value)}/>
-          <Inp label="Hide After (optional)" type="datetime-local" value={form.scheduleEnd||""} onChange={e=>set("scheduleEnd",e.target.value)}/>
-          <div style={{gridColumn:"1/-1"}}><ImageUpload label="Main Banner Image" value={form.image} onChange={v=>set("image",v)}/></div>
+          <Inp label={t("adm_show_after")} type="datetime-local" value={form.scheduleStart||""} onChange={e=>set("scheduleStart",e.target.value)}/>
+          <Inp label={t("adm_hide_after")} type="datetime-local" value={form.scheduleEnd||""} onChange={e=>set("scheduleEnd",e.target.value)}/>
+          <div style={{gridColumn:"1/-1"}}><ImageUpload label={t("adm_main_banner")} value={form.image} onChange={v=>set("image",v)}/></div>
           <div style={{gridColumn:"1/-1"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>Additional Gallery Images (shown in the ad details view)</p>
-              <Btn size="sm" variant="secondary" onClick={addGal} icon={<Ic.add size={14}/>}>Add Image</Btn>
+              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>{t("adm_gallery_images")}</p>
+              <Btn size="sm" variant="secondary" onClick={addGal} icon={<Ic.add size={14}/>}>{t("adm_add_image")}</Btn>
             </div>
             {galImages.map((img,i)=>(
               <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",marginBottom:7}}>
-                <div style={{flex:1}}><ImageUpload label="" value={img} onChange={v=>updateGal(i,v)} placeholder={`Gallery image ${i+1}`}/></div>
+                <div style={{flex:1}}><ImageUpload label="" value={img} onChange={v=>updateGal(i,v)} placeholder={`${t("adm_gallery_image_n")} ${i+1}`}/></div>
                 <button onClick={()=>delGal(i)} style={{marginTop:2,background:G.red,color:G.white,border:"none",borderRadius:7,width:25,height:25,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}><Ic.delete size={13}/></button>
               </div>
             ))}
           </div>
         </div>
-        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save}>{editing?"Save Changes":"Publish Ad"}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>Cancel</Btn></div>
+        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save}>{editing?t("adm_save_changes"):t("adm_publish_ad")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
       </Modal>
     </div>
   );
@@ -2097,17 +2342,18 @@ function AdManager({notify}){
    SITE SETTINGS MANAGER (admin)
 ════════════════════════════════════ */
 function SiteSettingsManager({notify}){
+  const{t}=useLang();
   const[form,setForm]=useState(null);
   const[migrating,setMigrating]=useState(false);
   const reload=async()=>setForm(await DB.site());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const save=async()=>{await DB.saveSite(form);notify(getLastSyncOk()?"Site settings saved!":"Saved locally — database sync failed, check connection","warn")};
+  const save=async()=>{await DB.saveSite(form);notify(getLastSyncOk()?t("msg_site_saved"):t("msg_saved_locally"),"warn")};
   const runMigration=async()=>{
     setMigrating(true);
     const r=await SA.pushLocalCacheToRemote();
     setMigrating(false);
-    notify(r.ok?"Local data pushed to the database!":"Migration failed: "+(r.reason||"unknown error"),r.ok?"success":"error");
+    notify(r.ok?t("msg_migration_pushed"):t("msg_migration_failed")+" "+(r.reason||"unknown error"),r.ok?"success":"error");
   };
   if(!form)return <p style={{color:G.gray5}}>Loading…</p>;
   return(
@@ -2115,50 +2361,48 @@ function SiteSettingsManager({notify}){
       <div style={{background:HAS_SUPABASE?G.g0:G.goldL,border:`1px solid ${HAS_SUPABASE?"#c8e6c9":G.gold}`,borderRadius:G.rL,padding:20,gridColumn:"1/-1",display:"flex",gap:16,alignItems:"flex-start",flexWrap:"wrap"}}>
         <div style={{color:HAS_SUPABASE?G.g7:"#92400e",flexShrink:0}}>{HAS_SUPABASE?<Ic.check size={22}/>:<Ic.alert size={22}/>}</div>
         <div style={{flex:1,minWidth:240}}>
-          <h3 style={{margin:"0 0 5px",fontFamily:FH,fontSize:15,color:G.gray9}}>{HAS_SUPABASE?"Connected to central database":"Running in development mode"}</h3>
+          <h3 style={{margin:"0 0 5px",fontFamily:FH,fontSize:15,color:G.gray9}}>{HAS_SUPABASE?t("ss_db_connected_title"):t("ss_dev_mode_title")}</h3>
           <p style={{margin:"0 0 10px",fontSize:12.5,color:G.gray7,lineHeight:1.6}}>
-            {HAS_SUPABASE
-              ? "All content — farmers, products, prices, tips, pests, calendar, ads, slideshow, and site settings — is being saved to Supabase and is instantly visible to every visitor and device after they refresh."
-              : "No Supabase credentials are configured, so all content is stored in this browser's localStorage only. Other visitors and devices won't see admin changes made here. See the README setup section for how to connect a real database before going live."}
+            {HAS_SUPABASE ? t("ss_db_connected_desc") : t("ss_dev_mode_desc")}
           </p>
           {HAS_SUPABASE&&(
             <Btn size="sm" variant="secondary" onClick={runMigration} disabled={migrating} icon={<Ic.upload size={13}/>}>
-              {migrating?"Pushing…":"Push this browser's local data to the database"}
+              {migrating?t("ss_pushing"):t("ss_push_local")}
             </Btn>
           )}
         </div>
       </div>
       <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,gridColumn:"1/-1",display:"flex",gap:24,flexWrap:"wrap"}}>
         <div style={{flex:"1 1 220px"}}>
-          <h3 style={{margin:"0 0 8px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.image size={15} color={G.g6}/> Official Logo</h3>
-          <p style={{margin:"0 0 10px",fontSize:12,color:G.gray5}}>Used in the navigation bar, footer, login, registration, and admin panel. Leave blank to keep the official Inkingi logo.</p>
-          <ImageUpload label="" value={form.logoUrl||""} onChange={v=>set("logoUrl",v)} placeholder="Upload or paste logo URL"/>
+          <h3 style={{margin:"0 0 8px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.image size={15} color={G.g6}/> {t("ss_official_logo")}</h3>
+          <p style={{margin:"0 0 10px",fontSize:12,color:G.gray5}}>{t("ss_logo_desc")}</p>
+          <ImageUpload label="" value={form.logoUrl||""} onChange={v=>set("logoUrl",v)} placeholder={t("ss_upload_logo")}/>
         </div>
         <div style={{flex:"1 1 220px"}}>
-          <h3 style={{margin:"0 0 8px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.districts size={15} color={G.g6}/> Browser Favicon</h3>
-          <p style={{margin:"0 0 10px",fontSize:12,color:G.gray5}}>The small icon shown in the browser tab. Leave blank to use the official logo.</p>
-          <ImageUpload label="" value={form.faviconUrl||""} onChange={v=>set("faviconUrl",v)} placeholder="Upload or paste favicon URL"/>
+          <h3 style={{margin:"0 0 8px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.districts size={15} color={G.g6}/> {t("ss_favicon")}</h3>
+          <p style={{margin:"0 0 10px",fontSize:12,color:G.gray5}}>{t("ss_favicon_desc")}</p>
+          <ImageUpload label="" value={form.faviconUrl||""} onChange={v=>set("faviconUrl",v)} placeholder={t("ss_upload_favicon")}/>
         </div>
       </div>
       <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,gridColumn:"1/-1"}}>
-        <h3 style={{margin:"0 0 16px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.edit size={15} color={G.g6}/> About, Vision & Mission</h3>
-        <Txt label="About Inkingi" value={form.about||""} onChange={e=>set("about",e.target.value)} style={{minHeight:100}}/>
-        <Txt label="Vision" value={form.vision||""} onChange={e=>set("vision",e.target.value)} style={{minHeight:70}}/>
-        <Txt label="Mission" value={form.mission||""} onChange={e=>set("mission",e.target.value)} style={{minHeight:70}}/>
+        <h3 style={{margin:"0 0 16px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.edit size={15} color={G.g6}/> {t("ss_about_vision_mission")}</h3>
+        <Txt label={t("ss_about")} value={form.about||""} onChange={e=>set("about",e.target.value)} style={{minHeight:100}}/>
+        <Txt label={t("ss_vision")} value={form.vision||""} onChange={e=>set("vision",e.target.value)} style={{minHeight:70}}/>
+        <Txt label={t("ss_mission")} value={form.mission||""} onChange={e=>set("mission",e.target.value)} style={{minHeight:70}}/>
       </div>
       <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh}}>
-        <h3 style={{margin:"0 0 16px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.contact size={15} color={G.g6}/> Contact & Hours</h3>
-        <Inp label="Address" value={form.address||""} onChange={e=>set("address",e.target.value)}/>
-        <Inp label="Phone" value={form.phone||""} onChange={e=>set("phone",e.target.value)}/>
-        <Inp label="Working Hours" value={form.hours||""} onChange={e=>set("hours",e.target.value)}/>
+        <h3 style={{margin:"0 0 16px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.contact size={15} color={G.g6}/> {t("ss_contact_hours")}</h3>
+        <Inp label={t("ss_address")} value={form.address||""} onChange={e=>set("address",e.target.value)}/>
+        <Inp label={t("ss_phone")} value={form.phone||""} onChange={e=>set("phone",e.target.value)}/>
+        <Inp label={t("ss_working_hours")} value={form.hours||""} onChange={e=>set("hours",e.target.value)}/>
       </div>
       <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh}}>
-        <h3 style={{margin:"0 0 10px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.external size={15} color={G.g6}/> Quick Links</h3>
-        <p style={{margin:"0 0 12px",fontSize:12,color:G.gray5}}>One per line. Options: Marketplace, Farmers, Market Prices, Farming Tips, Pest & Disease Center, Seasonal Planting Calendar</p>
+        <h3 style={{margin:"0 0 10px",fontFamily:FH,fontSize:15,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.external size={15} color={G.g6}/> {t("ss_quick_links")}</h3>
+        <p style={{margin:"0 0 12px",fontSize:12,color:G.gray5}}>{t("ss_quick_links_desc")}</p>
         <Txt value={(form.quickLinks||[]).join("\n")} onChange={e=>set("quickLinks",e.target.value.split("\n").map(s=>s.trim()).filter(Boolean))} style={{minHeight:120,fontFamily:FB,fontSize:13}}/>
       </div>
       <div style={{gridColumn:"1/-1",display:"flex",justifyContent:"flex-end"}}>
-        <Btn onClick={save} icon={<Ic.save size={14}/>}>Save All Settings</Btn>
+        <Btn onClick={save} icon={<Ic.save size={14}/>}>{t("ss_save_all")}</Btn>
       </div>
     </div>
   );
@@ -2176,6 +2420,7 @@ const isPublished=s=>{
 };
 
 function CarouselManager({notify}){
+  const{t}=useLang();
   const[allSlides,setAllSlides]=useState([]);const[editOpen,setEditOpen]=useState(false);const[editForm,setEditForm]=useState({});const[dragIdx,setDragIdx]=useState(null);
   const reload=async()=>setAllSlides(await DB.carousel());
   useEffect(()=>{reload()},[]);
@@ -2188,10 +2433,10 @@ function CarouselManager({notify}){
   const saveEdit=async()=>{
     const exists=allSlides.find(s=>s.id===editForm.id);
     const updated=exists?allSlides.map(s=>s.id===editForm.id?{...editForm}:s):[...allSlides,{...editForm}];
-    await persist(updated);setEditOpen(false);notify(exists?"Slide updated!":"Slide created!");
+    await persist(updated);setEditOpen(false);notify(exists?t("msg_slide_updated"):t("msg_slide_created"));
   };
-  const delSlide=async id=>{if(!window.confirm("Delete slide permanently?"))return;await persist(allSlides.filter(s=>s.id!==id));notify("Deleted")};
-  const togglePublish=async id=>{await persist(allSlides.map(s=>s.id===id?{...s,published:!s.published}:s));notify("Status updated")};
+  const delSlide=async id=>{if(!window.confirm(t("confirm_delete_slide")))return;await persist(allSlides.filter(s=>s.id!==id));notify(t("msg_deleted"))};
+  const togglePublish=async id=>{await persist(allSlides.map(s=>s.id===id?{...s,published:!s.published}:s));notify(t("msg_status_updated"))};
   const moveSlide=async(id,dir)=>{
     const arr=[...allSlides];const i=arr.findIndex(s=>s.id===id);const ni=i+dir;
     if(ni<0||ni>=arr.length)return;
@@ -2227,11 +2472,11 @@ function CarouselManager({notify}){
   return(
     <div>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
-        <div><h3 style={{margin:0,fontFamily:FH,fontSize:16,color:G.gray9,display:"flex",alignItems:"center",gap:8}}><Ic.image size={16} color={G.g6}/> Slideshow Manager</h3><p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>{allSlides.length} slides · {pubCount} live · drag to reorder</p></div>
-        <Btn icon={<Ic.add size={14}/>} onClick={openNew}>New Slide</Btn>
+        <div><h3 style={{margin:0,fontFamily:FH,fontSize:16,color:G.gray9,display:"flex",alignItems:"center",gap:8}}><Ic.image size={16} color={G.g6}/> {t("cm_title")}</h3><p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>{allSlides.length} {t("cm_slides")} · {pubCount} {t("cm_live")} · {t("cm_drag_reorder")}</p></div>
+        <Btn icon={<Ic.add size={14}/>} onClick={openNew}>{t("cm_new_slide")}</Btn>
       </div>
       {allSlides.length===0
-        ?<div style={{textAlign:"center",padding:"40px",color:G.gray5,background:G.gray1,borderRadius:G.rL}}>No slides yet.</div>
+        ?<div style={{textAlign:"center",padding:"40px",color:G.gray5,background:G.gray1,borderRadius:G.rL}}>{t("cm_none_yet")}</div>
         :<div style={{display:"flex",flexDirection:"column",gap:7}}>
             {allSlides.map((s,i)=>{
               const live=isPublished(s);const scheduled=s.published&&(s.scheduleStart||s.scheduleEnd)&&!live;
@@ -2243,53 +2488,53 @@ function CarouselManager({notify}){
                     {s.image?<img src={s.image} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>:<div style={{display:"flex",alignItems:"center",justifyContent:"center",height:"100%",fontSize:16}}>{s.type==="map"?<Ic.districts size={16}/>:s.type==="crops"?<Ic.crops size={16}/>:s.type==="livestock"?<Ic.livestock size={16}/>:<Ic.image size={16}/>}</div>}
                   </div>
                   <div style={{flex:1,minWidth:0}}>
-                    <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap",marginBottom:2}}><strong style={{fontSize:13,color:G.gray9}}>{s.title||"Untitled"}</strong><Badge color={live?"green":scheduled?"gold":"gray"}>{live?<><Ic.check size={10}/> Live</>:scheduled?<><Ic.hours size={10}/> Scheduled</>:<><Ic.close size={10}/> Draft</>}</Badge><Badge color="gray">{s.type}</Badge></div>
+                    <div style={{display:"flex",alignItems:"center",gap:5,flexWrap:"wrap",marginBottom:2}}><strong style={{fontSize:13,color:G.gray9}}>{s.title||t("cm_untitled")}</strong><Badge color={live?"green":scheduled?"gold":"gray"}>{live?<><Ic.check size={10}/> {t("adm_live")}</>:scheduled?<><Ic.hours size={10}/> {t("cm_scheduled")}</>:<><Ic.close size={10}/> {t("cm_draft")}</>}</Badge><Badge color="gray">{s.type}</Badge></div>
                     <p style={{margin:0,fontSize:11,color:G.gray5}}>⏱ {s.interval||6}s{s.scheduleStart?` · From: ${new Date(s.scheduleStart).toLocaleDateString()}`:""}{s.scheduleEnd?` · Until: ${new Date(s.scheduleEnd).toLocaleDateString()}`:""}</p>
                   </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap",flexShrink:0}}>
-                    <Btn size="sm" variant={s.published?"secondary":"primary"} onClick={()=>togglePublish(s.id)}>{s.published?"Unpublish":"Publish"}</Btn>
+                    <Btn size="sm" variant={s.published?"secondary":"primary"} onClick={()=>togglePublish(s.id)}>{s.published?t("cm_unpublish"):t("cm_publish")}</Btn>
                     <Btn size="sm" variant="ghost" onClick={()=>moveSlide(s.id,-1)} disabled={i===0}>↑</Btn>
                     <Btn size="sm" variant="ghost" onClick={()=>moveSlide(s.id,1)} disabled={i===allSlides.length-1}>↓</Btn>
-                    <Btn size="sm" variant="secondary" onClick={()=>openEdit(s)} icon={<Ic.edit size={14}/>}>Edit</Btn>
+                    <Btn size="sm" variant="secondary" onClick={()=>openEdit(s)} icon={<Ic.edit size={14}/>}>{t("cm_edit_slide")}</Btn>
                     <Btn size="sm" variant="danger" onClick={()=>delSlide(s.id)} icon={<Ic.delete size={14}/>}/>
                   </div>
                 </div>
               );
             })}
           </div>}
-      <Modal open={editOpen} onClose={()=>setEditOpen(false)} title={(allSlides.find(s=>s.id===editForm.id)?"Edit":"New")+" Slide"} maxW={640}>
+      <Modal open={editOpen} onClose={()=>setEditOpen(false)} title={(allSlides.find(s=>s.id===editForm.id)?t("cm_edit_slide"):t("cm_new_slide_title"))+" "+t("cm_slide_suffix")} maxW={640}>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-          <div style={{gridColumn:"1/-1"}}><Sel label="Slide Type" value={editForm.type||"welcome"} onChange={e=>setEditForm(f=>({...f,type:e.target.value}))}><option value="welcome">Welcome / Image</option><option value="map">Map / Regions</option><option value="crops">Crops Grid</option><option value="livestock">Livestock Grid</option></Sel></div>
-          <div style={{gridColumn:"1/-1"}}><Inp label="Title" value={editForm.title||""} onChange={e=>setEditForm(f=>({...f,title:e.target.value}))}/></div>
-          <div style={{gridColumn:"1/-1"}}><Inp label="Subtitle" value={editForm.subtitle||""} onChange={e=>setEditForm(f=>({...f,subtitle:e.target.value}))}/></div>
-          <Inp label="Interval (seconds)" type="number" value={editForm.interval||6} onChange={e=>setEditForm(f=>({...f,interval:parseInt(e.target.value)||6}))}/>
+          <div style={{gridColumn:"1/-1"}}><Sel label={t("cm_slide_type")} value={editForm.type||"welcome"} onChange={e=>setEditForm(f=>({...f,type:e.target.value}))}><option value="welcome">{t("cm_type_welcome")}</option><option value="map">{t("cm_type_map")}</option><option value="crops">{t("cm_type_crops")}</option><option value="livestock">{t("cm_type_livestock")}</option></Sel></div>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("cm_title_field")} value={editForm.title||""} onChange={e=>setEditForm(f=>({...f,title:e.target.value}))}/></div>
+          <div style={{gridColumn:"1/-1"}}><Inp label={t("cm_subtitle")} value={editForm.subtitle||""} onChange={e=>setEditForm(f=>({...f,subtitle:e.target.value}))}/></div>
+          <Inp label={t("cm_interval")} type="number" value={editForm.interval||6} onChange={e=>setEditForm(f=>({...f,interval:parseInt(e.target.value)||6}))}/>
           <div style={{display:"flex",alignItems:"center",gap:9,paddingTop:18}}>
             <div style={{width:40,height:21,background:editForm.published?G.g5:G.gray3,borderRadius:99,position:"relative",transition:"background .2s",cursor:"pointer"}} onClick={()=>setEditForm(f=>({...f,published:!f.published}))}>
               <div style={{width:17,height:17,background:G.white,borderRadius:99,position:"absolute",top:2,left:editForm.published?21:2,transition:"left .2s",boxShadow:G.sh}}/>
             </div>
-            <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{editForm.published?"Published":"Draft"}</span>
+            <span style={{fontSize:13,fontWeight:600,color:G.gray7}}>{editForm.published?t("cm_published"):t("cm_draft")}</span>
           </div>
-          <Inp label="Show After (optional)" type="datetime-local" value={editForm.scheduleStart||""} onChange={e=>setEditForm(f=>({...f,scheduleStart:e.target.value}))}/>
-          <Inp label="Hide After (optional)" type="datetime-local" value={editForm.scheduleEnd||""} onChange={e=>setEditForm(f=>({...f,scheduleEnd:e.target.value}))}/>
+          <Inp label={t("cm_show_after")} type="datetime-local" value={editForm.scheduleStart||""} onChange={e=>setEditForm(f=>({...f,scheduleStart:e.target.value}))}/>
+          <Inp label={t("cm_hide_after")} type="datetime-local" value={editForm.scheduleEnd||""} onChange={e=>setEditForm(f=>({...f,scheduleEnd:e.target.value}))}/>
         </div>
         {editForm.type==="welcome"&&(
           <>
-            <Inp label="Description" value={editForm.desc||""} onChange={e=>setEditForm(f=>({...f,desc:e.target.value}))}/>
-            <ImageUpload label="Main Image" value={editForm.image||""} onChange={v=>setEditForm(f=>({...f,image:v}))}/>
+            <Inp label={t("cm_description")} value={editForm.desc||""} onChange={e=>setEditForm(f=>({...f,desc:e.target.value}))}/>
+            <ImageUpload label={t("cm_main_image")} value={editForm.image||""} onChange={v=>setEditForm(f=>({...f,image:v}))}/>
           </>
         )}
         {editForm.type==="map"&&(
           <div style={{marginTop:4}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>Agricultural Regions</p>
-              <Btn size="sm" variant="secondary" onClick={addRegion} icon={<Ic.add size={14}/>}>Add Region</Btn>
+              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>{t("cm_regions")}</p>
+              <Btn size="sm" variant="secondary" onClick={addRegion} icon={<Ic.add size={14}/>}>{t("cm_add_region")}</Btn>
             </div>
             {(editForm.regions||[]).map((r,i)=>(
               <div key={i} style={{background:G.gray1,borderRadius:G.r,padding:10,marginBottom:7}}>
                 <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
                   <div style={{flex:1}}>
-                    <div style={{display:"flex",gap:7}}><div style={{flex:1}}><Inp label="Region Name" value={r.name} onChange={e=>updateRegion(i,"name",e.target.value)}/></div><div style={{width:68}}><Inp label="Color" type="color" value={r.color||"#22c55e"} onChange={e=>updateRegion(i,"color",e.target.value)} style={{height:38,padding:2}}/></div></div>
-                    <Inp label="Crops / Livestock" value={r.crops} onChange={e=>updateRegion(i,"crops",e.target.value)}/>
+                    <div style={{display:"flex",gap:7}}><div style={{flex:1}}><Inp label={t("cm_region_name")} value={r.name} onChange={e=>updateRegion(i,"name",e.target.value)}/></div><div style={{width:68}}><Inp label={t("cm_color")} type="color" value={r.color||"#22c55e"} onChange={e=>updateRegion(i,"color",e.target.value)} style={{height:38,padding:2}}/></div></div>
+                    <Inp label={t("cm_crops_livestock")} value={r.crops} onChange={e=>updateRegion(i,"crops",e.target.value)}/>
                   </div>
                   <button onClick={()=>delRegion(i)} style={{marginTop:22,background:G.red,color:G.white,border:"none",borderRadius:7,width:25,height:25,cursor:"pointer",flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}><Ic.delete size={12}/></button>
                 </div>
@@ -2300,8 +2545,8 @@ function CarouselManager({notify}){
         {(editForm.type==="crops"||editForm.type==="livestock")&&(
           <div style={{marginTop:4}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>Grid Items ({(editForm.items||[]).length}) · drag ⠿ or use ↑↓ to reorder</p>
-              <Btn size="sm" variant="secondary" onClick={addItem} icon={<Ic.add size={14}/>}>Add Item</Btn>
+              <p style={{margin:0,fontSize:12,color:G.gray5,fontWeight:600}}>{t("cm_grid_items")} ({(editForm.items||[]).length}) · drag ⠿ or use ↑↓ to reorder</p>
+              <Btn size="sm" variant="secondary" onClick={addItem} icon={<Ic.add size={14}/>}>{t("cm_add_item")}</Btn>
             </div>
             {(editForm.items||[]).map((item,i)=>(
               <div key={i} draggable onDragStart={()=>setDragItemIdx(i)} onDragOver={e=>onItemDragOver(e,i)} onDragEnd={()=>setDragItemIdx(null)}
@@ -2309,9 +2554,9 @@ function CarouselManager({notify}){
                 <div style={{display:"flex",gap:8,alignItems:"flex-start"}}>
                   <span style={{color:G.gray3,fontSize:15,cursor:"grab",marginTop:24,flexShrink:0}}><Ic.grip size={15}/></span>
                   <div style={{flex:1,minWidth:0}}>
-                    <Inp label="Title" value={item.name} onChange={e=>updateItem(i,"name",e.target.value)}/>
-                    <Inp label="Description (optional)" value={item.desc||""} onChange={e=>updateItem(i,"desc",e.target.value)} placeholder="Short caption shown on hover"/>
-                    <ImageUpload label="Image" value={item.image||""} onChange={v=>updateItem(i,"image",v)}/>
+                    <Inp label={t("cm_title_field")} value={item.name} onChange={e=>updateItem(i,"name",e.target.value)}/>
+                    <Inp label={t("cm_item_desc_label")} value={item.desc||""} onChange={e=>updateItem(i,"desc",e.target.value)} placeholder={t("cm_item_desc_ph")}/>
+                    <ImageUpload label={t("cm_image")} value={item.image||""} onChange={v=>updateItem(i,"image",v)}/>
                   </div>
                   <div style={{display:"flex",flexDirection:"column",gap:4,marginTop:22,flexShrink:0}}>
                     <button onClick={()=>moveItem(i,-1)} disabled={i===0} style={{background:G.white,border:`1px solid ${G.gray3}`,borderRadius:6,width:25,height:25,cursor:i===0?"not-allowed":"pointer",display:"flex",alignItems:"center",justifyContent:"center",opacity:i===0?.4:1}}><Ic.up size={13}/></button>
@@ -2324,8 +2569,8 @@ function CarouselManager({notify}){
           </div>
         )}
         <div style={{display:"flex",gap:9,marginTop:13}}>
-          <Btn full onClick={saveEdit}>Save Slide</Btn>
-          <Btn variant="secondary" onClick={()=>setEditOpen(false)}>Cancel</Btn>
+          <Btn full onClick={saveEdit}>{t("cm_save_slide")}</Btn>
+          <Btn variant="secondary" onClick={()=>setEditOpen(false)}>{t("prices_cancel")}</Btn>
         </div>
       </Modal>
     </div>
@@ -2561,6 +2806,7 @@ function AppInner(){
   const[page,setPage]=useState("home");
   const[products,setProducts]=useState([]);
   const[farmers,setFarmers]=useState([]);
+  const[wholesalers,setWholesalers]=useState([]);
   const[ads,setAds]=useState([]);
   const[site,setSite]=useState(DEFAULT_SITE);
   const[toast,setToast]=useState(null);
@@ -2593,8 +2839,8 @@ function AppInner(){
 
   const notify=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)};
   const reload=useCallback(async()=>{
-    const[f,p,a,s]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site()]);
-    setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);
+    const[f,p,a,s,w]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site(),WS.getAll()]);
+    setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);setWholesalers(w);
   },[]);
 
   useEffect(()=>{(async()=>{setLoading(true);await DB.init();await reload();const restored=await DB.restoreSession();if(restored)setUser(restored);setLoading(false)})()},[]);
@@ -2645,7 +2891,7 @@ function AppInner(){
     // server-verified Supabase session) — no separate localStorage write
     // needed here the way the old custom login required.
     setUser(u);setShowLogin(false);
-    notify("Welcome, "+u.name);if(u.role==="admin")setPage("admin");return{ok:true};
+    notify("Welcome, "+u.name);if(u.role==="admin")setPage("admin");else if(u.role==="wholesaler")setPage("wpanel");return{ok:true};
   };
   const doLogout=async()=>{await DB.logout();setUser(null);setPage("home");notify("Signed out")};
   const doRegister=async(d,role)=>{const r=await DB.register(d,role);if(r.ok){await reload();setShowReg(false);notify(r.pendingEmailConfirm?"Check your email to confirm your account, then sign in.":"Submitted! Await approval.")}return r};
@@ -2655,6 +2901,7 @@ function AppInner(){
     {k:"home",l:t("nav_home")},{k:"marketplace",l:t("nav_marketplace"),ic:Ic.marketplace},{k:"farmers",l:t("nav_farmers"),ic:Ic.farmer},
     {k:"prices",l:t("nav_prices"),ic:Ic.prices},{k:"tips",l:t("nav_tips"),ic:Ic.tips},{k:"pests",l:t("nav_pests"),ic:Ic.pests},{k:"calendar",l:t("nav_calendar"),ic:Ic.calendar},
     ...(user?.role==="farmer"?[{k:"dashboard",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
+    ...(user?.role==="wholesaler"?[{k:"wpanel",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
     ...(user?.role==="admin"?[{k:"admin",l:t("nav_admin"),ic:Ic.admin}]:[]),
   ];
 
@@ -2853,6 +3100,10 @@ function AppInner(){
     return(
       <div style={{background:G.white,minHeight:"60vh"}}>
         <div style={{maxWidth:860,margin:"0 auto",padding:"28px 20px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:16}}>
+            <div style={{width:34,height:34,borderRadius:9,overflow:"hidden",flexShrink:0,boxShadow:G.sh}}><Logo size={34} site={site}/></div>
+            <span style={{fontSize:13,fontWeight:700,color:G.gray5,fontFamily:FB}}>Inkingi</span>
+          </div>
           <div style={{background:`linear-gradient(135deg,${G.g8},${G.g6})`,borderRadius:20,padding:22,marginBottom:20,color:G.white}}>
             <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
               <div onClick={()=>setPhotoFarmer(me)} style={{position:"relative",cursor:"pointer",flexShrink:0}} title="Update profile photo">
@@ -2909,36 +3160,91 @@ function AppInner(){
     );
   };
 
+  /* ── WHOLESALER PANEL ──
+     Mirrors the Farmer dashboard above: own profile, own status,
+     nothing from Admin. Picture upload happens here (post-registration,
+     post-login) rather than during registration, reusing the same
+     ImageUpload component/Cloudinary path the rest of the app already
+     uses — no new upload system. */
+  const renderWholesalerPanel=()=>{
+    if(!user||user.role!=="wholesaler")return null;
+    const me=wholesalers.find(w=>w.id===user.id)||user;
+    return(
+      <div style={{background:G.white,minHeight:"60vh"}}>
+        <div style={{maxWidth:640,margin:"0 auto",padding:"28px 20px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:16}}>
+            <div style={{width:34,height:34,borderRadius:9,overflow:"hidden",flexShrink:0,boxShadow:G.sh}}><Logo size={34} site={site}/></div>
+            <span style={{fontSize:13,fontWeight:700,color:G.gray5,fontFamily:FB}}>Inkingi</span>
+          </div>
+          <div style={{background:`linear-gradient(135deg,${G.g8},${G.g6})`,borderRadius:20,padding:22,marginBottom:20,color:G.white}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+              <div style={{width:52,height:52,borderRadius:12,overflow:"hidden",background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                {me.image_url?<img src={me.image_url} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={22}/>}
+              </div>
+              <div>
+                <h2 style={{margin:0,fontSize:18,fontFamily:FH}}>{me.company_name}</h2>
+                <p style={{margin:"3px 0 0",opacity:.8,fontSize:12,display:"flex",alignItems:"center",gap:4}}><Ic.location size={12}/> {me.sector}, {me.district}</p>
+              </div>
+              <div style={{marginLeft:"auto"}}><Badge color={me.status==="approved"?"green":me.status==="blocked"?"red":"gold"}>{me.status==="approved"?<><Ic.check size={10}/> Verified</>:me.status==="blocked"?<><Ic.close size={10}/> Suspended</>:<><Ic.pending size={10}/> Pending</>}</Badge></div>
+            </div>
+          </div>
+          {me.status!=="approved"&&(
+            <div style={{background:G.goldL,border:`1px solid ${G.gold}`,borderRadius:G.r,padding:12,marginBottom:18,display:"flex",gap:8,alignItems:"center"}}>
+              <span style={{color:"#92400e"}}><Ic.pending size={18}/></span>
+              <p style={{margin:0,fontSize:12,color:"#78350f"}}>Your account is under review. You'll be notified once approved.</p>
+            </div>
+          )}
+          <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16}}>
+            <h3 style={{margin:"0 0 12px",fontSize:14,fontWeight:800,color:G.gray9,fontFamily:FH,display:"flex",alignItems:"center",gap:6}}><Ic.camera size={15} color={G.g6}/> Company Picture</h3>
+            <ImageUpload label="" value={me.image_url||""} onChange={async v=>{await WS.updateImage(me.id,v);await reload();notify("Picture updated!")}}/>
+          </div>
+          <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh}}>
+            <h3 style={{margin:"0 0 12px",fontSize:14,fontWeight:800,color:G.gray9,fontFamily:FH}}>My Details</h3>
+            <p style={{margin:"0 0 6px",fontSize:13,color:G.gray7,display:"flex",alignItems:"center",gap:6}}><Ic.contact size={13}/> {me.phone}</p>
+            <p style={{margin:"0 0 6px",fontSize:13,color:G.gray7}}>{me.email}</p>
+            {me.products_description&&<p style={{margin:"8px 0 0",fontSize:13,color:G.gray7,lineHeight:1.5}}>{me.products_description}</p>}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   /* ── ADMIN ── */
   const renderAdmin=()=>{
     if(!user||user.role!=="admin"){
       return(
         <div style={{textAlign:"center",padding:80}}>
           <div style={{display:"flex",justifyContent:"center",color:G.gray3}}><ShieldCheck size={48}/></div>
-          <h2 style={{color:G.gray9,fontFamily:FH}}>Admin Access Required</h2>
-          <Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>Sign In</Btn>
+          <h2 style={{color:G.gray9,fontFamily:FH}}>{t("admin_access_required")}</h2>
+          <Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>{t("nav_signin")}</Btn>
         </div>
       );
     }
-    const allF=farmers;const allP=products;
-    const tabs=[["dashboard","Dashboard",Ic.dashboard],["farmers","Farmers",Ic.farmer],["products","Products",Ic.listings],["prices","Prices",Ic.prices],["tips","Tips",Ic.tips],["pests","Pests",Ic.pests],["calendar","Calendar",Ic.calendar],["carousel","Slideshow",Ic.image],["ads","Ads",Ic.notifications],["site","Site Settings",Ic.edit]];
+    // Admin accounts now live in their own `admins` table (see AdminTbl).
+    // The old admin row in `farmers` is being kept temporarily as a
+    // manual-approval-required backup (per migration plan) rather than
+    // deleted immediately — filtering it out here keeps it from showing
+    // up in "All Farmers" / Pending Approvals without touching the
+    // underlying data or any delete/status function.
+    const allF=farmers.filter(f=>f.role!=="admin");const allP=products;
+    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit]];
     return(
       <div style={{background:G.pageBg,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:5,flexWrap:"wrap",gap:10}}>
             <div style={{display:"flex",alignItems:"center",gap:11}}>
               <div style={{width:38,height:38,borderRadius:10,overflow:"hidden",flexShrink:0,boxShadow:G.sh}}><Logo size={38} site={site}/></div>
-              <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.admin size={22} color={G.g6}/> Admin Panel</h1>
+              <h1 style={{margin:0,fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.admin size={22} color={G.g6}/> {t("admin_panel")}</h1>
             </div>
             <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-              {HAS_SUPABASE&&syncOk&&<Badge color="green"><Ic.check size={10}/> Database Connected</Badge>}
-              {HAS_SUPABASE&&!syncOk&&<Badge color="red"><Ic.alert size={10}/> Sync Issue — check connection</Badge>}
-              {!HAS_SUPABASE&&<Badge color="gold">Development Mode (localStorage)</Badge>}
+              {HAS_SUPABASE&&syncOk&&<Badge color="green"><Ic.check size={10}/> {t("admin_db_connected")}</Badge>}
+              {HAS_SUPABASE&&!syncOk&&<Badge color="red"><Ic.alert size={10}/> {t("admin_sync_issue")}</Badge>}
+              {!HAS_SUPABASE&&<Badge color="gold">{t("admin_dev_mode")}</Badge>}
               {HAS_CLOUDINARY&&<Badge color="blue">Cloudinary</Badge>}
-              {!HAS_CLOUDINARY&&<Badge color="gray">Local Images</Badge>}
+              {!HAS_CLOUDINARY&&<Badge color="gray">{t("admin_local_images")}</Badge>}
             </div>
           </div>
-          <p style={{margin:"0 0 18px",color:G.gray5,fontSize:12}}>Manage your platform</p>
+          <p style={{margin:"0 0 18px",color:G.gray5,fontSize:12}}>{t("admin_manage_platform")}</p>
           <div style={{display:"flex",gap:6,marginBottom:20,flexWrap:"wrap",borderBottom:`1px solid ${G.gray1}`,paddingBottom:12}}>
             {tabs.map(([tab,label,TabIc])=>(
               <button key={tab} onClick={()=>setAdminTab(tab)} style={{display:"inline-flex",alignItems:"center",gap:6,padding:"7px 13px",borderRadius:G.r,border:"none",fontWeight:700,fontSize:11,cursor:"pointer",background:adminTab===tab?G.g6:G.gray1,color:adminTab===tab?G.white:G.gray7,transition:"all .2s",fontFamily:FB,whiteSpace:"nowrap"}}><TabIc size={13}/>{label}</button>
@@ -2948,7 +3254,7 @@ function AppInner(){
           {adminTab==="dashboard"&&(
             <div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:24}}>
-                {[[allF.length,"Total Farmers",Ic.farmer,G.g6,()=>{setFarmerFilter("");setAdminTab("farmers")}],[allP.length,"Listings",Ic.listings,"#1d4ed8",()=>setAdminTab("products")],[allF.filter(f=>f.status==="pending").length,"Pending",Ic.pending,"#d97706",()=>{setFarmerFilter("pending");setAdminTab("farmers")}],[allP.reduce((s,p)=>s+(p.views||0),0),"Total Views",Ic.users,"#7c3aed",()=>setAdminTab("products")]].map(([v,l,IcC,col,onCardClick])=>(
+                {[[allF.length,t("admin_total_farmers"),Ic.farmer,G.g6,()=>{setFarmerFilter("");setAdminTab("farmers")}],[allP.length,t("admin_listings"),Ic.listings,"#1d4ed8",()=>setAdminTab("products")],[allF.filter(f=>f.status==="pending").length+wholesalers.filter(w=>w.status==="pending").length,t("admin_pending"),Ic.pending,"#d97706",()=>{setFarmerFilter("pending");setAdminTab("farmers")}],[allP.reduce((s,p)=>s+(p.views||0),0),t("admin_total_views"),Ic.users,"#7c3aed",()=>setAdminTab("products")]].map(([v,l,IcC,col,onCardClick])=>(
                   <button key={l} onClick={onCardClick} style={{background:G.white,borderRadius:G.rL,padding:"17px 16px",boxShadow:G.sh,border:`1px solid ${G.gray1}`,borderTop:`3px solid ${col}`,textAlign:"left",cursor:"pointer",font:"inherit",width:"100%"}}>
                     <div style={{marginBottom:5,color:col}}><IcC size={22}/></div>
                     <div style={{fontSize:26,fontWeight:900,color:col,fontFamily:FH}}>{typeof v==="number"?v.toLocaleString():v}</div>
@@ -2957,21 +3263,32 @@ function AppInner(){
                 ))}
               </div>
               <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
-                <h3 style={{margin:"0 0 13px",fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.pending size={16} color={G.g6}/> Pending Farmer Approvals</h3>
-                {allF.filter(f=>f.status==="pending").length===0
-                  ?<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>No pending approvals!</div>
-                  :allF.filter(f=>f.status==="pending").map(f=>(
-                    <div key={f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
-                      <div>
-                        <p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{f.name}</p>
-                        <p style={{margin:"2px 0 0",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district}, {f.sector}</p>
+                <h3 style={{margin:"0 0 13px",fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.pending size={16} color={G.g6}/> {t("admin_pending_approvals")}</h3>
+                {(()=>{
+                  // Same list as before (pending farmers), with pending
+                  // wholesalers merged in — tagged by _kind so each row
+                  // calls the right approve/block function below. This
+                  // keeps the existing single Pending Approvals UI as the
+                  // one place both farmer and wholesaler signups show up,
+                  // instead of adding a separate tab/section.
+                  const pendingF=allF.filter(f=>f.status==="pending").map(f=>({...f,_kind:"farmer"}));
+                  const pendingW=wholesalers.filter(w=>w.status==="pending").map(w=>({...w,_kind:"wholesaler"}));
+                  const pending=[...pendingF,...pendingW];
+                  return pending.length===0
+                    ?<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_pending")}</div>
+                    :pending.map(f=>(
+                      <div key={f._kind+f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
+                        <div>
+                          <p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{f._kind==="wholesaler"?f.company_name:f.name}{f._kind==="wholesaler"&&<span style={{marginLeft:6,fontWeight:600,fontSize:10,color:G.gray5}}>(Wholesaler)</span>}</p>
+                          <p style={{margin:"2px 0 0",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district}, {f.sector}</p>
+                        </div>
+                        <div style={{display:"flex",gap:6}}>
+                          <Btn size="sm" onClick={async()=>{if(f._kind==="wholesaler"){await WS.setStatus(f.id,"approved")}else{await DB.setFarmerStatus(f.id,"approved")}await reload();notify((f._kind==="wholesaler"?f.company_name:f.name)+" "+t("msg_farmer_verified"))}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>
+                          <Btn size="sm" variant="danger" onClick={async()=>{if(f._kind==="wholesaler"){await WS.setStatus(f.id,"blocked")}else{await DB.setFarmerStatus(f.id,"blocked")}await reload()}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>
+                        </div>
                       </div>
-                      <div style={{display:"flex",gap:6}}>
-                        <Btn size="sm" onClick={async()=>{await DB.setFarmerStatus(f.id,"approved");await reload();notify(f.name+" verified!")}} icon={<Ic.check size={13}/>}>Verify</Btn>
-                        <Btn size="sm" variant="danger" onClick={async()=>{await DB.setFarmerStatus(f.id,"blocked");await reload()}} icon={<Ic.close size={13}/>}>Block</Btn>
-                      </div>
-                    </div>
-                  ))}
+                    ));
+                })()}
               </div>
             </div>
           )}
@@ -2981,10 +3298,10 @@ function AppInner(){
             return(
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
-                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{farmerFilter==="pending"?`⏳ Pending Farmers (${shown.length})`:`All Farmers (${shown.length})`}</h3>
-                {farmerFilter&&<Btn size="sm" variant="ghost" onClick={()=>setFarmerFilter("")} icon={<Ic.close size={13}/>}>Clear filter</Btn>}
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{farmerFilter==="pending"?`⏳ ${t("admin_pending_farmers")} (${shown.length})`:`${t("admin_all_farmers")} (${shown.length})`}</h3>
+                {farmerFilter&&<Btn size="sm" variant="ghost" onClick={()=>setFarmerFilter("")} icon={<Ic.close size={13}/>}>{t("admin_clear_filter")}</Btn>}
               </div>
-              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>No farmers match this filter.</div>}
+              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_farmers_match")}</div>}
               {shown.map(f=>(
                 <div key={f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
@@ -2992,16 +3309,16 @@ function AppInner(){
                     <div>
                       <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:2}}>
                         <strong style={{fontSize:13,color:G.gray9}}>{f.name}</strong>
-                        <Badge color={f.status==="approved"?"green":f.status==="blocked"?"red":"gold"}>{f.status==="approved"?<><Ic.check size={10}/> Verified</>:f.status==="blocked"?<><Ic.close size={10}/> Blocked</>:<><Ic.pending size={10}/> Pending</>}</Badge>
+                        <Badge color={f.status==="approved"?"green":f.status==="blocked"?"red":"gold"}>{f.status==="approved"?<><Ic.check size={10}/> {t("admin_verified")}</>:f.status==="blocked"?<><Ic.close size={10}/> {t("admin_blocked")}</>:<><Ic.pending size={10}/> {t("admin_pending")}</>}</Badge>
                       </div>
-                      <p style={{margin:0,fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district} <span>· {allP.filter(p=>p.fid===f.id).length} listings</span></p>
+                      <p style={{margin:0,fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district} <span>· {allP.filter(p=>p.fid===f.id).length} {t("admin_listings_count")}</span></p>
                     </div>
                   </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
-                    <Btn size="sm" variant="secondary" onClick={()=>setPhotoFarmer(f)} icon={<Ic.camera size={13}/>}>Photo</Btn>
-                    {f.status!=="approved"&&<Btn size="sm" onClick={async()=>{await DB.setFarmerStatus(f.id,"approved");await reload();notify("Verified!")}} icon={<Ic.check size={13}/>}>Verify</Btn>}
-                    {f.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{await DB.setFarmerStatus(f.id,"blocked");await reload()}} icon={<Ic.close size={13}/>}>Block</Btn>}
-                    <Btn size="sm" variant="danger" onClick={async()=>{if(window.confirm("Delete farmer?"))await DB.deleteFarmer(f.id);await reload();notify("Deleted")}} icon={<Ic.delete size={14}/>}>Delete</Btn>
+                    <Btn size="sm" variant="secondary" onClick={()=>setPhotoFarmer(f)} icon={<Ic.camera size={13}/>}>{t("admin_photo")}</Btn>
+                    {f.status!=="approved"&&<Btn size="sm" onClick={async()=>{await DB.setFarmerStatus(f.id,"approved");await reload();notify(t("msg_updated"))}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
+                    {f.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{await DB.setFarmerStatus(f.id,"blocked");await reload()}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
+                    <Btn size="sm" variant="danger" onClick={async()=>{if(window.confirm(t("admin_confirm_delete_farmer")))await DB.deleteFarmer(f.id);await reload();notify(t("msg_deleted"))}} icon={<Ic.delete size={14}/>}>{t("admin_delete")}</Btn>
                   </div>
                 </div>
               ))}
@@ -3011,8 +3328,8 @@ function AppInner(){
           {adminTab==="products"&&(
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:15}}>
-                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>All Listings ({allP.length})</h3>
-                <Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>Add</Btn>
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{t("admin_all_listings")} ({allP.length})</h3>
+                <Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn>
               </div>
               {allP.map(p=>(
                 <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
@@ -3021,14 +3338,14 @@ function AppInner(){
                       <img src={p.img1||IMGS[p.sub]||(p.type==="crop"?IMGS.default_crop:IMGS.default_animal)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}} onError={e=>e.target.style.display="none"}/>
                     </div>
                     <div>
-                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:2}}><strong style={{fontSize:12,color:G.gray9}}>{p.name}</strong>{p.featured&&<Badge color="gold">⭐</Badge>}<Badge color={p.inStock?"green":"gray"}>{p.inStock?"In Stock":"Out"}</Badge></div>
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginBottom:2}}><strong style={{fontSize:12,color:G.gray9}}>{p.name}</strong>{p.featured&&<Badge color="gold">⭐</Badge>}<Badge color={p.inStock?"green":"gray"}>{p.inStock?t("admin_in_stock"):t("admin_out")}</Badge></div>
                       <p style={{margin:"1px 0",fontSize:10,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}>RWF {p.price?.toLocaleString()}/{p.unit} <span>·</span> <Ic.users size={10}/> {p.views} <span>· {p.fname}</span></p>
                     </div>
                   </div>
                   <div style={{display:"flex",gap:5}}>
-                    <Btn size="sm" variant="gold" onClick={async()=>{await DB.toggleFeatured(p.id);await reload()}} icon={<Ic.star size={13}/>}>{p.featured?"Unfeature":"Feature"}</Btn>
-                    <Btn size="sm" variant="secondary" onClick={()=>{setEditP(p);setShowForm(true)}} icon={<Ic.edit size={14}/>}>Edit</Btn>
-                    <Btn size="sm" variant="danger" onClick={()=>setDelP(p)} icon={<Ic.delete size={14}/>}>Del</Btn>
+                    <Btn size="sm" variant="gold" onClick={async()=>{await DB.toggleFeatured(p.id);await reload()}} icon={<Ic.star size={13}/>}>{p.featured?t("admin_unfeature"):t("admin_feature")}</Btn>
+                    <Btn size="sm" variant="secondary" onClick={()=>{setEditP(p);setShowForm(true)}} icon={<Ic.edit size={14}/>}>{t("admin_edit")}</Btn>
+                    <Btn size="sm" variant="danger" onClick={()=>setDelP(p)} icon={<Ic.delete size={14}/>}>{t("admin_del")}</Btn>
                   </div>
                 </div>
               ))}
@@ -3056,19 +3373,19 @@ function AppInner(){
         <div style={{display:"flex",gap:12,alignItems:"flex-start",marginBottom:16,flexWrap:"wrap"}}>
           <FarmerPhoto farmer={farmer} size={54} radius={13}/>
           <div style={{flex:1}}>
-            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><strong style={{fontSize:16,fontFamily:FH,color:G.gray9}}>{farmer.name}</strong><Badge color="green"><Ic.check size={10}/> Verified</Badge></div>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><strong style={{fontSize:16,fontFamily:FH,color:G.gray9}}>{farmer.name}</strong><Badge color="green"><Ic.check size={10}/> {t("admin_verified")}</Badge></div>
             <p style={{margin:"3px 0",fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5}}><Ic.location size={12}/> {farmer.village}, {farmer.sector}, {farmer.district}</p>
-            <Stars value={farmer.rating||0} size={12}/> <span style={{fontSize:11,color:G.gray5}}>{(farmer.rating||0).toFixed(1)} ({farmer.rCount||0} ratings)</span>
+            <Stars value={farmer.rating||0} size={12}/> <span style={{fontSize:11,color:G.gray5}}>{(farmer.rating||0).toFixed(1)} ({farmer.rCount||0} {t("fdm_ratings")})</span>
             {farmer.bio&&<p style={{margin:"5px 0 0",fontSize:12,color:G.gray5}}>{farmer.bio}</p>}
           </div>
           <div style={{display:"flex",gap:7}}>
-            <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.contact size={13}/> Call</a>
-            <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.whatsapp size={13}/> WhatsApp</a>
+            <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.contact size={13}/> {t("fdm_call")}</a>
+            <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>
           </div>
         </div>
-        <h3 style={{margin:"0 0 12px",fontFamily:FH,fontSize:14,color:G.gray9}}>Listings ({fp.length})</h3>
+        <h3 style={{margin:"0 0 12px",fontFamily:FH,fontSize:14,color:G.gray9}}>{t("fdm_listings")} ({fp.length})</h3>
         {fp.length===0
-          ?<p style={{color:G.gray5}}>No active listings</p>
+          ?<p style={{color:G.gray5}}>{t("fdm_no_listings")}</p>
           :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(195px,1fr))",gap:12}}>
               {fp.map(p=>(
                 <PCard key={p.id} product={p} user={null}
@@ -3086,7 +3403,7 @@ function AppInner(){
       <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:G.g9,fontFamily:FB}}>
         <div style={{textAlign:"center",color:G.white}}>
           <div style={{marginBottom:14,display:"flex",justifyContent:"center"}}><Logo size={64} site={site}/></div>
-          <p style={{fontSize:15,opacity:.8}}>Loading Inkingi…</p>
+          <p style={{fontSize:15,opacity:.8}}>{t("loading_text")}</p>
         </div>
       </div>
     );
@@ -3122,18 +3439,25 @@ function AppInner(){
         .ik-card:hover .ik-card-img{transform:scale(1.06)}
         .ik-card:active{transform:scale(0.985)}
         .ik-card-img{transition:transform 400ms ease}
+        @keyframes ik-spin{to{transform:rotate(360deg)}}
+        .ik-spinner{animation:ik-spin 700ms linear infinite}
+        @media (max-width:760px){
+          .ik-navbar-row{height:auto !important;flex-wrap:wrap !important;padding:8px 12px !important;row-gap:8px !important}
+          .ik-navbar-search{order:3;flex:1 1 100% !important;max-width:none !important}
+          .ik-navbar-items{order:4;flex:1 1 100% !important;margin-left:0 !important;justify-content:flex-start !important}
+        }
       `}</style>
 
       <Toast msg={toast?.msg} type={toast?.type}/>
 
       {/* NAVBAR */}
       <nav style={{background:G.g8,position:"sticky",top:0,zIndex:200,boxShadow:"0 2px 14px rgba(0,0,0,.2)"}}>
-        <div style={{maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:58,gap:13}}>
+        <div className="ik-navbar-row" style={{maxWidth:1200,margin:"0 auto",padding:"0 16px",display:"flex",alignItems:"center",height:58,gap:13}}>
           <div onClick={()=>nav("home")} style={{display:"flex",alignItems:"center",gap:7,cursor:"pointer",flexShrink:0}}>
             <div style={{width:30,height:30,borderRadius:8,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",flexShrink:0}}><Logo size={30} site={site}/></div>
             <span style={{fontSize:16,fontWeight:900,color:G.white,fontFamily:FH}}>Inkingi</span>
           </div>
-          <div ref={searchRef} style={{position:"relative",flex:1,maxWidth:400}}>
+          <div ref={searchRef} className="ik-navbar-search" style={{position:"relative",flex:1,maxWidth:400}}>
             <div style={{display:"flex",background:"rgba(255,255,255,.11)",border:"1.5px solid rgba(255,255,255,.18)",borderRadius:99,overflow:"hidden"}}>
               <input value={searchQ} onChange={e=>handleSugInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder="Search products…" style={{flex:1,background:"none",border:"none",outline:"none",padding:"7px 13px",color:G.white,fontSize:12,fontFamily:FB}}/>
               <button onClick={()=>doSearch()} style={{background:"rgba(255,255,255,.14)",border:"none",color:G.white,padding:"7px 11px",cursor:"pointer",display:"flex",alignItems:"center"}}><Ic.search size={14}/></button>
@@ -3146,7 +3470,7 @@ function AppInner(){
               </div>
             )}
           </div>
-          <div style={{display:"flex",alignItems:"center",gap:2,marginLeft:"auto",overflowX:"auto"}}>
+          <div className="ik-navbar-items" style={{display:"flex",alignItems:"center",gap:2,marginLeft:"auto",overflowX:"auto"}}>
             {navItems.map(n=>(
               <button key={n.k} onClick={()=>nav(n.k)} style={{display:"inline-flex",alignItems:"center",gap:5,background:page===n.k?"rgba(255,255,255,.16)":"none",color:G.white,border:"none",padding:"6px 9px",borderRadius:7,cursor:"pointer",fontWeight:page===n.k?700:500,fontSize:11,fontFamily:FB,whiteSpace:"nowrap",flexShrink:0}}>{n.ic&&<n.ic size={13}/>}{n.l}</button>
             ))}
@@ -3171,6 +3495,7 @@ function AppInner(){
         {page==="marketplace"&&renderMarketplace()}
         {page==="farmers"&&renderFarmers()}
         {page==="dashboard"&&renderDashboard()}
+        {page==="wpanel"&&renderWholesalerPanel()}
         {page==="admin"&&renderAdmin()}
         {page==="prices"&&<MarketPricesPage user={user} notify={notify}/>}
         {page==="tips"&&<FarmingTipsPage user={user} notify={notify}/>}
