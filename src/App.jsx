@@ -656,14 +656,25 @@ const SA = {
   // must (a) upsert every row still present and (b) delete any row that used
   // to exist remotely but is no longer in `rows` — otherwise a delete made in
   // one browser would never disappear for anyone else using the site.
-  async save(table, rows) {
+  // `skipDelete`: when true, this call only upserts `rows` and never
+  // deletes anything based on what's absent from the array. Defaults to
+  // false so every existing caller (products/prices/tips/pests/calendar,
+  // and the backup-restore path, which intentionally needs a save to
+  // remove rows added since the backup) keeps its exact current
+  // behavior. Only saveFarmers() opts into skipDelete=true — see the
+  // comment there for why: two sessions saving the farmers table with
+  // different/stale snapshots must never be able to delete each other's
+  // rows as a side effect of an unrelated save.
+  async save(table, rows, skipDelete=false) {
     LS.s(table, rows); // keep the local cache current for instant UI + offline fallback
     if (!HAS_SUPABASE) { lastSyncOk=true; return {ok:true}; }
     try {
-      const existing = await SB.get(table, "select=id");
-      const keepIds = new Set(rows.map(r=>r.id));
-      const toDelete = existing.filter(r=>!keepIds.has(r.id)).map(r=>r.id);
-      if (toDelete.length) await SB.del(table, `id=in.(${toDelete.map(id=>encodeURIComponent(id)).join(",")})`);
+      if (!skipDelete) {
+        const existing = await SB.get(table, "select=id");
+        const keepIds = new Set(rows.map(r=>r.id));
+        const toDelete = existing.filter(r=>!keepIds.has(r.id)).map(r=>r.id);
+        if (toDelete.length) await SB.del(table, `id=in.(${toDelete.map(id=>encodeURIComponent(id)).join(",")})`);
+      }
       if (rows.length) {
         const payload = rows.map(({id,...rest})=>({id, data:rest}));
         await SB.upsert(table, payload);
@@ -1052,7 +1063,11 @@ const DB = {
   async ads(){return (await SA.getKV("ads"))||[]},
   async carousel(){return (await SA.getKV("carousel"))||DEFAULT_CAROUSEL},
   async site(){return (await SA.getKV("site"))||DEFAULT_SITE},
-  async saveFarmers(v){return await SA.save("farmers",v)},
+  // skipDelete=true: farmer saves must never delete rows as a side
+  // effect of an incomplete/stale array — see SA.save's comment. Actual
+  // farmer deletion is handled explicitly by deleteFarmer() below, via a
+  // direct single-row DELETE rather than this diff mechanism.
+  async saveFarmers(v){return await SA.save("farmers",v,true)},
   async saveProducts(v){await SA.save("products",v)},
   async savePrices(v){await SA.save("prices",v)},
   async saveTips(v){await SA.save("tips",v)},
@@ -1114,7 +1129,21 @@ const DB = {
   async rateFarmer(fid,rating,sid){const rs=(await SA.getKV("ratings"))||[];if(rs.find(r=>r.fid===fid&&r.sid===sid))return{err:"Already rated"};const nrs=[...rs,{fid,rating,sid}];await SA.setKV("ratings",nrs);const fr=nrs.filter(r=>r.fid===fid);const avg=fr.reduce((s,r)=>s+r.rating,0)/fr.length;await this.saveFarmers((await this.farmers()).map(f=>f.id===fid?{...f,rating:Math.round(avg*10)/10,rCount:fr.length}:f));return{ok:true}},
   async setFarmerStatus(id,status){await this.saveFarmers((await this.farmers()).map(f=>f.id===id?{...f,status}:f))},
   async updateFarmer(id,patch){await this.saveFarmers((await this.farmers()).map(f=>f.id===id?{...f,...patch}:f))},
-  async deleteFarmer(id){const[fs,ps]=await Promise.all([this.farmers(),this.products()]);await Promise.all([this.saveFarmers(fs.filter(f=>f.id!==id)),this.saveProducts(ps.filter(p=>p.fid!==id))])},
+  // Explicit, single-row delete — this is the ONLY place a farmer row is
+  // ever actually removed from Supabase. It no longer relies on
+  // saveFarmers' diff-delete side effect (disabled for farmers, see
+  // saveFarmers above) so that deleting one farmer can never accidentally
+  // remove another session's just-written row. Governed by the existing
+  // farmers_delete_admin_only RLS policy, unchanged.
+  async deleteFarmer(id){
+    const ps = await this.products();
+    await Promise.all([
+      SB.del("farmers", `id=eq.${encodeURIComponent(id)}`),
+      this.saveProducts(ps.filter(p=>p.fid!==id)),
+    ]);
+    const cached=(LS.g("farmers")||[]).filter(f=>f.id!==id);
+    LS.s("farmers", cached);
+  },
   async toggleFeatured(id){await this.saveProducts((await this.products()).map(p=>p.id===id?{...p,featured:!p.featured}:p))},
 };
 
