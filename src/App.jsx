@@ -1027,7 +1027,8 @@ const DB = {
         status: cameFromRegistration ? "pending" : "approved",
         rating:0, rCount:0, createdAt:new Date().toISOString(),
       };
-      await this.saveFarmers([...farmers, profile]);
+      const r = await this.saveFarmers([...farmers, profile]);
+      if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     }
     return profile;
   },
