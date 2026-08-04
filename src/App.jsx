@@ -665,8 +665,18 @@ const SA = {
   // comment there for why: two sessions saving the farmers table with
   // different/stale snapshots must never be able to delete each other's
   // rows as a side effect of an unrelated save.
-  async save(table, rows, skipDelete=false) {
-    LS.s(table, rows); // keep the local cache current for instant UI + offline fallback
+  //
+  // `cacheRows`: optional. When provided, the LOCAL cache (this
+  // browser's offline/instant-UI copy) is written using this fuller
+  // array, while the actual network request to Supabase still only
+  // ever sends `rows`. This is what lets a single new/changed row be
+  // upserted to Supabase (satisfying a strict per-row RLS policy like
+  // `auth.uid() = id`) without shrinking this browser's local view of
+  // every other farmer down to just that one row. Defaults to `rows`,
+  // so every existing caller that doesn't pass this keeps its exact
+  // current behavior (local cache and network payload stay identical).
+  async save(table, rows, skipDelete=false, cacheRows=null) {
+    LS.s(table, cacheRows||rows); // keep the local cache current for instant UI + offline fallback
     if (!HAS_SUPABASE) { lastSyncOk=true; return {ok:true}; }
     try {
       if (!skipDelete) {
@@ -1027,7 +1037,7 @@ const DB = {
         status: cameFromRegistration ? "pending" : "approved",
         rating:0, rCount:0, createdAt:new Date().toISOString(),
       };
-      const r = await this.saveFarmers([...farmers, profile]);
+      const r = await this.saveFarmers([profile], [...farmers, profile]);
       if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     }
     return profile;
@@ -1068,7 +1078,14 @@ const DB = {
   // effect of an incomplete/stale array — see SA.save's comment. Actual
   // farmer deletion is handled explicitly by deleteFarmer() below, via a
   // direct single-row DELETE rather than this diff mechanism.
-  async saveFarmers(v){return await SA.save("farmers",v,true)},
+  //
+  // cacheRows (optional): lets a caller send only the one row that
+  // actually needs to reach Supabase (v) while keeping this browser's
+  // local cache showing the full known set — see register()/login()
+  // below, where a non-admin farmer's own INSERT must not be bundled
+  // with every other farmer's row or a strict `auth.uid() = id` RLS
+  // policy rejects the whole batch over rows that aren't theirs.
+  async saveFarmers(v,cacheRows=null){return await SA.save("farmers",v,true,cacheRows)},
   async saveProducts(v){await SA.save("products",v)},
   async savePrices(v){await SA.save("prices",v)},
   async saveTips(v){await SA.save("tips",v)},
@@ -1119,7 +1136,8 @@ const DB = {
       return {ok:true};
     }
     const nf={...profileFields,id:uid,email,role:"farmer",status:"pending",rating:0,rCount:0,createdAt:new Date().toISOString()};
-    const r = await this.saveFarmers([...(await this.farmers()),nf]);
+    const existingFarmers = await this.farmers();
+    const r = await this.saveFarmers([nf], [...existingFarmers, nf]);
     if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     return {ok:true};
   },
