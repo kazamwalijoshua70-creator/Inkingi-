@@ -665,8 +665,18 @@ const SA = {
   // comment there for why: two sessions saving the farmers table with
   // different/stale snapshots must never be able to delete each other's
   // rows as a side effect of an unrelated save.
-  async save(table, rows, skipDelete=false) {
-    LS.s(table, rows); // keep the local cache current for instant UI + offline fallback
+  //
+  // `cacheRows`: optional. When provided, the LOCAL cache (this
+  // browser's offline/instant-UI copy) is written using this fuller
+  // array, while the actual network request to Supabase still only
+  // ever sends `rows`. This is what lets a single new/changed row be
+  // upserted to Supabase (satisfying a strict per-row RLS policy like
+  // `auth.uid() = id`) without shrinking this browser's local view of
+  // every other farmer down to just that one row. Defaults to `rows`,
+  // so every existing caller that doesn't pass this keeps its exact
+  // current behavior (local cache and network payload stay identical).
+  async save(table, rows, skipDelete=false, cacheRows=null) {
+    LS.s(table, cacheRows||rows); // keep the local cache current for instant UI + offline fallback
     if (!HAS_SUPABASE) { lastSyncOk=true; return {ok:true}; }
     try {
       if (!skipDelete) {
@@ -791,6 +801,69 @@ const WS = {
     }
     const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,image_url}:w);
     LS.s("wholesalers", cached);
+    return {ok:true};
+  },
+};
+
+// Business accounts (Stage 3 of the new Business system) — mirrors WS
+// above exactly: `businesses` is a flat relational table (no jsonb blob,
+// see businesses/business_compliance/business_products schema, verified
+// live in Stage 1), so every write here is a genuine INSERT (add) or a
+// genuine column-scoped UPDATE (_patchBusiness) via SB.post/SB.patch.
+// SB.upsert is never used — learned directly from the farmers
+// upsert-vs-INSERT-policy bug earlier this session.
+const Biz = {
+  async getAll() {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("businesses", "select=*&order=created_at.asc");
+        lastSyncOk = true; LS.s("businesses", rows); return rows;
+      } catch { lastSyncOk = false; }
+    }
+    return LS.g("businesses") || [];
+  },
+  async getOne(id) {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("businesses", `id=eq.${id}&select=*`);
+        lastSyncOk = true; return rows?.[0] || null;
+      } catch { lastSyncOk = false; return null; }
+    }
+    return (LS.g("businesses") || []).find(b=>b.id===id) || null;
+  },
+  // Genuine one-time INSERT — plain SB.post, no merge-duplicates header.
+  async add(row) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.post("businesses", row);
+        lastSyncOk = true;
+        const cached = LS.g("businesses") || [];
+        LS.s("businesses", [...cached, row]);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = LS.g("businesses") || [];
+    LS.s("businesses", [...cached, row]);
+    return {ok:true};
+  },
+  // Genuine column-scoped UPDATE — never upsert, never a full-object
+  // replace. `patch` is only the changed fields (e.g. {status:"approved"}),
+  // sent as-is via SB.patch; PostgREST maps this to
+  // UPDATE businesses SET <only those columns> WHERE id=... — no other
+  // column is read or resent. businesses has no jsonb column, so there is
+  // no equivalent of the farmers full-blob-replacement/rating-trigger risk.
+  async _patchBusiness(id, patch) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("businesses", `id=eq.${id}`, patch);
+        lastSyncOk = true;
+        const cached = (LS.g("businesses")||[]).map(b=>b.id===id?{...b,...patch}:b);
+        LS.s("businesses", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("businesses")||[]).map(b=>b.id===id?{...b,...patch}:b);
+    LS.s("businesses", cached);
     return {ok:true};
   },
 };
@@ -1003,6 +1076,44 @@ const DB = {
       }
       return {...wProfile, role:"wholesaler"};
     }
+    // Business accounts live in `businesses` — same pattern as
+    // wholesaler above. primary_category is DATA on this row (see
+    // businesses schema, Stage 1), never a separate auth branch — the
+    // category itself does not affect how this branch behaves.
+    if (meta.role === "business") {
+      let bizProfile = await Biz.getOne(uid);
+      if (!bizProfile) {
+        // Same email-confirmation gap as wholesaler/farmer: the row
+        // couldn't be inserted at registration time (no active session
+        // yet), so it's rebuilt here from the metadata that signUp
+        // preserved. meta.primary_category is the actual value the
+        // person submitted at registration — it is never defaulted or
+        // invented here. If it's missing (corrupted/incomplete
+        // metadata), that's a genuine data problem, not something to
+        // paper over by guessing a category — surface it as an error so
+        // the person (or an admin, on investigation) knows the account
+        // needs attention, rather than silently creating a
+        // mis-categorized business.
+        if (!meta.primary_category) {
+          return {err:"Your business registration is incomplete (missing category). Please contact support or try registering again."};
+        }
+        bizProfile = {
+          id: uid, trading_name: meta.trading_name || meta.name || email,
+          legal_name: meta.legal_name || null,
+          primary_category: meta.primary_category,
+          secondary_categories: meta.secondary_categories || [],
+          contact_name: meta.contact_name || meta.name || email,
+          email, phone: meta.phone || "", whatsapp: meta.whatsapp === true,
+          district: meta.district, sector: meta.sector, village: meta.village,
+          description: meta.description || meta.bio || "",
+          image_url: meta.image || "",
+          status: "pending", created_at: new Date().toISOString(),
+        };
+        const r = await Biz.add(bizProfile);
+        if (!r.ok) return {err:r.reason||"Could not save business profile"};
+      }
+      return {...bizProfile, role:"business"};
+    }
     const farmers = await SA.getAll("farmers");
     let profile = farmers.find(f=>f.id===uid);
     if (!profile) {
@@ -1027,7 +1138,7 @@ const DB = {
         status: cameFromRegistration ? "pending" : "approved",
         rating:0, rCount:0, createdAt:new Date().toISOString(),
       };
-      const r = await this.saveFarmers([...farmers, profile]);
+      const r = await this.saveFarmers([profile], [...farmers, profile]);
       if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     }
     return profile;
@@ -1052,6 +1163,10 @@ const DB = {
       const w = wholesalers.find(w=>w.id===session.user.id);
       return w ? {...w, role:"wholesaler"} : null;
     }
+    if (session.user?.user_metadata?.role === "business") {
+      const b = await Biz.getOne(session.user.id);
+      return b ? {...b, role:"business"} : null;
+    }
     const farmers = await SA.getAll("farmers");
     return farmers.find(f=>f.id===session.user.id) || null;
   },
@@ -1068,8 +1183,23 @@ const DB = {
   // effect of an incomplete/stale array — see SA.save's comment. Actual
   // farmer deletion is handled explicitly by deleteFarmer() below, via a
   // direct single-row DELETE rather than this diff mechanism.
-  async saveFarmers(v){return await SA.save("farmers",v,true)},
-  async saveProducts(v){await SA.save("products",v)},
+  //
+  // cacheRows (optional): lets a caller send only the one row that
+  // actually needs to reach Supabase (v) while keeping this browser's
+  // local cache showing the full known set — see register()/login()
+  // below, where a non-admin farmer's own INSERT must not be bundled
+  // with every other farmer's row or a strict `auth.uid() = id` RLS
+  // policy rejects the whole batch over rows that aren't theirs.
+  async saveFarmers(v,cacheRows=null){return await SA.save("farmers",v,true,cacheRows)},
+  // cacheRows (optional, same pattern as saveFarmers): lets addProduct
+  // send only the one new product row to Supabase — required because
+  // products_insert_own has no unconditional-open fallback the way the
+  // farmers/products UPDATE policies do, so a full-array insert batch
+  // containing other farmers' existing products could be rejected.
+  // Defaults to null so every other caller (updateProduct, deleteProduct,
+  // incView, toggleFeatured, backup restore) keeps its exact current
+  // behavior unchanged.
+  async saveProducts(v,cacheRows=null){return await SA.save("products",v,false,cacheRows)},
   async savePrices(v){await SA.save("prices",v)},
   async saveTips(v){await SA.save("tips",v)},
   async savePests(v){await SA.save("pests",v)},
@@ -1118,18 +1248,82 @@ const DB = {
       if (!r.ok) return {err:r.reason||"Could not save wholesaler profile"};
       return {ok:true};
     }
+    if (role==="business") {
+      const {trading_name,legal_name,primary_category,secondary_categories,contact_name,phone,whatsapp,district,sector,village,description,image}=profileFields;
+      if (!primary_category) return {err:"Please select a business category before submitting."};
+      const nb={
+        id:uid, trading_name, legal_name:legal_name||null, primary_category,
+        secondary_categories: secondary_categories||[],
+        contact_name, email, phone, whatsapp: whatsapp===true,
+        district, sector, village, description, image_url:image||"",
+        status:"pending", created_at:new Date().toISOString(),
+      };
+      const r = await Biz.add(nb);
+      if (!r.ok) return {err:r.reason||"Could not save business profile"};
+      return {ok:true};
+    }
     const nf={...profileFields,id:uid,email,role:"farmer",status:"pending",rating:0,rCount:0,createdAt:new Date().toISOString()};
-    const r = await this.saveFarmers([...(await this.farmers()),nf]);
+    const existingFarmers = await this.farmers();
+    const r = await this.saveFarmers([nf], [...existingFarmers, nf]);
     if (!r.ok) return {err:r.reason||"Could not save farmer profile"};
     return {ok:true};
   },
-  async addProduct(d){const ps=await this.products();const np={...d,id:"p"+Date.now(),views:0,img1:d.img1||"",img2:d.img2||"",createdAt:new Date().toISOString()};await this.saveProducts([...ps,np]);return np},
+  async addProduct(d){const ps=await this.products();const np={...d,id:"p"+Date.now(),views:0,img1:d.img1||"",img2:d.img2||"",createdAt:new Date().toISOString()};await this.saveProducts([np],[...ps,np]);return np},
   async updateProduct(id,d){await this.saveProducts((await this.products()).map(p=>p.id===id?{...p,...d}:p))},
   async deleteProduct(id){await this.saveProducts((await this.products()).filter(p=>p.id!==id))},
   async incView(id){await this.saveProducts((await this.products()).map(p=>p.id===id?{...p,views:(p.views||0)+1}:p))},
   async rateFarmer(fid,rating,sid){const rs=(await SA.getKV("ratings"))||[];if(rs.find(r=>r.fid===fid&&r.sid===sid))return{err:"Already rated"};const nrs=[...rs,{fid,rating,sid}];await SA.setKV("ratings",nrs);const fr=nrs.filter(r=>r.fid===fid);const avg=fr.reduce((s,r)=>s+r.rating,0)/fr.length;await this.saveFarmers((await this.farmers()).map(f=>f.id===fid?{...f,rating:Math.round(avg*10)/10,rCount:fr.length}:f));return{ok:true}},
-  async setFarmerStatus(id,status){await this.saveFarmers((await this.farmers()).map(f=>f.id===id?{...f,status}:f))},
-  async updateFarmer(id,patch){await this.saveFarmers((await this.farmers()).map(f=>f.id===id?{...f,...patch}:f))},
+  // Sends only the one changed row to Supabase (cacheRows keeps the local
+  // cache showing every farmer), and returns a real result so the caller
+  // can tell whether the status change actually reached the database
+  // instead of assuming success.
+  // Shared by setFarmerStatus/updateFarmer: both only ever modify a
+  // farmer row that's already confirmed to exist, so — unlike
+  // saveFarmers (genuine inserts: registration, login-rebuild) — these
+  // must use a real UPDATE, not an upsert. SB.upsert sends
+  // `Prefer: resolution=merge-duplicates`, which PostgREST implements as
+  // INSERT ... ON CONFLICT DO UPDATE; Postgres checks the INSERT policy's
+  // WITH CHECK on every row of that statement regardless of whether it
+  // will end up inserting or updating, so an admin changing another
+  // farmer's row was being rejected by farmers_insert_self_or_admin
+  // (correctly: (auth.uid()=id) OR is_admin() fails for auth.uid()=admin,
+  // id=farmer) even though the UPDATE policies that DO cover this case
+  // were never actually reached. A direct SB.patch is a genuine SQL
+  // UPDATE, checked only against the UPDATE policies — same fix already
+  // proven working in WS.setStatus/WS.updateImage above.
+  //
+  // farmers is the jsonb-wrapped table (id, data, created_at) — unlike
+  // wholesalers' flat columns, every field lives inside `data`, and a
+  // PATCH replaces that column's value outright rather than merging by
+  // key. So the full updated fields object (not just the changed key)
+  // is sent as `data`, preserving every other field on the row.
+  async _patchFarmer(id, updatedFields, cacheRows) {
+    if (HAS_SUPABASE) {
+      try {
+        const {id:_omit, ...data} = updatedFields;
+        await SB.patch("farmers", `id=eq.${id}`, {data});
+        lastSyncOk = true;
+        LS.s("farmers", cacheRows);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    LS.s("farmers", cacheRows);
+    return {ok:true};
+  },
+  async setFarmerStatus(id,status){
+    const all = await this.farmers();
+    const updated = all.map(f=>f.id===id?{...f,status}:f);
+    const changed = updated.find(f=>f.id===id);
+    if (!changed) return {ok:false, reason:"Farmer not found"};
+    return await this._patchFarmer(id, changed, updated);
+  },
+  async updateFarmer(id,patch){
+    const all = await this.farmers();
+    const updated = all.map(f=>f.id===id?{...f,...patch}:f);
+    const changed = updated.find(f=>f.id===id);
+    if (!changed) return {ok:false, reason:"Farmer not found"};
+    return await this._patchFarmer(id, changed, updated);
+  },
   // Explicit, single-row delete — this is the ONLY place a farmer row is
   // ever actually removed from Supabase. It no longer relies on
   // saveFarmers' diff-delete side effect (disabled for farmers, see
@@ -1376,7 +1570,62 @@ function FarmerPhoto({farmer,size=48,radius=12}){
   );
 }
 
-/* ── PRODUCT DISPLAY ── */
+/* ── FARMER PROFILE SECTION (dashboard) ──
+   Lets a signed-in farmer (pending or approved) complete/edit their own
+   contact, WhatsApp preference, location, and agricultural info. Reuses
+   the existing DB.updateFarmer (now single-row/cacheRows-safe) and the
+   existing LocPicker component — no new location fields, no new
+   agricultural fields beyond the existing fType/bio, per approved scope.
+   WhatsApp is stored as a new additive `whatsapp` boolean inside the
+   existing farmers.data jsonb — no schema change. */
+function FarmerProfileSection({me,onNotify,onReload}){
+  const[f,setF]=useState({phone:me.phone||"",whatsapp:me.whatsapp===true,district:me.district||"",sector:me.sector||"",village:me.village||"",fType:me.fType||"abahinzi",bio:me.bio||""});
+  const[busy,setBusy]=useState(false);
+  const[dirty,setDirty]=useState(false);
+  // Keep the form in sync if the farmer record changes elsewhere (e.g.
+  // after a save reloads `farmers` from Supabase) — but only while the
+  // farmer hasn't started editing, so an in-progress edit is never
+  // silently overwritten.
+  useEffect(()=>{if(!dirty)setF({phone:me.phone||"",whatsapp:me.whatsapp===true,district:me.district||"",sector:me.sector||"",village:me.village||"",fType:me.fType||"abahinzi",bio:me.bio||""})},[me.phone,me.whatsapp,me.district,me.sector,me.village,me.fType,me.bio,dirty]);
+  const set=(k,v)=>{setF(x=>({...x,[k]:v}));setDirty(true)};
+  const save=async()=>{
+    setBusy(true);
+    const r=await DB.updateFarmer(me.id,{phone:f.phone,whatsapp:f.whatsapp,district:f.district,sector:f.sector,village:f.village,fType:f.fType,bio:f.bio});
+    setBusy(false);
+    if(r.ok){setDirty(false);await onReload();onNotify("Profile updated!")}
+    else onNotify(r.reason||"Could not update profile","error");
+  };
+  return(
+    <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:20}}>
+      <h3 style={{margin:"0 0 14px",fontSize:15,fontWeight:800,color:G.gray9,fontFamily:FH,display:"flex",alignItems:"center",gap:7}}><Ic.contact size={15} color={G.g6}/> My Profile</h3>
+
+      <p style={{margin:"0 0 8px",fontSize:12,fontWeight:700,color:G.gray5,textTransform:"uppercase",letterSpacing:.3}}>Contact</p>
+      <Inp label="Phone number" value={f.phone} onChange={e=>set("phone",e.target.value)} type="tel" placeholder="07XXXXXXXX"/>
+      <div style={{marginBottom:13}}>
+        <label style={{display:"block",fontSize:13,fontWeight:600,color:G.gray7,marginBottom:5,fontFamily:FB}}>Do you use WhatsApp on this number?</label>
+        <div style={{display:"flex",gap:8}}>
+          <Btn variant={f.whatsapp?"primary":"secondary"} size="sm" onClick={()=>set("whatsapp",true)} icon={<Ic.whatsapp size={13}/>}>Yes</Btn>
+          <Btn variant={!f.whatsapp?"primary":"secondary"} size="sm" onClick={()=>set("whatsapp",false)} icon={<Ic.close size={13}/>}>No</Btn>
+        </div>
+        <p style={{margin:"6px 0 0",fontSize:11,color:G.gray5}}>{f.whatsapp?"A WhatsApp contact option will be shown on your public listings.":"Only your phone number will be shown — no WhatsApp button."}</p>
+      </div>
+
+      <p style={{margin:"16px 0 8px",fontSize:12,fontWeight:700,color:G.gray5,textTransform:"uppercase",letterSpacing:.3}}>Location</p>
+      <LocPicker district={f.district} sector={f.sector} village={f.village} onChange={(d,s,v)=>{setF(x=>({...x,district:d,sector:s,village:v}));setDirty(true)}}/>
+
+      <p style={{margin:"16px 0 8px",fontSize:12,fontWeight:700,color:G.gray5,textTransform:"uppercase",letterSpacing:.3}}>Agricultural Information</p>
+      <Sel label="Farming type" value={f.fType} onChange={e=>set("fType",e.target.value)}>
+        <option value="abahinzi">Abahinzi — Crops</option>
+        <option value="aborozi">Aborozi — Livestock</option>
+      </Sel>
+      <Txt label="About your farm / main products" value={f.bio} onChange={e=>set("bio",e.target.value)} style={{minHeight:70}}/>
+
+      <Btn onClick={save} disabled={busy||!dirty} icon={<Ic.check size={14}/>}>{busy?"Saving...":"Save Profile"}</Btn>
+    </div>
+  );
+}
+
+
 function PImg({product,h=200,detail=false}){
   const[err,setErr]=useState(false);
   const imgSrc=detail?(product.img2||product.img1||""):(product.img1||"");
@@ -1750,7 +1999,7 @@ function ProductDetailModal({product,farmers,open,onClose,onReload}){
               </div>
               <div style={{display:"flex",gap:7,marginBottom:11,flexWrap:"wrap"}}>
                 <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.contact size={13}/> {t("prod_call_now")}</a>
-                <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>
+                {farmer.whatsapp===true&&<a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"7px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12,flex:1,justifyContent:"center"}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>}
               </div>
               <div style={{borderTop:`1px solid #c8e6c9`,paddingTop:9}}>
                 <p style={{margin:"0 0 5px",fontSize:12,fontWeight:700,color:G.gray7}}>{t("prod_rate_farmer")}</p>
@@ -2856,6 +3105,7 @@ function AppInner(){
   const chooseRegRole=role=>{setShowRoleChoice(false);setRegRole(role);setShowReg(true)};
   const[legalOpen,setLegalOpen]=useState(""); // "" | "terms" | "privacy" | "support"
   const[showForm,setShowForm]=useState(false);const[editP,setEditP]=useState(null);const[delP,setDelP]=useState(null);
+  const[detailFarmer,setDetailFarmer]=useState(null);
   const[adminTab,setAdminTab]=useState("dashboard");
   const[syncOk,setSyncOk]=useState(true);
   useEffect(()=>{ // lightweight poll so the admin badge reflects real Supabase health without wiring every save call
@@ -3147,44 +3397,53 @@ function AppInner(){
               <div style={{marginLeft:"auto"}}><Badge color={me.status==="approved"?"green":me.status==="blocked"?"red":"gold"}>{me.status==="approved"?<><Ic.check size={10}/> Verified</>:me.status==="blocked"?<><Ic.close size={10}/> Suspended</>:<><Ic.pending size={10}/> Pending</>}</Badge></div>
             </div>
           </div>
-          {me.status!=="approved"&&(
-            <div style={{background:G.goldL,border:`1px solid ${G.gold}`,borderRadius:G.r,padding:12,marginBottom:18,display:"flex",gap:8,alignItems:"center"}}>
-              <span style={{color:"#92400e"}}><Ic.pending size={18}/></span>
-              <p style={{margin:0,fontSize:12,color:"#78350f"}}>Your account is under review. You'll be notified once approved.</p>
-            </div>
-          )}
-          {me.status==="approved"&&(
-            <>
-              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(125px,1fr))",gap:11,marginBottom:22}}>
-                {[[mine.length,"Listings",Ic.listings,G.g6],[mine.reduce((s,p)=>s+(p.views||0),0),"Views",Ic.users,"#1d4ed8"],[(me.rating||0).toFixed(1),"Rating",Ic.star,"#d97706"],[mine.filter(p=>p.inStock).length,"In Stock",Ic.check,G.g6]].map(([v,l,IcC,ac])=>(
-                  <div key={l} style={{background:G.white,borderRadius:G.rL,padding:16,boxShadow:G.sh,textAlign:"center",border:`1px solid ${G.gray1}`}}>
-                    <div style={{marginBottom:4,color:ac,display:"flex",justifyContent:"center"}}><IcC size={22}/></div>
-                    <div style={{fontSize:22,fontWeight:900,color:ac,fontFamily:FH}}>{v}</div>
-                    <div style={{fontSize:11,color:G.gray5,fontWeight:600,marginTop:2}}>{l}</div>
-                  </div>
+          {/* Email confirmation and Admin approval are two different, separate
+              things — a farmer reaching this dashboard at all already proves
+              their email is confirmed (that's required to sign in), so that
+              part is always shown as done. Admin approval is a distinct,
+              separate status shown alongside it, never conflated with it. */}
+          <div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:18}}>
+            <div style={{display:"flex",alignItems:"center",gap:7,fontSize:12,color:G.g7,fontWeight:600}}><Ic.check size={13} color={G.g6}/> Email confirmed</div>
+            {me.status==="approved"
+              ?<div style={{display:"flex",alignItems:"center",gap:7,fontSize:12,color:G.g7,fontWeight:600}}><Ic.check size={13} color={G.g6}/> Profile approved by Admin</div>
+              :me.status==="blocked"
+              ?<div style={{display:"flex",alignItems:"center",gap:7,fontSize:12,color:G.red,fontWeight:600}}><Ic.close size={13}/> Account suspended by Admin</div>
+              :<div style={{background:G.goldL,border:`1px solid ${G.gold}`,borderRadius:G.r,padding:12,display:"flex",gap:8,alignItems:"center"}}>
+                  <span style={{color:"#92400e"}}><Ic.pending size={18}/></span>
+                  <p style={{margin:0,fontSize:12,color:"#78350f"}}>Your profile is pending Admin approval. You can complete your profile and prepare products now — they'll become publicly visible once approved.</p>
+                </div>}
+          </div>
+          <FarmerProfileSection me={me} onNotify={notify} onReload={reload}/>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(125px,1fr))",gap:11,marginBottom:22,marginTop:22}}>
+            {[[mine.length,"Listings",Ic.listings,G.g6],[mine.reduce((s,p)=>s+(p.views||0),0),"Views",Ic.users,"#1d4ed8"],[(me.rating||0).toFixed(1),"Rating",Ic.star,"#d97706"],[mine.filter(p=>p.inStock).length,"In Stock",Ic.check,G.g6]].map(([v,l,IcC,ac])=>(
+              <div key={l} style={{background:G.white,borderRadius:G.rL,padding:16,boxShadow:G.sh,textAlign:"center",border:`1px solid ${G.gray1}`}}>
+                <div style={{marginBottom:4,color:ac,display:"flex",justifyContent:"center"}}><IcC size={22}/></div>
+                <div style={{fontSize:22,fontWeight:900,color:ac,fontFamily:FH}}>{v}</div>
+                <div style={{fontSize:11,color:G.gray5,fontWeight:600,marginTop:2}}>{l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:9}}>
+            <h2 style={{margin:0,fontSize:16,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.listings size={16} color={G.g6}/> My Listings</h2>
+            <Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>Add Product</Btn>
+          </div>
+          {me.status!=="approved"&&
+            <p style={{fontSize:12,color:G.gray5,marginTop:-8,marginBottom:14,display:"flex",alignItems:"center",gap:5}}><Ic.alert size={12}/> Your listings are saved but won't appear publicly until your profile is approved.</p>}
+          {mine.length===0
+            ?<div style={{textAlign:"center",padding:"40px",background:G.white,borderRadius:G.rL,border:`2px dashed ${G.gray3}`}}>
+                <div style={{marginBottom:9,display:"flex",justifyContent:"center",color:G.gray3}}><Ic.listings size={38}/></div>
+                <p style={{color:G.gray5,marginBottom:12}}>No listings yet.</p>
+                <Btn onClick={()=>{setEditP(null);setShowForm(true)}} icon={<Ic.add size={14}/>}>Add Product</Btn>
+              </div>
+            :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
+                {mine.map(p=>(
+                  <PCard key={p.id} product={p} user={user}
+                    onView={viewProduct}
+                    onEdit={p=>{setEditP(p);setShowForm(true)}}
+                    onDel={p=>setDelP(p)}
+                    onFeat={()=>{}}/>
                 ))}
-              </div>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14,flexWrap:"wrap",gap:9}}>
-                <h2 style={{margin:0,fontSize:16,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:7}}><Ic.listings size={16} color={G.g6}/> My Listings</h2>
-                <Btn icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>Add Product</Btn>
-              </div>
-              {mine.length===0
-                ?<div style={{textAlign:"center",padding:"40px",background:G.white,borderRadius:G.rL,border:`2px dashed ${G.gray3}`}}>
-                    <div style={{marginBottom:9,display:"flex",justifyContent:"center",color:G.gray3}}><Ic.listings size={38}/></div>
-                    <p style={{color:G.gray5,marginBottom:12}}>No listings yet.</p>
-                    <Btn onClick={()=>{setEditP(null);setShowForm(true)}} icon={<Ic.add size={14}/>}>Add Product</Btn>
-                  </div>
-                :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:14}}>
-                    {mine.map(p=>(
-                      <PCard key={p.id} product={p} user={user}
-                        onView={viewProduct}
-                        onEdit={p=>{setEditP(p);setShowForm(true)}}
-                        onDel={p=>setDelP(p)}
-                        onFeat={()=>{}}/>
-                    ))}
-                  </div>}
-            </>
-          )}
+              </div>}
         </div>
       </div>
     );
@@ -3308,13 +3567,13 @@ function AppInner(){
                     ?<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_pending")}</div>
                     :pending.map(f=>(
                       <div key={f._kind+f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
-                        <div>
+                        <div onClick={()=>{if(f._kind==="farmer")setDetailFarmer(f)}} style={{cursor:f._kind==="farmer"?"pointer":"default"}}>
                           <p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{f._kind==="wholesaler"?f.company_name:f.name}{f._kind==="wholesaler"&&<span style={{marginLeft:6,fontWeight:600,fontSize:10,color:G.gray5}}>(Wholesaler)</span>}</p>
                           <p style={{margin:"2px 0 0",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district}, {f.sector}</p>
                         </div>
                         <div style={{display:"flex",gap:6}}>
-                          <Btn size="sm" onClick={async()=>{if(f._kind==="wholesaler"){await WS.setStatus(f.id,"approved")}else{await DB.setFarmerStatus(f.id,"approved")}await reload();notify((f._kind==="wholesaler"?f.company_name:f.name)+" "+t("msg_farmer_verified"))}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>
-                          <Btn size="sm" variant="danger" onClick={async()=>{if(f._kind==="wholesaler"){await WS.setStatus(f.id,"blocked")}else{await DB.setFarmerStatus(f.id,"blocked")}await reload()}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>
+                          <Btn size="sm" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"approved"):await DB.setFarmerStatus(f.id,"approved");if(r.ok){await reload();notify((f._kind==="wholesaler"?f.company_name:f.name)+" "+t("msg_farmer_verified"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>
+                          <Btn size="sm" variant="danger" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"blocked"):await DB.setFarmerStatus(f.id,"blocked");if(r.ok){await reload()}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>
                         </div>
                       </div>
                     ));
@@ -3346,8 +3605,8 @@ function AppInner(){
                   </div>
                   <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
                     <Btn size="sm" variant="secondary" onClick={()=>setPhotoFarmer(f)} icon={<Ic.camera size={13}/>}>{t("admin_photo")}</Btn>
-                    {f.status!=="approved"&&<Btn size="sm" onClick={async()=>{await DB.setFarmerStatus(f.id,"approved");await reload();notify(t("msg_updated"))}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
-                    {f.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{await DB.setFarmerStatus(f.id,"blocked");await reload()}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
+                    {f.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await DB.setFarmerStatus(f.id,"approved");if(r.ok){await reload();notify(t("msg_updated"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
+                    {f.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{const r=await DB.setFarmerStatus(f.id,"blocked");if(r.ok){await reload()}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
                     <Btn size="sm" variant="danger" onClick={async()=>{if(window.confirm(t("admin_confirm_delete_farmer")))await DB.deleteFarmer(f.id);await reload();notify(t("msg_deleted"))}} icon={<Ic.delete size={14}/>}>{t("admin_delete")}</Btn>
                   </div>
                 </div>
@@ -3410,7 +3669,7 @@ function AppInner(){
           </div>
           <div style={{display:"flex",gap:7}}>
             <a href={"tel:"+farmer.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.contact size={13}/> {t("fdm_call")}</a>
-            <a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>
+            {farmer.whatsapp===true&&<a href={"https://wa.me/250"+farmer.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>}
           </div>
         </div>
         <h3 style={{margin:"0 0 12px",fontFamily:FH,fontSize:14,color:G.gray9}}>{t("fdm_listings")} ({fp.length})</h3>
@@ -3625,6 +3884,51 @@ function AppInner(){
           <ImageUpload label="Profile Photo" value={photoFarmer.photoUrl||""} onChange={async v=>{await DB.updateFarmer(photoFarmer.id,{photoUrl:v});await reload();setPhotoFarmer(f=>f?{...f,photoUrl:v}:f);notify("Photo updated!")}}/>
         )}
         <Btn full variant="secondary" onClick={()=>setPhotoFarmer(null)}>Done</Btn>
+      </Modal>
+
+      <Modal open={!!detailFarmer} onClose={()=>setDetailFarmer(null)} title="Farmer Details" maxW={520}>
+        {detailFarmer&&(()=>{
+          const d=farmers.find(x=>x.id===detailFarmer.id)||detailFarmer; // always show the freshest copy
+          const np=v=>(v===undefined||v===null||v==="")?<span style={{color:G.gray4,fontStyle:"italic"}}>Not provided</span>:v;
+          const dp=products.filter(p=>p.fid===d.id);
+          const row=(label,val)=>(
+            <div style={{display:"flex",justifyContent:"space-between",gap:10,padding:"7px 0",borderBottom:`1px solid ${G.gray1}`,fontSize:13}}>
+              <span style={{color:G.gray5,fontWeight:600}}>{label}</span>
+              <span style={{color:G.gray9,textAlign:"right"}}>{np(val)}</span>
+            </div>
+          );
+          return(<>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16}}>
+              <FarmerPhoto farmer={d} size={56} radius={13}/>
+              <div>
+                <p style={{margin:0,fontWeight:800,fontSize:16,color:G.gray9,fontFamily:FH}}>{d.name}</p>
+                <Badge color={d.status==="approved"?"green":d.status==="blocked"?"red":"gold"}>{d.status==="approved"?<><Ic.check size={10}/> Approved</>:d.status==="blocked"?<><Ic.close size={10}/> Blocked</>:<><Ic.pending size={10}/> Pending</>}</Badge>
+              </div>
+            </div>
+            <div style={{background:G.g0,borderRadius:G.r,padding:"4px 12px",marginBottom:14}}>
+              {row("Email",d.email)}
+              {row("Phone",d.phone)}
+              {row("WhatsApp",d.whatsapp===true?"Yes":d.whatsapp===false?"No":undefined)}
+              {row("Farming type",d.fType==="aborozi"?"Aborozi — Livestock":d.fType==="abahinzi"?"Abahinzi — Crops":undefined)}
+              {row("District",d.district)}
+              {row("Sector",d.sector)}
+              {row("Village",d.village)}
+              {row("Bio",d.bio)}
+              {row("Registered",d.createdAt?new Date(d.createdAt).toLocaleDateString():undefined)}
+            </div>
+            <p style={{margin:"0 0 8px",fontSize:12,fontWeight:700,color:G.gray5,textTransform:"uppercase",letterSpacing:.3}}>Products ({dp.length})</p>
+            {dp.length===0
+              ?<p style={{fontSize:12,color:G.gray5,marginBottom:14}}>No products added yet.</p>
+              :<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:14,maxHeight:160,overflowY:"auto"}}>
+                  {dp.map(p=>(<div key={p.id} style={{fontSize:12,color:G.gray7,padding:"6px 10px",background:G.gray1,borderRadius:8}}>{p.name}</div>))}
+                </div>}
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {d.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await DB.setFarmerStatus(d.id,"approved");if(r.ok){await reload();notify(t("msg_updated"));setDetailFarmer(null)}else notify(r.reason||"Could not update status","error")}} icon={<Ic.check size={13}/>}>Verify / Approve</Btn>}
+              {d.status!=="pending"&&<Btn size="sm" variant="secondary" onClick={async()=>{const r=await DB.setFarmerStatus(d.id,"pending");if(r.ok){await reload();notify(t("msg_updated"))}else notify(r.reason||"Could not update status","error")}}>Keep Pending</Btn>}
+              <Btn size="sm" variant="ghost" onClick={()=>setDetailFarmer(null)}>Close</Btn>
+            </div>
+          </>);
+        })()}
       </Modal>
     </div>
   );
