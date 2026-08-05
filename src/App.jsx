@@ -805,6 +805,69 @@ const WS = {
   },
 };
 
+// Business accounts (Stage 3 of the new Business system) — mirrors WS
+// above exactly: `businesses` is a flat relational table (no jsonb blob,
+// see businesses/business_compliance/business_products schema, verified
+// live in Stage 1), so every write here is a genuine INSERT (add) or a
+// genuine column-scoped UPDATE (_patchBusiness) via SB.post/SB.patch.
+// SB.upsert is never used — learned directly from the farmers
+// upsert-vs-INSERT-policy bug earlier this session.
+const Biz = {
+  async getAll() {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("businesses", "select=*&order=created_at.asc");
+        lastSyncOk = true; LS.s("businesses", rows); return rows;
+      } catch { lastSyncOk = false; }
+    }
+    return LS.g("businesses") || [];
+  },
+  async getOne(id) {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("businesses", `id=eq.${id}&select=*`);
+        lastSyncOk = true; return rows?.[0] || null;
+      } catch { lastSyncOk = false; return null; }
+    }
+    return (LS.g("businesses") || []).find(b=>b.id===id) || null;
+  },
+  // Genuine one-time INSERT — plain SB.post, no merge-duplicates header.
+  async add(row) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.post("businesses", row);
+        lastSyncOk = true;
+        const cached = LS.g("businesses") || [];
+        LS.s("businesses", [...cached, row]);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = LS.g("businesses") || [];
+    LS.s("businesses", [...cached, row]);
+    return {ok:true};
+  },
+  // Genuine column-scoped UPDATE — never upsert, never a full-object
+  // replace. `patch` is only the changed fields (e.g. {status:"approved"}),
+  // sent as-is via SB.patch; PostgREST maps this to
+  // UPDATE businesses SET <only those columns> WHERE id=... — no other
+  // column is read or resent. businesses has no jsonb column, so there is
+  // no equivalent of the farmers full-blob-replacement/rating-trigger risk.
+  async _patchBusiness(id, patch) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("businesses", `id=eq.${id}`, patch);
+        lastSyncOk = true;
+        const cached = (LS.g("businesses")||[]).map(b=>b.id===id?{...b,...patch}:b);
+        LS.s("businesses", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("businesses")||[]).map(b=>b.id===id?{...b,...patch}:b);
+    LS.s("businesses", cached);
+    return {ok:true};
+  },
+};
+
 // Dedicated Admin profile lookup — deliberately read-only from the app.
 // Admin accounts live in their own `admins` table (separate from
 // `farmers`/`wholesalers` on purpose) so that farmer/wholesaler
@@ -1013,6 +1076,44 @@ const DB = {
       }
       return {...wProfile, role:"wholesaler"};
     }
+    // Business accounts live in `businesses` — same pattern as
+    // wholesaler above. primary_category is DATA on this row (see
+    // businesses schema, Stage 1), never a separate auth branch — the
+    // category itself does not affect how this branch behaves.
+    if (meta.role === "business") {
+      let bizProfile = await Biz.getOne(uid);
+      if (!bizProfile) {
+        // Same email-confirmation gap as wholesaler/farmer: the row
+        // couldn't be inserted at registration time (no active session
+        // yet), so it's rebuilt here from the metadata that signUp
+        // preserved. meta.primary_category is the actual value the
+        // person submitted at registration — it is never defaulted or
+        // invented here. If it's missing (corrupted/incomplete
+        // metadata), that's a genuine data problem, not something to
+        // paper over by guessing a category — surface it as an error so
+        // the person (or an admin, on investigation) knows the account
+        // needs attention, rather than silently creating a
+        // mis-categorized business.
+        if (!meta.primary_category) {
+          return {err:"Your business registration is incomplete (missing category). Please contact support or try registering again."};
+        }
+        bizProfile = {
+          id: uid, trading_name: meta.trading_name || meta.name || email,
+          legal_name: meta.legal_name || null,
+          primary_category: meta.primary_category,
+          secondary_categories: meta.secondary_categories || [],
+          contact_name: meta.contact_name || meta.name || email,
+          email, phone: meta.phone || "", whatsapp: meta.whatsapp === true,
+          district: meta.district, sector: meta.sector, village: meta.village,
+          description: meta.description || meta.bio || "",
+          image_url: meta.image || "",
+          status: "pending", created_at: new Date().toISOString(),
+        };
+        const r = await Biz.add(bizProfile);
+        if (!r.ok) return {err:r.reason||"Could not save business profile"};
+      }
+      return {...bizProfile, role:"business"};
+    }
     const farmers = await SA.getAll("farmers");
     let profile = farmers.find(f=>f.id===uid);
     if (!profile) {
@@ -1061,6 +1162,10 @@ const DB = {
       const wholesalers = await WS.getAll();
       const w = wholesalers.find(w=>w.id===session.user.id);
       return w ? {...w, role:"wholesaler"} : null;
+    }
+    if (session.user?.user_metadata?.role === "business") {
+      const b = await Biz.getOne(session.user.id);
+      return b ? {...b, role:"business"} : null;
     }
     const farmers = await SA.getAll("farmers");
     return farmers.find(f=>f.id===session.user.id) || null;
@@ -1141,6 +1246,20 @@ const DB = {
       };
       const r = await WS.add(nw);
       if (!r.ok) return {err:r.reason||"Could not save wholesaler profile"};
+      return {ok:true};
+    }
+    if (role==="business") {
+      const {trading_name,legal_name,primary_category,secondary_categories,contact_name,phone,whatsapp,district,sector,village,description,image}=profileFields;
+      if (!primary_category) return {err:"Please select a business category before submitting."};
+      const nb={
+        id:uid, trading_name, legal_name:legal_name||null, primary_category,
+        secondary_categories: secondary_categories||[],
+        contact_name, email, phone, whatsapp: whatsapp===true,
+        district, sector, village, description, image_url:image||"",
+        status:"pending", created_at:new Date().toISOString(),
+      };
+      const r = await Biz.add(nb);
+      if (!r.ok) return {err:r.reason||"Could not save business profile"};
       return {ok:true};
     }
     const nf={...profileFields,id:uid,email,role:"farmer",status:"pending",rating:0,rCount:0,createdAt:new Date().toISOString()};
