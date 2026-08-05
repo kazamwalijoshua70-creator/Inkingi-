@@ -1158,19 +1158,52 @@ const DB = {
   // cache showing every farmer), and returns a real result so the caller
   // can tell whether the status change actually reached the database
   // instead of assuming success.
+  // Shared by setFarmerStatus/updateFarmer: both only ever modify a
+  // farmer row that's already confirmed to exist, so — unlike
+  // saveFarmers (genuine inserts: registration, login-rebuild) — these
+  // must use a real UPDATE, not an upsert. SB.upsert sends
+  // `Prefer: resolution=merge-duplicates`, which PostgREST implements as
+  // INSERT ... ON CONFLICT DO UPDATE; Postgres checks the INSERT policy's
+  // WITH CHECK on every row of that statement regardless of whether it
+  // will end up inserting or updating, so an admin changing another
+  // farmer's row was being rejected by farmers_insert_self_or_admin
+  // (correctly: (auth.uid()=id) OR is_admin() fails for auth.uid()=admin,
+  // id=farmer) even though the UPDATE policies that DO cover this case
+  // were never actually reached. A direct SB.patch is a genuine SQL
+  // UPDATE, checked only against the UPDATE policies — same fix already
+  // proven working in WS.setStatus/WS.updateImage above.
+  //
+  // farmers is the jsonb-wrapped table (id, data, created_at) — unlike
+  // wholesalers' flat columns, every field lives inside `data`, and a
+  // PATCH replaces that column's value outright rather than merging by
+  // key. So the full updated fields object (not just the changed key)
+  // is sent as `data`, preserving every other field on the row.
+  async _patchFarmer(id, updatedFields, cacheRows) {
+    if (HAS_SUPABASE) {
+      try {
+        const {id:_omit, ...data} = updatedFields;
+        await SB.patch("farmers", `id=eq.${id}`, {data});
+        lastSyncOk = true;
+        LS.s("farmers", cacheRows);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    LS.s("farmers", cacheRows);
+    return {ok:true};
+  },
   async setFarmerStatus(id,status){
     const all = await this.farmers();
     const updated = all.map(f=>f.id===id?{...f,status}:f);
     const changed = updated.find(f=>f.id===id);
     if (!changed) return {ok:false, reason:"Farmer not found"};
-    return await this.saveFarmers([changed], updated);
+    return await this._patchFarmer(id, changed, updated);
   },
   async updateFarmer(id,patch){
     const all = await this.farmers();
     const updated = all.map(f=>f.id===id?{...f,...patch}:f);
     const changed = updated.find(f=>f.id===id);
     if (!changed) return {ok:false, reason:"Farmer not found"};
-    return await this.saveFarmers([changed], updated);
+    return await this._patchFarmer(id, changed, updated);
   },
   // Explicit, single-row delete — this is the ONLY place a farmer row is
   // ever actually removed from Supabase. It no longer relies on
