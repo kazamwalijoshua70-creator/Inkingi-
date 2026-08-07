@@ -1274,7 +1274,7 @@ const DB = {
     const {pw,email,...profileFields}=d;
     try { session = await Auth.signUp(email, pw, {...profileFields, role}); }
     catch(e){ return {err:e.message||"Could not create account"}; }
-    const uid = session.user?.id;
+    const uid = session.user?.id || session.id;
     if (!uid) return {err:"Could not create account"};
     if (!session.access_token) {
       // Email confirmation is required by this Supabase project's auth
