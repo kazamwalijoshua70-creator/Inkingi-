@@ -589,7 +589,7 @@ const Auth = (() => {
   return {
     getSession, saveSession, clearSession,
     async signUp(email, password, metadata={}) {
-      const data = await req("/signup", {method:"POST", body:JSON.stringify({email,password,data:metadata})});
+      const data = await req("/signup", {method:"POST", body:JSON.stringify({email,password,data:metadata,email_redirect_to:window.location.origin})});
       if (data.access_token) saveSession(data); // Supabase can return a session immediately if email confirmation is off
       return data;
     },
