@@ -39,6 +39,11 @@ const TRANSLATIONS = {
   nav_home:{en:"Home",rw:"Ahabanza",fr:"Accueil"},
   nav_marketplace:{en:"Marketplace",rw:"Isoko",fr:"Marché"},
   nav_farmers:{en:"Farmers",rw:"Abahinzi",fr:"Agriculteurs"},
+  nav_businesses:{en:"Businesses",rw:"Ubucuruzi",fr:"Entreprises"},
+  businesses_title:{en:"Business Directory",rw:"Urutonde rw'Ubucuruzi",fr:"Répertoire des entreprises"},
+  businesses_all:{en:"All",rw:"Byose",fr:"Tous"},
+  businesses_none:{en:"No businesses found in this category yet.",rw:"Nta bucuruzi buboneka muri iki cyiciro.",fr:"Aucune entreprise trouvée dans cette catégorie."},
+  businesses_services:{en:"Products / Services",rw:"Ibicuruzwa / Serivisi",fr:"Produits / Services"},
   nav_prices:{en:"Prices",rw:"Ibiciro",fr:"Prix"},
   nav_tips:{en:"Tips",rw:"Inama",fr:"Conseils"},
   nav_pests:{en:"Pests",rw:"Udukoko",fr:"Nuisibles"},
@@ -90,6 +95,34 @@ const TRANSLATIONS = {
   reg_choice_question:{en:"How would you like to register?",rw:"Wifuza kwiyandikisha ute?",fr:"Comment souhaitez-vous vous inscrire ?"},
   reg_choice_farmer:{en:"Register as Farmer",rw:"Iyandikishe nk'Umuhinzi",fr:"S'inscrire comme agriculteur"},
   reg_choice_wholesaler:{en:"Register as Wholesaler",rw:"Iyandikishe nk'Umucuruzi",fr:"S'inscrire comme grossiste"},
+  reg_choice_business:{en:"Register as Business",rw:"Iyandikishe nk'Ubucuruzi",fr:"S'inscrire comme entreprise"},
+  reg_business_title:{en:"Register Your Business",rw:"Andikisha Ubucuruzi Bwawe",fr:"Enregistrer votre entreprise"},
+  reg_business_step:{en:"Step",rw:"Intambwe",fr:"Étape"},
+  reg_business_primary_category:{en:"What best describes your agricultural business?",rw:"Ni iki kigaragaza neza ubucuruzi bwawe bw'ubuhinzi?",fr:"Qu'est-ce qui décrit le mieux votre entreprise agricole ?"},
+  reg_business_secondary_category:{en:"Also involved in (optional)",rw:"Ukora n'ibindi (bidahatirwa)",fr:"Également impliqué dans (facultatif)"},
+  reg_business_trading_name:{en:"Trading / business name",rw:"Izina ry'ubucuruzi",fr:"Nom commercial"},
+  reg_business_legal_name:{en:"Legal registered name (optional)",rw:"Izina ryemewe n'amategeko (bidahatirwa)",fr:"Nom légal enregistré (facultatif)"},
+  reg_business_contact_name:{en:"Contact person's full name",rw:"Amazina y'uhagarariye ubucuruzi",fr:"Nom complet de la personne à contacter"},
+  reg_business_phone:{en:"Phone number",rw:"Nimero ya telefoni",fr:"Numéro de téléphone"},
+  reg_business_whatsapp_q:{en:"Do you use WhatsApp on this number?",rw:"Ese ukoresha WhatsApp kuri iyi nimero?",fr:"Utilisez-vous WhatsApp sur ce numéro ?"},
+  reg_business_no_extra:{en:"No additional questions for this category.",rw:"Nta bibazo by'inyongera kuri iyi category.",fr:"Aucune question supplémentaire pour cette catégorie."},
+  reg_business_auth_q:{en:"Is your business registered/authorized/licensed for this activity?",rw:"Ese ubucuruzi bwawe bwanditswe/bwemerewe gukora iyi mirimo?",fr:"Votre entreprise est-elle enregistrée/autorisée pour cette activité ?"},
+  reg_business_auth_yes:{en:"Yes, currently valid",rw:"Yego, birakomeje kuba byemewe",fr:"Oui, actuellement valide"},
+  reg_business_auth_progress:{en:"Application in progress",rw:"Gusaba birimo gukorwa",fr:"Demande en cours"},
+  reg_business_auth_none:{en:"Not required for my business",rw:"Ntibikenewe ku bucuruzi bwanjye",fr:"Non requis pour mon entreprise"},
+  reg_business_auth_unsure:{en:"I'm not sure",rw:"Simbizi neza",fr:"Je ne suis pas sûr"},
+  reg_business_issuing_authority:{en:"Issuing authority",rw:"Urwego rwatanze uruhushya",fr:"Autorité émettrice"},
+  reg_business_license_number:{en:"Registration/license number",rw:"Nimero y'icyemezo",fr:"Numéro d'enregistrement/licence"},
+  reg_business_issue_date:{en:"Issue date",rw:"Itariki yatanzweho",fr:"Date de délivrance"},
+  reg_business_expiry_date:{en:"Expiry date (if applicable)",rw:"Itariki irangirira (niba bikenewe)",fr:"Date d'expiration (le cas échéant)"},
+  reg_business_description:{en:"About your business",rw:"Ibijyanye n'ubucuruzi bwawe",fr:"À propos de votre entreprise"},
+  reg_business_image:{en:"Business logo / photo",rw:"Ifoto/ikirango cy'ubucuruzi",fr:"Logo/photo de l'entreprise"},
+  reg_business_category_info:{en:"Category details",rw:"Amakuru arebana na category",fr:"Détails de la catégorie"},
+  reg_error_required:{en:"Please complete all required fields.",rw:"Uzuza ibisabwa byose.",fr:"Veuillez remplir tous les champs requis."},
+  common_yes:{en:"Yes",rw:"Yego",fr:"Oui"},
+  common_no:{en:"No",rw:"Oya",fr:"Non"},
+  common_back:{en:"Back",rw:"Subira Inyuma",fr:"Retour"},
+  common_next:{en:"Next",rw:"Komeza",fr:"Suivant"},
   reg_title_farmer:{en:"Join as Farmer",rw:"Injira nk'Umuhinzi",fr:"Rejoindre comme agriculteur"},
   reg_title_wholesaler:{en:"Join as Wholesaler",rw:"Injira nk'Umucuruzi",fr:"Rejoindre comme grossiste"},
   reg_full_name:{en:"Full Name",rw:"Amazina Yombi",fr:"Nom complet"},
@@ -357,6 +390,19 @@ const TRANSLATIONS = {
   admin_tab_slideshow:{en:"Slideshow",rw:"Amashusho Ahindagurika",fr:"Diaporama"},
   admin_tab_ads:{en:"Ads",rw:"Ubwamamaza",fr:"Publicités"},
   admin_tab_site:{en:"Site Settings",rw:"Igenamiterere ry'Urubuga",fr:"Paramètres du site"},
+  admin_tab_activity:{en:"Activity",rw:"Ibikorwa",fr:"Activité"},
+  admin_tab_businesses:{en:"Businesses",rw:"Ubucuruzi",fr:"Entreprises"},
+  admin_all_businesses:{en:"All Businesses",rw:"Ubucuruzi Bwose",fr:"Toutes les entreprises"},
+  admin_pending_businesses:{en:"Pending Businesses",rw:"Ubucuruzi Butegereje",fr:"Entreprises en attente"},
+  admin_total_businesses:{en:"Total Businesses",rw:"Ubucuruzi Bwose",fr:"Total entreprises"},
+  admin_no_businesses_match:{en:"No businesses match this filter.",rw:"Nta bucuruzi buhuye n'iri jambo.",fr:"Aucune entreprise ne correspond à ce filtre."},
+  biz_status_pending_title:{en:"Email verified",rw:"Imeli yemejwe",fr:"E-mail vérifié"},
+  biz_status_pending_msg:{en:"Your email has been verified. Your account is currently waiting for Admin approval.",rw:"Imeli yawe yemejwe. Konti yawe itegereje kwemezwa n'Ubuyobozi.",fr:"Votre e-mail a été vérifié. Votre compte attend actuellement l'approbation de l'administrateur."},
+  biz_status_approved_msg:{en:"Your account has been approved and is now active.",rw:"Konti yawe yemejwe kandi irakora.",fr:"Votre compte a été approuvé et est maintenant actif."},
+  biz_status_blocked_msg:{en:"Your account is currently blocked. Please contact support/Admin for assistance.",rw:"Konti yawe yahagaritswe. Vugana n'Ubuyobozi kugira ngo ubone ubufasha.",fr:"Votre compte est actuellement bloqué. Veuillez contacter le support/l'administrateur pour obtenir de l'aide."},
+  biz_profile_title:{en:"Business Profile",rw:"Umwirondoro w'Ubucuruzi",fr:"Profil de l'entreprise"},
+  biz_coming_soon:{en:"Coming soon",rw:"Biraza vuba",fr:"Bientôt disponible"},
+  biz_products_title:{en:"Products / Services",rw:"Ibicuruzwa / Serivisi",fr:"Produits / Services"},
   admin_total_farmers:{en:"Total Farmers",rw:"Abahinzi Bose",fr:"Total agriculteurs"},
   admin_listings:{en:"Listings",rw:"Ibyanditswe",fr:"Annonces"},
   admin_pending:{en:"Pending",rw:"Bitegereje",fr:"En attente"},
@@ -561,7 +607,7 @@ const Auth = (() => {
   return {
     getSession, saveSession, clearSession,
     async signUp(email, password, metadata={}) {
-      const data = await req("/signup", {method:"POST", body:JSON.stringify({email,password,data:metadata})});
+      const data = await req("/signup", {method:"POST", body:JSON.stringify({email,password,data:metadata,email_redirect_to:window.location.origin})});
       if (data.access_token) saveSession(data); // Supabase can return a session immediately if email confirmation is off
       return data;
     },
@@ -813,11 +859,32 @@ const WS = {
 // SB.upsert is never used — learned directly from the farmers
 // upsert-vs-INSERT-policy bug earlier this session.
 const Biz = {
+  // A previously-live bug, found and fixed this pass: business_compliance
+  // (requires_auth/auth_status/issuing_authority/license_number/
+  // issue_date/expiry_date) lives in its own table — one row per
+  // business, PK = business_id, FK business_id -> businesses(id) — NOT
+  // columns on `businesses` itself. Every prior read here only selected
+  // from `businesses`, so those fields were always undefined wherever
+  // they were displayed (Business dashboard, Admin Detail modal),
+  // despite registration writing them correctly via register_business.
+  // Fixed via a PostgREST embedded (to-one) select, since business_id is
+  // both the FK and the compliance table's own primary key — the
+  // standard shape PostgREST returns as a single nested object, not an
+  // array. `_flattenCompliance` normalizes either shape defensively,
+  // since this couldn't be tested against the live REST endpoint from
+  // this environment (SQL-level connector access only, no network).
+  _flattenCompliance(row) {
+    if (!row) return row;
+    const c = Array.isArray(row.business_compliance) ? row.business_compliance[0] : row.business_compliance;
+    const { business_compliance, ...rest } = row;
+    return { ...rest, ...(c || {}) };
+  },
   async getAll() {
     if (HAS_SUPABASE) {
       try {
-        const rows = await SB.get("businesses", "select=*&order=created_at.asc");
-        lastSyncOk = true; LS.s("businesses", rows); return rows;
+        const rows = await SB.get("businesses", "select=*,business_compliance(requires_auth,auth_status,issuing_authority,license_number,issue_date,expiry_date)&order=created_at.asc");
+        const flat = rows.map(r=>Biz._flattenCompliance(r));
+        lastSyncOk = true; LS.s("businesses", flat); return flat;
       } catch { lastSyncOk = false; }
     }
     return LS.g("businesses") || [];
@@ -825,8 +892,8 @@ const Biz = {
   async getOne(id) {
     if (HAS_SUPABASE) {
       try {
-        const rows = await SB.get("businesses", `id=eq.${id}&select=*`);
-        lastSyncOk = true; return rows?.[0] || null;
+        const rows = await SB.get("businesses", `id=eq.${id}&select=*,business_compliance(requires_auth,auth_status,issuing_authority,license_number,issue_date,expiry_date)`);
+        lastSyncOk = true; return rows?.[0] ? Biz._flattenCompliance(rows[0]) : null;
       } catch { lastSyncOk = false; return null; }
     }
     return (LS.g("businesses") || []).find(b=>b.id===id) || null;
@@ -865,6 +932,92 @@ const Biz = {
     const cached = (LS.g("businesses")||[]).map(b=>b.id===id?{...b,...patch}:b);
     LS.s("businesses", cached);
     return {ok:true};
+  },
+  // Atomic registration — calls the register_business RPC (Stage 4),
+  // which inserts the businesses row and its business_compliance row in
+  // a single transaction: both succeed or neither is created. Returns
+  // the created businesses row on success. Not a replacement for add()
+  // (still used elsewhere), only used by the registration paths below.
+  async registerAtomic(payload) {
+    if (HAS_SUPABASE) {
+      try {
+        const row = await SB.post("rpc/register_business", payload);
+        lastSyncOk = true;
+        const created = Array.isArray(row) ? row[0] : row;
+        const cached = LS.g("businesses") || [];
+        LS.s("businesses", [...cached, created]);
+        return {ok:true, business:created};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    return {ok:false, reason:"Registration is not configured yet — see SETUP.md"};
+  },
+  // Admin-only, transactional deletion via the delete_business RPC
+  // (SECURITY DEFINER, checks is_admin() internally, EXECUTE granted to
+  // `authenticated` only — verified live via the Supabase connector
+  // immediately after creating it). business_compliance and
+  // business_products both cascade automatically; the associated
+  // auth.users account is deliberately left untouched — see the
+  // migration comment for why, and the completion report for what
+  // remains a manual/future step there.
+  async remove(businessId) {
+    if (HAS_SUPABASE) {
+      try {
+        const ok = await SB.post("rpc/delete_business", { p_business_id: businessId });
+        lastSyncOk = true;
+        const cached = LS.g("businesses") || [];
+        LS.s("businesses", cached.filter(b=>b.id!==businessId));
+        return { ok: ok===true, reason: ok===true?undefined:"Business not found or already deleted" };
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    return {ok:false, reason:"Not configured"};
+  },
+};
+
+// business_products — real schema/RLS confirmed live via the Supabase
+// connector (not inferred): columns id/business_id/type/name/category/
+// description/price/unit/image_url/status/created_at, FK business_id ->
+// businesses(id) ON DELETE CASCADE. RLS: SELECT is public (true) — this
+// is the marketplace-facing side, anyone can browse a business's
+// products/services; INSERT requires auth.uid()=business_id; UPDATE/
+// DELETE require auth.uid()=business_id OR is_admin(). So ownership is
+// enforced by the database itself, not by this object — a business can
+// never touch another business's rows no matter what this code sends.
+const BizProd = {
+  async listFor(businessId) {
+    if (HAS_SUPABASE) {
+      try {
+        const rows = await SB.get("business_products", `business_id=eq.${businessId}&select=*&order=created_at.desc`);
+        lastSyncOk = true; return rows;
+      } catch(e) { lastSyncOk = false; return []; }
+    }
+    return [];
+  },
+  async add(businessId, fields) {
+    if (HAS_SUPABASE) {
+      try {
+        const row = await SB.post("business_products", {...fields, business_id:businessId});
+        lastSyncOk = true; return {ok:true, item:Array.isArray(row)?row[0]:row};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    return {ok:false, reason:"Not configured"};
+  },
+  async update(id, patch) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("business_products", `id=eq.${id}`, patch);
+        lastSyncOk = true; return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    return {ok:false, reason:"Not configured"};
+  },
+  async remove(id) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.del("business_products", `id=eq.${id}`);
+        lastSyncOk = true; return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    return {ok:false, reason:"Not configured"};
   },
 };
 
@@ -916,6 +1069,21 @@ const uploadImage = async (file) => {
     reader.onerror = () => rej(new Error("File read failed"));
     reader.readAsDataURL(file);
   });
+};
+
+// Section P (image performance): builds a resized/optimized Cloudinary
+// delivery URL from an already-uploaded secure_url, purely by inserting
+// a transformation segment after "/upload/" — this touches nothing about
+// how uploadImage() stores files, and is a no-op passthrough for any
+// non-Cloudinary URL (local data: URLs, or when HAS_CLOUDINARY is false),
+// so existing image records/behavior are never altered. Used only for
+// the new Admin Businesses list and Business dashboard/detail thumbnails
+// added in this pass — not applied anywhere else, to keep this change
+// scoped and avoid touching farmer/product image rendering.
+const cldThumb = (url, w = 100) => {
+  if (!url || typeof url !== "string") return url;
+  if (!url.includes("res.cloudinary.com") || !url.includes("/upload/")) return url;
+  return url.replace("/upload/", `/upload/w_${w},h_${w},c_fill,q_auto,f_auto/`);
 };
 
 /* ── CONSTANTS ── */
@@ -1097,20 +1265,25 @@ const DB = {
         if (!meta.primary_category) {
           return {err:"Your business registration is incomplete (missing category). Please contact support or try registering again."};
         }
-        bizProfile = {
-          id: uid, trading_name: meta.trading_name || meta.name || email,
-          legal_name: meta.legal_name || null,
-          primary_category: meta.primary_category,
-          secondary_categories: meta.secondary_categories || [],
-          contact_name: meta.contact_name || meta.name || email,
-          email, phone: meta.phone || "", whatsapp: meta.whatsapp === true,
-          district: meta.district, sector: meta.sector, village: meta.village,
-          description: meta.description || meta.bio || "",
-          image_url: meta.image || "",
-          status: "pending", created_at: new Date().toISOString(),
-        };
-        const r = await Biz.add(bizProfile);
+        const r = await Biz.registerAtomic({
+          p_trading_name: meta.trading_name || meta.name || email,
+          p_legal_name: meta.legal_name || null,
+          p_primary_category: meta.primary_category,
+          p_secondary_categories: meta.secondary_categories || [],
+          p_contact_name: meta.contact_name || meta.name || email,
+          p_phone: meta.phone || "", p_whatsapp: meta.whatsapp === true,
+          p_district: meta.district, p_sector: meta.sector, p_village: meta.village,
+          p_description: meta.description || meta.bio || "",
+          p_image_url: meta.image || "",
+          p_requires_auth: meta.requires_auth === true, p_auth_status: meta.auth_status || null,
+          p_issuing_authority: meta.issuing_authority || null, p_license_number: meta.license_number || null,
+          p_issue_date: meta.issue_date || null, p_expiry_date: meta.expiry_date || null,
+        });
         if (!r.ok) return {err:r.reason||"Could not save business profile"};
+        // The RPC derives email/status/created_at server-side, so its
+        // returned row (not a locally-constructed object) is what's used
+        // from here on — it's the actual source of truth for this row.
+        bizProfile = r.business;
       }
       return {...bizProfile, role:"business"};
     }
@@ -1223,7 +1396,7 @@ const DB = {
     const {pw,email,...profileFields}=d;
     try { session = await Auth.signUp(email, pw, {...profileFields, role}); }
     catch(e){ return {err:e.message||"Could not create account"}; }
-    const uid = session.user?.id;
+    const uid = session.user?.id || session.id;
     if (!uid) return {err:"Could not create account"};
     if (!session.access_token) {
       // Email confirmation is required by this Supabase project's auth
@@ -1249,16 +1422,18 @@ const DB = {
       return {ok:true};
     }
     if (role==="business") {
-      const {trading_name,legal_name,primary_category,secondary_categories,contact_name,phone,whatsapp,district,sector,village,description,image}=profileFields;
+      const {trading_name,legal_name,primary_category,secondary_categories,contact_name,phone,whatsapp,district,sector,village,description,image,requires_auth,auth_status,issuing_authority,license_number,issue_date,expiry_date}=profileFields;
       if (!primary_category) return {err:"Please select a business category before submitting."};
-      const nb={
-        id:uid, trading_name, legal_name:legal_name||null, primary_category,
-        secondary_categories: secondary_categories||[],
-        contact_name, email, phone, whatsapp: whatsapp===true,
-        district, sector, village, description, image_url:image||"",
-        status:"pending", created_at:new Date().toISOString(),
-      };
-      const r = await Biz.add(nb);
+      const r = await Biz.registerAtomic({
+        p_trading_name: trading_name, p_legal_name: legal_name||null,
+        p_primary_category: primary_category, p_secondary_categories: secondary_categories||[],
+        p_contact_name: contact_name, p_phone: phone, p_whatsapp: whatsapp===true,
+        p_district: district, p_sector: sector, p_village: village,
+        p_description: description, p_image_url: image||"",
+        p_requires_auth: requires_auth===true, p_auth_status: auth_status||null,
+        p_issuing_authority: issuing_authority||null, p_license_number: license_number||null,
+        p_issue_date: issue_date||null, p_expiry_date: expiry_date||null,
+      });
       if (!r.ok) return {err:r.reason||"Could not save business profile"};
       return {ok:true};
     }
@@ -1760,7 +1935,12 @@ function RoleChoiceModal({open,onClose,onChoose,site}){
       </div>
       <p style={{fontSize:13,color:G.gray6,textAlign:"center",margin:"0 0 16px",fontFamily:FB}}>{t("reg_choice_question")}</p>
       <Btn full variant="gold" onClick={()=>onChoose("farmer")} icon={<Ic.farmer size={16}/>} style={{fontSize:15,padding:"13px 20px",marginBottom:10}}>{t("reg_choice_farmer")}</Btn>
-      <Btn full variant="secondary" onClick={()=>onChoose("wholesaler")} icon={<Ic.marketplace size={16}/>} style={{fontSize:15,padding:"13px 20px"}}>{t("reg_choice_wholesaler")}</Btn>
+      <Btn full variant="secondary" onClick={()=>onChoose("business")} icon={<Ic.marketplace size={16}/>} style={{fontSize:15,padding:"13px 20px"}}>{t("reg_choice_business")}</Btn>
+      {/* Old standalone Wholesaler registration button removed per spec —
+          Wholesaler remains available as a category inside Business
+          registration (BusinessRegModal / BUSINESS_CATEGORY_CONFIG).
+          Legacy wholesaler accounts and their login/dashboard path
+          (WS, renderWholesalerPanel, wpanel) are untouched. */}
     </Modal>
   );
 }
@@ -1817,6 +1997,232 @@ function RegModal({open,onClose,onRegister,site,role="farmer"}){
       {errs.district&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.district}</p>}
       {errs.sector&&<p style={{fontSize:12,color:G.red,marginTop:-8,marginBottom:11}}>{errs.sector}</p>}
       <Btn full variant="gold" onClick={submit} disabled={busy||!pwPasses(f.pw)||f.pw2!==f.pw} style={{fontSize:15,padding:"13px 20px",boxShadow:"0 4px 14px rgba(245,158,11,.35)"}}>{busy?t("reg_submitting"):t("reg_submit")}</Btn>
+    </Modal>
+  );
+}
+
+/* ── BUSINESS CATEGORY CONFIG ──
+   Data-driven per-category question set (Stage 4). Each category lists
+   its own category-specific fields, rendered generically by
+   BusinessRegModal — adding a future category means adding one entry
+   here, not new branches in the modal itself. category_data collected
+   from these fields is shown in Review but intentionally NOT persisted
+   anywhere (no approved storage mechanism yet — Stage 4 scope). */
+const BUSINESS_CATEGORY_CONFIG = {
+  "Wholesaler": {fields:[
+    {key:"main_products", label:"Main products traded", type:"text"},
+  ]},
+  "Agro-dealer / Input Supplier": {fields:[
+    {key:"input_types", label:"Inputs supplied", type:"checkboxes",
+      options:["Seeds","Fertilizer","Crop-protection products","Animal feed","Other"]},
+  ]},
+  "Livestock Trader": {fields:[
+    {key:"animal_types", label:"Animals traded", type:"checkboxes",
+      options:["Cattle","Goats","Sheep","Pigs","Poultry","Other"]},
+    {key:"trading_area", label:"Main trading area", type:"text"},
+  ]},
+  "Veterinary / Animal Health Service": {fields:[
+    {key:"services_offered", label:"Services offered", type:"text"},
+    {key:"service_area", label:"Service area", type:"text"},
+  ]},
+  "Agricultural / Food Processor": {fields:[
+    {key:"products_processed", label:"Products processed", type:"text"},
+    {key:"processing_type", label:"Processing type", type:"text"},
+  ]},
+  "Cooperative": {fields:[
+    {key:"cooperative_type", label:"Cooperative type/activity", type:"text"},
+  ]},
+  "Agricultural Transport / Logistics": {fields:[
+    {key:"transport_services", label:"Services offered", type:"text"},
+    {key:"coverage_area", label:"Service area", type:"text"},
+  ]},
+  "Storage / Warehouse": {fields:[
+    {key:"storage_type", label:"Storage type", type:"text"},
+    {key:"capacity", label:"Approximate capacity", type:"text"},
+  ]},
+};
+const BUSINESS_CATEGORIES = Object.keys(BUSINESS_CATEGORY_CONFIG);
+
+// Phase 7: category-aware terminology for the shared business_products
+// table — deliberately NOT a new schema per category, just presentation.
+// A Livestock Trader adding a "product" and a Veterinary service adding
+// a "product" both write to the same business_products row shape
+// (type/name/category/description/price/unit) — only the label/prompt
+// changes, so this stays a config lookup rather than eight branches.
+const CATEGORY_PRODUCT_TERMS = {
+  "Wholesaler": {addLabel:"Add product", namePlaceholder:"Product name"},
+  "Agro-dealer / Input Supplier": {addLabel:"Add input", namePlaceholder:"Input name (e.g. DAP fertilizer)"},
+  "Livestock Trader": {addLabel:"Add animal listing", namePlaceholder:"e.g. Friesian dairy cow"},
+  "Veterinary / Animal Health Service": {addLabel:"Add service", namePlaceholder:"Service name (e.g. Deworming)"},
+  "Agricultural / Food Processor": {addLabel:"Add product", namePlaceholder:"Processed product name"},
+  "Cooperative": {addLabel:"Add product/service", namePlaceholder:"Name"},
+  "Agricultural Transport / Logistics": {addLabel:"Add service", namePlaceholder:"Service name (e.g. Maize transport, Kigali–Musanze)"},
+  "Storage / Warehouse": {addLabel:"Add storage listing", namePlaceholder:"e.g. Dry storage, 50 tons"},
+};
+
+/* ── BUSINESS REGISTRATION MODAL (Stage 4) ──
+   Separate component from RegModal — farmer/wholesaler registration is
+   completely untouched. 8 steps per the approved design: category,
+   identity, contact, location, category-specific, compliance, image,
+   review. On submit, calls onRegister(payload, "business") — the same
+   doRegister handler farmer/wholesaler already use — which routes to
+   DB.register's business branch and the atomic register_business RPC. */
+function BusinessRegModal({open,onClose,onRegister,site}){
+  const{t}=useLang();
+  const blank={
+    primary_category:"", secondary_categories:[],
+    trading_name:"", legal_name:"", contact_name:"",
+    email:"", pw:"", pw2:"",
+    phone:"", whatsapp:null,
+    district:"", sector:"", village:"",
+    category_data:{},
+    requires_auth:null, auth_status:"", issuing_authority:"", license_number:"", issue_date:"", expiry_date:"",
+    description:"", image:"",
+  };
+  const[step,setStep]=useState(1);
+  const[f,setF]=useState(blank);
+  const[busy,setBusy]=useState(false);
+  const[err,setErr]=useState("");
+  useEffect(()=>{if(open){setStep(1);setF(blank);setErr("")}},[open]);
+  const set=(k,v)=>setF(x=>({...x,[k]:v}));
+  const setCat=(k,v)=>setF(x=>({...x,category_data:{...x.category_data,[k]:v}}));
+  const toggleSecondary=cat=>setF(x=>({...x,secondary_categories:x.secondary_categories.includes(cat)?x.secondary_categories.filter(c=>c!==cat):[...x.secondary_categories,cat]}));
+  const toggleCatCheckbox=(key,opt)=>setF(x=>{
+    const cur=x.category_data[key]||[];
+    const next=cur.includes(opt)?cur.filter(o=>o!==opt):[...cur,opt];
+    return {...x,category_data:{...x.category_data,[key]:next}};
+  });
+
+  const stepValid=()=>{
+    if(step===1) return !!f.primary_category;
+    if(step===2) return !!f.trading_name && !!f.contact_name && !!f.email && pwPasses(f.pw) && f.pw2===f.pw;
+    if(step===3) return !!f.phone && f.whatsapp!==null;
+    if(step===4) return !!f.district && !!f.sector;
+    if(step===6) return f.requires_auth!==null;
+    return true;
+  };
+  const next=()=>{if(stepValid())setStep(s=>Math.min(s+1,8));};
+  const back=()=>setStep(s=>Math.max(s-1,1));
+
+  const submit=async()=>{
+    setErr("");
+    if(!stepValid()){setErr(t("reg_error_required")||"Please complete all required fields.");return;}
+    setBusy(true);
+    const payload={
+      trading_name:f.trading_name, legal_name:f.legal_name||null,
+      primary_category:f.primary_category, secondary_categories:f.secondary_categories,
+      contact_name:f.contact_name, email:f.email, pw:f.pw,
+      phone:f.phone, whatsapp:f.whatsapp===true,
+      district:f.district, sector:f.sector, village:f.village,
+      description:f.description, image:f.image,
+      requires_auth:f.requires_auth===true,
+      auth_status:f.requires_auth===true?(f.auth_status||null):null,
+      issuing_authority:f.requires_auth===true?(f.issuing_authority||null):null,
+      license_number:f.requires_auth===true?(f.license_number||null):null,
+      issue_date:f.requires_auth===true?(f.issue_date||null):null,
+      expiry_date:f.requires_auth===true?(f.expiry_date||null):null,
+    };
+    const r=await onRegister(payload,"business");
+    setBusy(false);
+    if(r?.err) setErr(r.err);
+  };
+
+  const catFields=BUSINESS_CATEGORY_CONFIG[f.primary_category]?.fields||[];
+
+  return(
+    <Modal open={open} onClose={onClose} title={t("reg_business_title")||"Register Your Business"} maxW={560}>
+      <div style={{display:"flex",justifyContent:"center",marginBottom:14}}>
+        <div style={{width:56,height:56,borderRadius:14,overflow:"hidden",boxShadow:G.sh}}><Logo size={56} site={site}/></div>
+      </div>
+      <p style={{textAlign:"center",fontSize:11,color:G.gray5,fontWeight:700,marginBottom:16}}>{t("reg_business_step")||"Step"} {step} / 8</p>
+      {err&&<p style={{background:G.redL,color:G.red,padding:"8px 12px",borderRadius:G.r,fontSize:12,marginBottom:12}}>{err}</p>}
+
+      {step===1&&<>
+        <label style={{display:"block",fontSize:13,fontWeight:600,color:G.gray7,marginBottom:8}}>{t("reg_business_primary_category")||"What best describes your agricultural business?"}</label>
+        {BUSINESS_CATEGORIES.map(cat=>(
+          <Btn key={cat} full variant={f.primary_category===cat?"primary":"secondary"} onClick={()=>set("primary_category",cat)} style={{marginBottom:7,fontSize:14,textAlign:"left",justifyContent:"flex-start"}}>{cat}</Btn>
+        ))}
+        <label style={{display:"block",fontSize:12,fontWeight:600,color:G.gray5,margin:"14px 0 8px"}}>{t("reg_business_secondary_category")||"Also involved in (optional)"}</label>
+        {BUSINESS_CATEGORIES.filter(c=>c!==f.primary_category).map(cat=>(
+          <label key={cat} style={{display:"flex",alignItems:"center",gap:8,fontSize:13,marginBottom:6,cursor:"pointer"}}>
+            <input type="checkbox" checked={f.secondary_categories.includes(cat)} onChange={()=>toggleSecondary(cat)}/>{cat}
+          </label>
+        ))}
+      </>}
+
+      {step===2&&<>
+        <Inp label={t("reg_business_trading_name")||"Trading / business name"} value={f.trading_name} onChange={e=>set("trading_name",e.target.value)}/>
+        <Inp label={t("reg_business_legal_name")||"Legal registered name (optional)"} value={f.legal_name} onChange={e=>set("legal_name",e.target.value)}/>
+        <Inp label={t("reg_business_contact_name")||"Contact person's full name"} value={f.contact_name} onChange={e=>set("contact_name",e.target.value)}/>
+        <Inp label={t("reg_email")||"Email"} type="email" value={f.email} onChange={e=>set("email",e.target.value)}/>
+        <Inp label={t("reg_password")||"Password"} type="password" value={f.pw} onChange={e=>set("pw",e.target.value)}/>
+        <Inp label={t("reg_password2")||"Confirm password"} type="password" value={f.pw2} onChange={e=>set("pw2",e.target.value)}/>
+      </>}
+
+      {step===3&&<>
+        <Inp label={t("reg_business_phone")||"Phone number"} type="tel" value={f.phone} onChange={e=>set("phone",e.target.value)}/>
+        <label style={{display:"block",fontSize:13,fontWeight:600,color:G.gray7,margin:"4px 0 8px"}}>{t("reg_business_whatsapp_q")||"Do you use WhatsApp on this number?"}</label>
+        <div style={{display:"flex",gap:8,marginBottom:8}}>
+          <Btn variant={f.whatsapp===true?"primary":"secondary"} onClick={()=>set("whatsapp",true)} icon={<Ic.whatsapp size={13}/>}>{t("common_yes")||"Yes"}</Btn>
+          <Btn variant={f.whatsapp===false?"primary":"secondary"} onClick={()=>set("whatsapp",false)} icon={<Ic.close size={13}/>}>{t("common_no")||"No"}</Btn>
+        </div>
+      </>}
+
+      {step===4&&<LocPicker district={f.district} sector={f.sector} village={f.village} onChange={(d,s,v)=>setF(x=>({...x,district:d,sector:s,village:v}))}/>}
+
+      {step===5&&<>
+        {catFields.length===0&&<p style={{fontSize:13,color:G.gray5}}>{t("reg_business_no_extra")||"No additional questions for this category."}</p>}
+        {catFields.map(fld=>fld.type==="checkboxes"?(
+          <div key={fld.key} style={{marginBottom:14}}>
+            <label style={{display:"block",fontSize:13,fontWeight:600,color:G.gray7,marginBottom:6}}>{fld.label}</label>
+            {fld.options.map(opt=>(
+              <label key={opt} style={{display:"flex",alignItems:"center",gap:8,fontSize:13,marginBottom:5,cursor:"pointer"}}>
+                <input type="checkbox" checked={(f.category_data[fld.key]||[]).includes(opt)} onChange={()=>toggleCatCheckbox(fld.key,opt)}/>{opt}
+              </label>
+            ))}
+          </div>
+        ):(
+          <Inp key={fld.key} label={fld.label} value={f.category_data[fld.key]||""} onChange={e=>setCat(fld.key,e.target.value)}/>
+        ))}
+      </>}
+
+      {step===6&&<>
+        <label style={{display:"block",fontSize:13,fontWeight:600,color:G.gray7,marginBottom:8}}>{t("reg_business_auth_q")||"Is your business registered/authorized/licensed for this activity?"}</label>
+        <div style={{display:"flex",flexDirection:"column",gap:7,marginBottom:12}}>
+          {[["has_it",t("reg_business_auth_yes")||"Yes, currently valid"],["in_progress",t("reg_business_auth_progress")||"Application in progress"],["not_required",t("reg_business_auth_none")||"Not required for my business"],["unsure",t("reg_business_auth_unsure")||"I'm not sure"]].map(([val,label])=>(
+            <label key={val} style={{display:"flex",alignItems:"center",gap:8,fontSize:13,cursor:"pointer"}}>
+              <input type="radio" name="auth_status" checked={f.auth_status===val} onChange={()=>{set("auth_status",val);set("requires_auth",val!=="not_required")}}/>{label}
+            </label>
+          ))}
+        </div>
+        {(f.auth_status==="has_it"||f.auth_status==="in_progress")&&<>
+          <Inp label={t("reg_business_issuing_authority")||"Issuing authority"} value={f.issuing_authority} onChange={e=>set("issuing_authority",e.target.value)}/>
+          <Inp label={t("reg_business_license_number")||"Registration/license number"} value={f.license_number} onChange={e=>set("license_number",e.target.value)}/>
+          <Inp label={t("reg_business_issue_date")||"Issue date"} type="date" value={f.issue_date} onChange={e=>set("issue_date",e.target.value)}/>
+          <Inp label={t("reg_business_expiry_date")||"Expiry date (if applicable)"} type="date" value={f.expiry_date} onChange={e=>set("expiry_date",e.target.value)}/>
+        </>}
+      </>}
+
+      {step===7&&<>
+        <Txt label={t("reg_business_description")||"About your business"} value={f.description} onChange={e=>set("description",e.target.value)} style={{minHeight:80}}/>
+        <ImageUpload label={t("reg_business_image")||"Business logo / photo"} value={f.image} onChange={v=>set("image",v)}/>
+      </>}
+
+      {step===8&&<div style={{fontSize:13,color:G.gray7,lineHeight:1.7}}>
+        <p><b>{t("reg_business_trading_name")||"Trading name"}:</b> {f.trading_name}</p>
+        <p><b>{t("reg_business_primary_category")||"Category"}:</b> {f.primary_category}{f.secondary_categories.length>0&&` (+ ${f.secondary_categories.join(", ")})`}</p>
+        <p><b>{t("reg_business_contact_name")||"Contact"}:</b> {f.contact_name}</p>
+        <p><b>{t("reg_business_phone")||"Phone"}:</b> {f.phone} {f.whatsapp?"(WhatsApp)":""}</p>
+        <p><b>{t("nav_location")||"Location"}:</b> {f.village?f.village+", ":""}{f.sector}, {f.district}</p>
+        {catFields.length>0&&<p><b>{t("reg_business_category_info")||"Category details"}:</b> {catFields.map(fl=>`${fl.label}: ${Array.isArray(f.category_data[fl.key])?(f.category_data[fl.key]||[]).join(", "):(f.category_data[fl.key]||"—")}`).join(" · ")}</p>}
+        <p><b>{t("reg_business_auth_q")||"Authorization"}:</b> {f.auth_status||"—"}</p>
+      </div>}
+
+      <div style={{display:"flex",gap:8,marginTop:18}}>
+        {step>1&&<Btn variant="secondary" onClick={back}>{t("common_back")||"Back"}</Btn>}
+        {step<8&&<Btn onClick={next} disabled={!stepValid()} style={{flex:1}}>{t("common_next")||"Next"}</Btn>}
+        {step===8&&<Btn onClick={submit} disabled={busy} style={{flex:1}}>{busy?(t("reg_submitting")||"Submitting..."):(t("reg_submit")||"Submit")}</Btn>}
+      </div>
     </Modal>
   );
 }
@@ -3086,6 +3492,7 @@ function AppInner(){
   const[products,setProducts]=useState([]);
   const[farmers,setFarmers]=useState([]);
   const[wholesalers,setWholesalers]=useState([]);
+  const[businesses,setBusinesses]=useState([]);
   const[ads,setAds]=useState([]);
   const[site,setSite]=useState(DEFAULT_SITE);
   const[toast,setToast]=useState(null);
@@ -3114,16 +3521,68 @@ function AppInner(){
     return ()=>clearInterval(t);
   },[]);
   const[farmerFilter,setFarmerFilter]=useState(""); // "" | "pending" — set when a dashboard stat card is clicked
+  const[bizFilter,setBizFilter]=useState(""); // "" | "pending" — same pattern as farmerFilter, for the Admin Businesses tab
+  const[bizSearch,setBizSearch]=useState(""); // free-text search — trading/legal name, phone, email (client-side over the already-fetched businesses array, see Admin Businesses tab)
+  const[bizCatFilter,setBizCatFilter]=useState(""); // "" | one of BUSINESS_CATEGORY_CONFIG's keys
+  const[bizSort,setBizSort]=useState("newest"); // "newest" | "oldest"
+  const[detailBusiness,setDetailBusiness]=useState(null); // business row shown in the Admin detail modal
+  const[editBusiness,setEditBusiness]=useState(null); // business row currently open in the Admin edit modal
+  const[myProducts,setMyProducts]=useState([]); // the logged-in business's own business_products rows (real schema/RLS verified live via Supabase connector)
+  const[prodForm,setProdForm]=useState(null); // null=closed; {} =adding new; {...row}=editing existing
+  const[activityLog,setActivityLog]=useState([]); // Admin Activity tab — from AuditLog.getAll(); kv_store's audit_log key is now admin-only readable (verified live), so this fetch will simply return [] for a non-admin caller rather than error
+  const[activitySearch,setActivitySearch]=useState("");
+  const[activitySort,setActivitySort]=useState("newest");
+  const[detailBusinessProducts,setDetailBusinessProducts]=useState([]); // this business's products/services, shown+moderatable in the Admin Business Detail modal
   const[photoFarmer,setPhotoFarmer]=useState(null); // farmer currently being edited for profile photo (admin)
+  const[bizPublicCat,setBizPublicCat]=useState(""); // "" | one of BUSINESS_CATEGORIES — public Businesses directory tab filter
+  const[selBiz,setSelBiz]=useState(null); // approved business row shown in the public (read-only) Business detail modal
+  const[selBizProducts,setSelBizProducts]=useState([]); // this business's business_products rows, shown in the public detail modal
+  useEffect(()=>{ // mirrors the Admin detailBusiness effect below — fetch a business's public products/services whenever a different one is opened
+    if(selBiz?.id){BizProd.listFor(selBiz.id).then(setSelBizProducts)}
+    else setSelBizProducts([]);
+  },[selBiz?.id]);
   const searchRef=useRef(null);
 
   const notify=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)};
   const reload=useCallback(async()=>{
-    const[f,p,a,s,w]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site(),WS.getAll()]);
-    setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);setWholesalers(w);
+    const[f,p,a,s,w,b]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site(),WS.getAll(),Biz.getAll()]);
+    setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);setWholesalers(w);setBusinesses(b);
   },[]);
 
-  useEffect(()=>{(async()=>{setLoading(true);await DB.init();await reload();const restored=await DB.restoreSession();if(restored)setUser(restored);setLoading(false)})()},[]);
+  useEffect(()=>{(async()=>{setLoading(true);await DB.init();await reload();const restored=await DB.restoreSession();if(restored){setUser(restored);
+    // Section C: a restored (page-refresh) business session must land
+    // back on the business dashboard, the same way a fresh login does
+    // (see doLogin below) — previously restoreSession only set `user`
+    // and left `page` at its default ("home"), so a refreshed business
+    // user saw the homepage instead of their dashboard. Scoped to
+    // business only, matching what this pass was asked to fix; admin/
+    // wholesaler restore-routing is unchanged (pre-existing behavior).
+    if(restored.role==="business")setPage("bizpanel");
+  }setLoading(false)})()},[]);
+  // Fetch the logged-in business's own products/services whenever the
+  // business identity changes (login, restore, logout). Table/RLS
+  // verified live via the Supabase connector — SELECT is public but
+  // this call is scoped to the owner's own id regardless, since the
+  // dashboard only ever needs to show the owner their own listings.
+  useEffect(()=>{
+    if(user?.role==="business"&&user?.id){BizProd.listFor(user.id).then(setMyProducts)}
+    else{setMyProducts([])}
+  },[user?.role,user?.id]);
+  // Admin Activity tab — lazy-fetch only when an admin actually opens it
+  // (audit history isn't needed on every admin page load). kv_store's
+  // audit_log key is admin-only readable now (verified live), so this
+  // is safe to call as soon as adminTab flips to "activity".
+  useEffect(()=>{
+    if(user?.role==="admin"&&adminTab==="activity"){AuditLog.getAll().then(setActivityLog)}
+  },[user?.role,adminTab]);
+  // Fetch the viewed business's products when the Admin opens its detail
+  // modal — moderation (Phase 2): SELECT is public and DELETE/UPDATE
+  // already permit is_admin() per the live-verified RLS, so no policy
+  // change was needed for this.
+  useEffect(()=>{
+    if(detailBusiness?.id){BizProd.listFor(detailBusiness.id).then(setDetailBusinessProducts)}
+    else{setDetailBusinessProducts([])}
+  },[detailBusiness?.id]);
   // Keep the browser tab favicon in sync with the admin-configured logo/favicon — no code edits needed.
   useEffect(()=>{
     const href=(site&&(site.faviconUrl||site.logoUrl))||DEFAULT_LOGO_URL;
@@ -3137,6 +3596,10 @@ function AppInner(){
   },[]);
 
   const approvedFarmers=farmers.filter(f=>f.status==="approved");
+  // Public-facing businesses — only approved/verified rows are ever shown
+  // off this array; pending/blocked businesses never reach the public
+  // Businesses directory or its category tabs (renderBusinesses below).
+  const approvedBusinesses=businesses.filter(b=>b.status==="approved");
   const approvedProds=products.filter(p=>approvedFarmers.find(f=>f.id===p.fid));
   const nav=p=>{setPage(p);setResults(null);setShowSugg(false)};
 
@@ -3171,17 +3634,22 @@ function AppInner(){
     // server-verified Supabase session) — no separate localStorage write
     // needed here the way the old custom login required.
     setUser(u);setShowLogin(false);
-    notify("Welcome, "+u.name);if(u.role==="admin")setPage("admin");else if(u.role==="wholesaler")setPage("wpanel");return{ok:true};
+    // Business profiles use trading_name/company_name rather than .name
+    // (see businesses schema) — fall back sensibly so the welcome toast
+    // doesn't show "undefined" for business/wholesaler accounts.
+    notify("Welcome, "+(u.name||u.trading_name||u.company_name||u.contact_name||""));
+    if(u.role==="admin")setPage("admin");else if(u.role==="wholesaler")setPage("wpanel");else if(u.role==="business")setPage("bizpanel");return{ok:true};
   };
   const doLogout=async()=>{await DB.logout();setUser(null);setPage("home");notify("Signed out")};
   const doRegister=async(d,role)=>{const r=await DB.register(d,role);if(r.ok){await reload();setShowReg(false);notify(r.pendingEmailConfirm?"Check your email to confirm your account, then sign in.":"Submitted! Await approval.")}return r};
   const viewProduct=async p=>{await DB.incView(p.id);await reload();setSelProd(p)};
 
   const navItems=[
-    {k:"home",l:t("nav_home")},{k:"marketplace",l:t("nav_marketplace"),ic:Ic.marketplace},{k:"farmers",l:t("nav_farmers"),ic:Ic.farmer},
+    {k:"home",l:t("nav_home")},{k:"marketplace",l:t("nav_marketplace"),ic:Ic.marketplace},{k:"farmers",l:t("nav_farmers"),ic:Ic.farmer},{k:"businesses",l:t("nav_businesses"),ic:Ic.listings},
     {k:"prices",l:t("nav_prices"),ic:Ic.prices},{k:"tips",l:t("nav_tips"),ic:Ic.tips},{k:"pests",l:t("nav_pests"),ic:Ic.pests},{k:"calendar",l:t("nav_calendar"),ic:Ic.calendar},
     ...(user?.role==="farmer"?[{k:"dashboard",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
     ...(user?.role==="wholesaler"?[{k:"wpanel",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
+    ...(user?.role==="business"?[{k:"bizpanel",l:t("nav_dashboard"),ic:Ic.dashboard}]:[]),
     ...(user?.role==="admin"?[{k:"admin",l:t("nav_admin"),ic:Ic.admin}]:[]),
   ];
 
@@ -3372,6 +3840,52 @@ function AppInner(){
     </div>
   );
 
+  /* ── BUSINESSES (public directory) ──
+     Reads from the same `businesses` array Admin already populates via
+     reload()/Biz.getAll() — only status==="approved" rows are ever shown
+     here (see approvedBusinesses above). Tabs are built directly off
+     BUSINESS_CATEGORIES (the existing category config, see
+     BUSINESS_CATEGORY_CONFIG) so this never invents category names of
+     its own. A business also matches a tab if the category is one of
+     its secondary_categories, not just its primary one. */
+  const renderBusinesses=()=>{
+    const shown=bizPublicCat
+      ?approvedBusinesses.filter(b=>b.primary_category===bizPublicCat||(b.secondary_categories||[]).includes(bizPublicCat))
+      :approvedBusinesses;
+    return(
+      <div style={{background:G.sectionAlt,minHeight:"60vh"}}>
+        <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
+          <h1 style={{margin:"0 0 16px",fontSize:22,fontWeight:800,fontFamily:FH,color:G.gray9,display:"flex",alignItems:"center",gap:9}}><Ic.listings size={22} color={G.g6}/> {t("businesses_title")}</h1>
+          <div style={{display:"flex",gap:6,marginBottom:18,flexWrap:"wrap"}}>
+            <button onClick={()=>setBizPublicCat("")} style={{padding:"6px 13px",borderRadius:99,border:`1.5px solid ${bizPublicCat===""?G.g6:G.gray3}`,background:bizPublicCat===""?G.g6:G.white,color:bizPublicCat===""?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{t("businesses_all")}</button>
+            {BUSINESS_CATEGORIES.map(c=>(
+              <button key={c} onClick={()=>setBizPublicCat(c)} style={{padding:"6px 13px",borderRadius:99,border:`1.5px solid ${bizPublicCat===c?G.g6:G.gray3}`,background:bizPublicCat===c?G.g6:G.white,color:bizPublicCat===c?G.white:G.gray7,fontWeight:600,fontSize:12,cursor:"pointer",fontFamily:FB}}>{c}</button>
+            ))}
+          </div>
+          {shown.length===0
+            ?<div style={{textAlign:"center",padding:"60px",color:G.gray5}}>
+                <div style={{marginBottom:12,display:"flex",justifyContent:"center"}}><Ic.marketplace size={48}/></div>
+                <h3 style={{fontFamily:FH,color:G.gray9,fontWeight:700,fontSize:15}}>{t("businesses_none")}</h3>
+              </div>
+            :<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(230px,1fr))",gap:16}}>
+                {shown.map(b=>(
+                  <div key={b.id} className="ik-card" onClick={()=>setSelBiz(b)} style={{background:G.white,borderRadius:G.rL,overflow:"hidden",cursor:"pointer",border:`1px solid ${G.gray1}`,boxShadow:G.sh}}>
+                    <div className="ik-card-img" style={{height:120,background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+                      {b.image_url?<img src={cldThumb(b.image_url,460)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={28} color={G.gray5}/>}
+                    </div>
+                    <div style={{padding:14}}>
+                      <strong style={{fontSize:14,fontFamily:FH,color:G.gray9,display:"block",marginBottom:6}}>{b.trading_name||b.contact_name}</strong>
+                      <Badge color="blue">{b.primary_category}</Badge>
+                      <p style={{margin:"8px 0 0",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4}}><Ic.location size={11}/> {[b.sector,b.district].filter(Boolean).join(", ")}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>}
+        </div>
+      </div>
+    );
+  };
+
   /* ── DASHBOARD ── */
   const renderDashboard=()=>{
     if(!user||user.role!=="farmer")return null;
@@ -3498,6 +4012,178 @@ function AppInner(){
     );
   };
 
+  /* ── BUSINESS DASHBOARD (category-aware, Section 7-12 of spec) ──
+     role="business" — category comes from businesses.primary_category
+     (database), never from client metadata. Reuses the same
+     businesses state populated by reload()/Biz.getAll() so the
+     dashboard survives refresh/restored session (Biz.getOne is what
+     DB.restoreSession/login already use to rebuild `user` itself). */
+  const renderBusinessPanel=()=>{
+    if(!user||user.role!=="business")return null;
+    // Loading state (Section R) — `loading` is the same top-level flag
+    // set around the initial DB.init/reload/restoreSession sequence.
+    // Without this guard, a business user landing here mid-restore
+    // could briefly render a shell with blank/undefined fields instead
+    // of an explicit loading indicator.
+    if(loading){
+      return(
+        <div style={{background:G.white,minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{textAlign:"center",color:G.gray5}}>
+            <Ic.refresh size={28} className="ik-spinner"/>
+            <p style={{marginTop:10,fontSize:13}}>Loading your business profile…</p>
+          </div>
+        </div>
+      );
+    }
+    const me=businesses.find(b=>b.id===user.id)||user;
+    // Error/empty state — `user` always has at least {id,role} once
+    // logged in (DB.login/restoreSession populate the rest from the
+    // businesses row), so a missing trading_name/status here means the
+    // row genuinely failed to load rather than just being mid-fetch.
+    if(!me||!me.id){
+      return(
+        <div style={{background:G.white,minHeight:"60vh",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <div style={{textAlign:"center",maxWidth:340,padding:20}}>
+            <Ic.alert size={28} color={G.red}/>
+            <p style={{marginTop:10,fontSize:13,color:G.gray7}}>We couldn't load your business profile. Please check your connection and try refreshing the page.</p>
+            <Btn size="sm" onClick={()=>reload()} style={{marginTop:10}}>Retry</Btn>
+          </div>
+        </div>
+      );
+    }
+    const statusColor=me.status==="approved"?"green":me.status==="blocked"?"red":"gold";
+    const catCfg=BUSINESS_CATEGORY_CONFIG[me.primary_category];
+    return(
+      <div style={{background:G.white,minHeight:"60vh"}}>
+        <div style={{maxWidth:680,margin:"0 auto",padding:"28px 20px"}}>
+          <div style={{display:"flex",alignItems:"center",gap:9,marginBottom:16}}>
+            <div style={{width:34,height:34,borderRadius:9,overflow:"hidden",flexShrink:0,boxShadow:G.sh}}><Logo size={34} site={site}/></div>
+            <span style={{fontSize:13,fontWeight:700,color:G.gray5,fontFamily:FB}}>Inkingi</span>
+          </div>
+          <div style={{background:`linear-gradient(135deg,${G.g8},${G.g6})`,borderRadius:20,padding:22,marginBottom:20,color:G.white}}>
+            <div style={{display:"flex",alignItems:"center",gap:12,flexWrap:"wrap"}}>
+              <div style={{width:52,height:52,borderRadius:12,overflow:"hidden",background:"rgba(255,255,255,.15)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                {me.image_url?<img src={cldThumb(me.image_url,104)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={22}/>}
+              </div>
+              <div>
+                <h2 style={{margin:0,fontSize:18,fontFamily:FH}}>{me.trading_name||me.contact_name}</h2>
+                <p style={{margin:"3px 0 0",opacity:.8,fontSize:12,display:"flex",alignItems:"center",gap:4}}><Ic.location size={12}/> {me.sector}, {me.district}</p>
+                <p style={{margin:"3px 0 0",opacity:.85,fontSize:12}}>{me.primary_category}{me.secondary_categories?.length>0&&` (+ ${me.secondary_categories.join(", ")})`}</p>
+              </div>
+              <div style={{marginLeft:"auto"}}><Badge color={statusColor}>{me.status==="approved"?<><Ic.check size={10}/> {t("admin_verified")}</>:me.status==="blocked"?<><Ic.close size={10}/> {t("admin_blocked")}</>:<><Ic.pending size={10}/> {t("admin_pending")}</>}</Badge></div>
+            </div>
+          </div>
+
+          {/* Status UX — Section 9 & 19: never leave the user wondering
+              whether verification/approval worked. Database `status` is
+              authoritative; nothing here is client-editable. */}
+          {me.status==="pending"&&(
+            <div style={{background:G.goldL,border:`1px solid ${G.gold}`,borderRadius:G.r,padding:14,marginBottom:18}}>
+              <p style={{margin:"0 0 4px",fontWeight:700,fontSize:13,color:"#92400e"}}>{t("biz_status_pending_title")}</p>
+              <p style={{margin:0,fontSize:12,color:"#78350f",lineHeight:1.5}}>{t("biz_status_pending_msg")}</p>
+            </div>
+          )}
+          {me.status==="approved"&&(
+            <div style={{background:G.g1,border:`1px solid ${G.g3}`,borderRadius:G.r,padding:14,marginBottom:18}}>
+              <p style={{margin:0,fontSize:12,color:G.g8,lineHeight:1.5,fontWeight:600}}>{t("biz_status_approved_msg")}</p>
+            </div>
+          )}
+          {me.status==="blocked"&&(
+            <div style={{background:G.redL,border:`1px solid ${G.red}`,borderRadius:G.r,padding:14,marginBottom:18}}>
+              <p style={{margin:0,fontSize:12,color:G.red,lineHeight:1.5,fontWeight:600}}>{t("biz_status_blocked_msg")}</p>
+            </div>
+          )}
+
+          {/* Profile — Section 10: fields actually present on the
+              businesses row, nothing invented. */}
+          <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16}}>
+            <h3 style={{margin:"0 0 12px",fontSize:14,fontWeight:800,color:G.gray9,fontFamily:FH}}>{t("biz_profile_title")}</h3>
+            {me.legal_name&&<p style={{margin:"0 0 6px",fontSize:13,color:G.gray7}}><b>Legal name:</b> {me.legal_name}</p>}
+            <p style={{margin:"0 0 6px",fontSize:13,color:G.gray7,display:"flex",alignItems:"center",gap:6}}><Ic.contact size={13}/> {me.contact_name} · {me.phone}{me.whatsapp&&" (WhatsApp)"}</p>
+            <p style={{margin:"0 0 6px",fontSize:13,color:G.gray7}}>{me.email}</p>
+            <p style={{margin:"0 0 6px",fontSize:13,color:G.gray7,display:"flex",alignItems:"center",gap:6}}><Ic.location size={13}/> {[me.village,me.sector,me.district].filter(Boolean).join(", ")}</p>
+            {me.description&&<p style={{margin:"8px 0 0",fontSize:13,color:G.gray7,lineHeight:1.5}}>{me.description}</p>}
+            {me.requires_auth&&(
+              <p style={{margin:"8px 0 0",fontSize:12,color:G.gray5}}>
+                {me.issuing_authority&&<>Issuing authority: {me.issuing_authority}. </>}
+                {me.license_number&&<>License #: {me.license_number}. </>}
+                {me.auth_status&&<>Status: {me.auth_status}.</>}
+              </p>
+            )}
+            {me.created_at&&<p style={{margin:"8px 0 0",fontSize:11,color:G.gray5}}>Registered {new Date(me.created_at).toLocaleDateString()}</p>}
+          </div>
+
+          {/* Category-aware section — Section 8 & 11: presentation is
+              driven by the same BUSINESS_CATEGORY_CONFIG the
+              registration modal already uses, not a new per-category
+              auth branch. category-specific answers aren't persisted
+              anywhere yet (see BusinessRegModal comment), so this is
+              honestly labeled "Coming soon" rather than faked. */}
+          <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16}}>
+            <h3 style={{margin:"0 0 8px",fontSize:14,fontWeight:800,color:G.gray9,fontFamily:FH}}>{me.primary_category} — {t("biz_coming_soon")}</h3>
+            <p style={{margin:0,fontSize:12,color:G.gray5,lineHeight:1.5}}>
+              {catCfg?.fields?.length>0
+                ? `Category-specific tools for ${catCfg.fields.map(f=>f.label).join(", ").toLowerCase()} are coming soon.`
+                : "Category-specific tools for this business type are coming soon."}
+            </p>
+          </div>
+
+          {/* Products/services — real CRUD against the verified
+              business_products table/RLS (see BizProd above). RLS
+              already enforces that this business can only write its
+              own rows, so this UI doesn't need to duplicate that
+              check — it just can't succeed against another id. */}
+          <div style={{background:G.white,border:`1px solid ${G.gray1}`,borderRadius:G.rL,padding:18,boxShadow:G.sh}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+              <h3 style={{margin:0,fontSize:14,fontWeight:800,color:G.gray9,fontFamily:FH}}>{t("biz_products_title")}</h3>
+              <Btn size="sm" onClick={()=>setProdForm({type:"product",name:"",category:"",description:"",price:"",unit:"",image_url:""})} icon={<Ic.add size={13}/>}>{(CATEGORY_PRODUCT_TERMS[me.primary_category]||{}).addLabel||"Add"}</Btn>
+            </div>
+            {myProducts.length===0&&!prodForm&&<p style={{margin:0,fontSize:12,color:G.gray5}}>You haven't added any products or services yet.</p>}
+            {myProducts.map(p=>(
+              <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"9px 0",borderBottom:`1px solid ${G.gray1}`,gap:8}}>
+                <div style={{display:"flex",gap:9,alignItems:"center",minWidth:0}}>
+                  <div style={{width:34,height:34,borderRadius:8,overflow:"hidden",background:G.gray1,flexShrink:0,display:"flex",alignItems:"center",justifyContent:"center"}}>
+                    {p.image_url?<img src={cldThumb(p.image_url,68)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.listings size={15} color={G.gray5}/>}
+                  </div>
+                  <div style={{minWidth:0}}>
+                    <p style={{margin:0,fontSize:12.5,fontWeight:700,color:G.gray9,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>{p.name}{p.price&&<span style={{fontWeight:500,color:G.gray5}}> · {p.price} RWF{p.unit?`/${p.unit}`:""}</span>}</p>
+                    <p style={{margin:0,fontSize:10.5,color:G.gray5}}>{p.category||p.type}{p.status!=="active"&&<span> · {p.status}</span>}</p>
+                  </div>
+                </div>
+                <div style={{display:"flex",gap:5,flexShrink:0}}>
+                  <Btn size="sm" variant="ghost" onClick={()=>setProdForm({...p})} icon={<Ic.edit size={12}/>}/>
+                  <Btn size="sm" variant="ghost" onClick={async()=>{if(!confirm(`Delete "${p.name}"?`))return;const r=await BizProd.remove(p.id);if(r.ok){setMyProducts(ps=>ps.filter(x=>x.id!==p.id));notify(t("msg_updated"))}else notify(r.reason||"Could not delete","error")}} icon={<Ic.close size={12}/>}/>
+                </div>
+              </div>
+            ))}
+            {prodForm&&(
+              <div style={{marginTop:12,padding:12,background:G.g0,borderRadius:G.r}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:8}}>
+                  <input placeholder={(CATEGORY_PRODUCT_TERMS[me.primary_category]||{}).namePlaceholder||"Name"} value={prodForm.name||""} onChange={e=>setProdForm(f=>({...f,name:e.target.value}))} style={{padding:"7px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}/>
+                  <input placeholder="Category" value={prodForm.category||""} onChange={e=>setProdForm(f=>({...f,category:e.target.value}))} style={{padding:"7px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}/>
+                  <input placeholder="Price (RWF)" type="number" value={prodForm.price||""} onChange={e=>setProdForm(f=>({...f,price:e.target.value}))} style={{padding:"7px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}/>
+                  <input placeholder="Unit (e.g. kg, service)" value={prodForm.unit||""} onChange={e=>setProdForm(f=>({...f,unit:e.target.value}))} style={{padding:"7px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}/>
+                </div>
+                <textarea placeholder="Description" value={prodForm.description||""} onChange={e=>setProdForm(f=>({...f,description:e.target.value}))} style={{width:"100%",padding:"7px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB,marginBottom:8,minHeight:52}}/>
+                <div style={{display:"flex",gap:8}}>
+                  <Btn size="sm" onClick={async()=>{
+                    const{id,business_id,created_at,status,...fields}=prodForm; // status/id/business_id/created_at are never client-writable here — status defaults server-side, id/business_id/created_at are set on insert only
+                    const payload={...fields,price:fields.price===""?null:Number(fields.price)};
+                    if(!payload.name?.trim()){notify("Name is required","error");return}
+                    const r=id?await BizProd.update(id,payload):await BizProd.add(user.id,payload);
+                    if(r.ok){const fresh=await BizProd.listFor(user.id);setMyProducts(fresh);setProdForm(null);notify(t("msg_updated"))}
+                    else notify(r.reason||"Could not save","error");
+                  }}>Save</Btn>
+                  <Btn size="sm" variant="secondary" onClick={()=>setProdForm(null)}>Cancel</Btn>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   /* ── ADMIN ── */
   const renderAdmin=()=>{
     if(!user||user.role!=="admin"){
@@ -3515,8 +4201,8 @@ function AppInner(){
     // deleted immediately — filtering it out here keeps it from showing
     // up in "All Farmers" / Pending Approvals without touching the
     // underlying data or any delete/status function.
-    const allF=farmers.filter(f=>f.role!=="admin");const allP=products;
-    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit]];
+    const allF=farmers.filter(f=>f.role!=="admin");const allP=products;const allB=businesses;
+    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["activity",t("admin_tab_activity"),Ic.hours]];
     return(
       <div style={{background:G.pageBg,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
@@ -3543,7 +4229,7 @@ function AppInner(){
           {adminTab==="dashboard"&&(
             <div>
               <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:12,marginBottom:24}}>
-                {[[allF.length,t("admin_total_farmers"),Ic.farmer,G.g6,()=>{setFarmerFilter("");setAdminTab("farmers")}],[allP.length,t("admin_listings"),Ic.listings,"#1d4ed8",()=>setAdminTab("products")],[allF.filter(f=>f.status==="pending").length+wholesalers.filter(w=>w.status==="pending").length,t("admin_pending"),Ic.pending,"#d97706",()=>{setFarmerFilter("pending");setAdminTab("farmers")}],[allP.reduce((s,p)=>s+(p.views||0),0),t("admin_total_views"),Ic.users,"#7c3aed",()=>setAdminTab("products")]].map(([v,l,IcC,col,onCardClick])=>(
+                {[[allF.length,t("admin_total_farmers"),Ic.farmer,G.g6,()=>{setFarmerFilter("");setAdminTab("farmers")}],[allB.length,t("admin_total_businesses"),Ic.marketplace,"#0f766e",()=>{setBizFilter("");setAdminTab("businesses")}],[allP.length,t("admin_listings"),Ic.listings,"#1d4ed8",()=>setAdminTab("products")],[allF.filter(f=>f.status==="pending").length+wholesalers.filter(w=>w.status==="pending").length+allB.filter(b=>b.status==="pending").length,t("admin_pending"),Ic.pending,"#d97706",()=>{setFarmerFilter("pending");setAdminTab("farmers")}],[allP.reduce((s,p)=>s+(p.views||0),0),t("admin_total_views"),Ic.users,"#7c3aed",()=>setAdminTab("products")]].map(([v,l,IcC,col,onCardClick])=>(
                   <button key={l} onClick={onCardClick} style={{background:G.white,borderRadius:G.rL,padding:"17px 16px",boxShadow:G.sh,border:`1px solid ${G.gray1}`,borderTop:`3px solid ${col}`,textAlign:"left",cursor:"pointer",font:"inherit",width:"100%"}}>
                     <div style={{marginBottom:5,color:col}}><IcC size={22}/></div>
                     <div style={{fontSize:26,fontWeight:900,color:col,fontFamily:FH}}>{typeof v==="number"?v.toLocaleString():v}</div>
@@ -3562,18 +4248,20 @@ function AppInner(){
                   // instead of adding a separate tab/section.
                   const pendingF=allF.filter(f=>f.status==="pending").map(f=>({...f,_kind:"farmer"}));
                   const pendingW=wholesalers.filter(w=>w.status==="pending").map(w=>({...w,_kind:"wholesaler"}));
-                  const pending=[...pendingF,...pendingW];
+                  const pendingB=allB.filter(b=>b.status==="pending").map(b=>({...b,_kind:"business"}));
+                  const pending=[...pendingF,...pendingW,...pendingB];
+                  const nameOf=f=>f._kind==="wholesaler"?f.company_name:f._kind==="business"?(f.trading_name||f.contact_name):f.name;
                   return pending.length===0
                     ?<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_pending")}</div>
                     :pending.map(f=>(
                       <div key={f._kind+f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"11px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                         <div onClick={()=>{if(f._kind==="farmer")setDetailFarmer(f)}} style={{cursor:f._kind==="farmer"?"pointer":"default"}}>
-                          <p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{f._kind==="wholesaler"?f.company_name:f.name}{f._kind==="wholesaler"&&<span style={{marginLeft:6,fontWeight:600,fontSize:10,color:G.gray5}}>(Wholesaler)</span>}</p>
+                          <p style={{margin:0,fontWeight:700,fontSize:13,color:G.gray9}}>{nameOf(f)}{f._kind!=="farmer"&&<span style={{marginLeft:6,fontWeight:600,fontSize:10,color:G.gray5}}>({f._kind==="wholesaler"?"Wholesaler":`Business — ${f.primary_category}`})</span>}</p>
                           <p style={{margin:"2px 0 0",fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {f.phone} <span>·</span> <Ic.location size={11}/> {f.district}, {f.sector}</p>
                         </div>
                         <div style={{display:"flex",gap:6}}>
-                          <Btn size="sm" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"approved"):await DB.setFarmerStatus(f.id,"approved");if(r.ok){await reload();notify((f._kind==="wholesaler"?f.company_name:f.name)+" "+t("msg_farmer_verified"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>
-                          <Btn size="sm" variant="danger" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"blocked"):await DB.setFarmerStatus(f.id,"blocked");if(r.ok){await reload()}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>
+                          <Btn size="sm" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"approved"):f._kind==="business"?await Biz._patchBusiness(f.id,{status:"approved"}):await DB.setFarmerStatus(f.id,"approved");if(r.ok){await reload();if(f._kind==="business")await AuditLog.log(user,"BUSINESS_APPROVED",nameOf(f));notify(nameOf(f)+" "+t("msg_farmer_verified"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>
+                          <Btn size="sm" variant="danger" onClick={async()=>{const r=f._kind==="wholesaler"?await WS.setStatus(f.id,"blocked"):f._kind==="business"?await Biz._patchBusiness(f.id,{status:"blocked"}):await DB.setFarmerStatus(f.id,"blocked");if(r.ok){await reload();if(f._kind==="business")await AuditLog.log(user,"BUSINESS_BLOCKED",nameOf(f))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>
                         </div>
                       </div>
                     ));
@@ -3608,6 +4296,126 @@ function AppInner(){
                     {f.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await DB.setFarmerStatus(f.id,"approved");if(r.ok){await reload();notify(t("msg_updated"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
                     {f.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{const r=await DB.setFarmerStatus(f.id,"blocked");if(r.ok){await reload()}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
                     <Btn size="sm" variant="danger" onClick={async()=>{if(window.confirm(t("admin_confirm_delete_farmer")))await DB.deleteFarmer(f.id);await reload();notify(t("msg_deleted"))}} icon={<Ic.delete size={14}/>}>{t("admin_delete")}</Btn>
+                  </div>
+                </div>
+              ))}
+            </div>
+          );})()}
+
+          {adminTab==="activity"&&(()=>{
+            let shown=activityLog;
+            if(activitySearch.trim()){
+              const q=activitySearch.trim().toLowerCase();
+              shown=shown.filter(e=>
+                (e.action||"").toLowerCase().includes(q)||
+                (e.adminName||"").toLowerCase().includes(q)||
+                (e.details||"").toLowerCase().includes(q)
+              );
+            }
+            shown=[...shown].sort((a,b)=>{
+              const da=new Date(a.timestamp||0),db=new Date(b.timestamp||0);
+              return activitySort==="oldest"?da-db:db-da;
+            });
+            return(
+            <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>Admin Activity ({shown.length})</h3>
+              </div>
+              {/* Reads from the existing AuditLog/kv_store implementation —
+                  no new audit table was created (Phase 4: "do not create a
+                  new audit table unless the existing implementation
+                  genuinely cannot support this securely" — it can, now
+                  that kv_store's audit_log key is admin-only readable,
+                  verified live via the Supabase connector). */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:15}}>
+                <input value={activitySearch} onChange={e=>setActivitySearch(e.target.value)} placeholder="Search action, admin, details…" style={{flex:"1 1 200px",padding:"8px 12px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB,outline:"none"}}/>
+                <select value={activitySort} onChange={e=>setActivitySort(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </div>
+              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>No activity recorded yet — actions like approving or editing a business will appear here.</div>}
+              {shown.map(e=>(
+                <div key={e.id} style={{padding:"10px 0",borderBottom:`1px solid ${G.gray1}`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                    <Badge color="blue">{e.action}</Badge>
+                    <span style={{fontSize:11,color:G.gray5}}>{e.timestamp?new Date(e.timestamp).toLocaleString():""}</span>
+                  </div>
+                  <p style={{margin:"5px 0 0",fontSize:12,color:G.gray7}}>{e.adminName} — {e.details}</p>
+                </div>
+              ))}
+            </div>
+          );})()}
+
+          {adminTab==="businesses"&&(()=>{
+            let shown=bizFilter==="pending"?allB.filter(b=>b.status==="pending"):allB;
+            if(bizCatFilter)shown=shown.filter(b=>b.primary_category===bizCatFilter);
+            if(bizSearch.trim()){
+              const q=bizSearch.trim().toLowerCase();
+              shown=shown.filter(b=>
+                (b.trading_name||"").toLowerCase().includes(q)||
+                (b.legal_name||"").toLowerCase().includes(q)||
+                (b.phone||"").toLowerCase().includes(q)||
+                (b.email||"").toLowerCase().includes(q)
+              );
+            }
+            shown=[...shown].sort((a,b)=>{
+              const da=new Date(a.created_at||0),db=new Date(b.created_at||0);
+              return bizSort==="oldest"?da-db:db-da;
+            });
+            return(
+            <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{bizFilter==="pending"?`⏳ ${t("admin_pending_businesses")} (${shown.length})`:`${t("admin_all_businesses")} (${shown.length})`}</h3>
+                {bizFilter&&<Btn size="sm" variant="ghost" onClick={()=>setBizFilter("")} icon={<Ic.close size={13}/>}>{t("admin_clear_filter")}</Btn>}
+              </div>
+              {/* Search / filter / sort — Section F. Client-side over the
+                  already-fetched `businesses` array (same array reload()
+                  populates), not a new server-side query — see the
+                  Performance section of the completion report for why
+                  server-side pagination/search wasn't introduced here. */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:15}}>
+                <input value={bizSearch} onChange={e=>setBizSearch(e.target.value)} placeholder="Search name, phone, email…" style={{flex:"1 1 200px",padding:"8px 12px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB,outline:"none"}}/>
+                <select value={bizCatFilter} onChange={e=>setBizCatFilter(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="">All categories</option>
+                  {BUSINESS_CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
+                <select value={bizSort} onChange={e=>setBizSort(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </div>
+              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_businesses_match")}</div>}
+              {shown.map(b=>(
+                <div key={b.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
+                  <div onClick={()=>setDetailBusiness(b)} style={{display:"flex",gap:10,alignItems:"center",cursor:"pointer"}}>
+                    <div style={{width:40,height:40,borderRadius:10,overflow:"hidden",background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      {b.image_url?<img src={cldThumb(b.image_url,80)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={18} color={G.gray5}/>}
+                    </div>
+                    <div>
+                      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:2}}>
+                        <strong style={{fontSize:13,color:G.gray9}}>{b.trading_name||b.contact_name}</strong>
+                        <Badge color="blue">{b.primary_category}</Badge>
+                        <Badge color={b.status==="approved"?"green":b.status==="blocked"?"red":"gold"}>{b.status==="approved"?<><Ic.check size={10}/> {t("admin_verified")}</>:b.status==="blocked"?<><Ic.close size={10}/> {t("admin_blocked")}</>:<><Ic.pending size={10}/> {t("admin_pending")}</>}</Badge>
+                      </div>
+                      <p style={{margin:0,fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {b.phone} <span>·</span> <Ic.location size={11}/> {b.district}, {b.sector}{b.created_at&&<span>· {new Date(b.created_at).toLocaleDateString()}</span>}</p>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                    <Btn size="sm" variant="secondary" onClick={()=>setEditBusiness(b)} icon={<Ic.edit size={13}/>}>{t("admin_edit")}</Btn>
+                    {b.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await Biz._patchBusiness(b.id,{status:"approved"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_APPROVED",b.trading_name||b.contact_name);notify(t("msg_updated"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
+                    {b.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{const r=await Biz._patchBusiness(b.id,{status:"blocked"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_BLOCKED",b.trading_name||b.contact_name)}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
+                    <Btn size="sm" variant="danger" onClick={async()=>{
+                      // Same delete_business RPC + confirmation as the
+                      // Business Detail modal's Delete button below —
+                      // offered here too so Delete is reachable directly
+                      // from the list, not only after opening a business.
+                      const warn=`Delete this business permanently?\n\n"${b.trading_name||b.contact_name}" (${b.primary_category})\nID: ${b.id}\n\nThis cannot be undone. All of this business's products/services and compliance records will be deleted along with it. The business's login account itself is not deleted and would need separate handling.`;
+                      if(!confirm(warn))return;
+                      const r=await Biz.remove(b.id);
+                      if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_DELETED",`${b.trading_name||b.contact_name} (${b.primary_category})`);if(detailBusiness?.id===b.id)setDetailBusiness(null);notify(t("msg_updated"))}
+                      else notify(r.reason||"Could not delete business","error");
+                    }} icon={<Ic.delete size={13}/>}>{t("admin_del")}</Btn>
                   </div>
                 </div>
               ))}
@@ -3686,6 +4494,44 @@ function AppInner(){
     );
   };
 
+  /* ── PUBLIC BUSINESS DETAIL MODAL ──
+     Read-only counterpart to the Admin detail modal (detailBusiness,
+     further below) — same business fields, but no status/edit/delete
+     actions, since this is what a visitor sees, not an admin. */
+  const BusinessDetailModal=({biz,products:bp,open,onClose})=>{
+    if(!biz)return null;
+    return(
+      <Modal open={open} onClose={onClose} title={biz.trading_name||biz.contact_name} maxW={620}>
+        <div style={{display:"flex",gap:12,alignItems:"flex-start",marginBottom:16,flexWrap:"wrap"}}>
+          <div style={{width:54,height:54,borderRadius:13,overflow:"hidden",background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            {biz.image_url?<img src={cldThumb(biz.image_url,108)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={22} color={G.gray5}/>}
+          </div>
+          <div style={{flex:1,minWidth:200}}>
+            <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap"}}><strong style={{fontSize:16,fontFamily:FH,color:G.gray9}}>{biz.trading_name||biz.contact_name}</strong><Badge color="green"><Ic.check size={10}/> {t("admin_verified")}</Badge></div>
+            <p style={{margin:"3px 0",fontSize:12,color:G.gray5,display:"flex",alignItems:"center",gap:5,flexWrap:"wrap"}}><Ic.location size={12}/> {[biz.village,biz.sector,biz.district].filter(Boolean).join(", ")}</p>
+            <Badge color="blue">{biz.primary_category}</Badge>
+            {biz.secondary_categories?.length>0&&<span style={{fontSize:11,color:G.gray5,marginLeft:6}}>+ {biz.secondary_categories.join(", ")}</span>}
+            {biz.description&&<p style={{margin:"7px 0 0",fontSize:12,color:G.gray5,lineHeight:1.6}}>{biz.description}</p>}
+          </div>
+          <div style={{display:"flex",gap:7,flexWrap:"wrap"}}>
+            {biz.phone&&<a href={"tel:"+biz.phone} style={{display:"inline-flex",alignItems:"center",gap:4,background:G.g6,color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.contact size={13}/> {t("fdm_call")}</a>}
+            {biz.whatsapp===true&&biz.phone&&<a href={"https://wa.me/250"+biz.phone.replace(/^0/,"")} target="_blank" rel="noreferrer" style={{display:"inline-flex",alignItems:"center",gap:4,background:"#25d366",color:G.white,padding:"8px 12px",borderRadius:G.r,textDecoration:"none",fontWeight:700,fontSize:12}}><Ic.whatsapp size={13}/> {t("prod_whatsapp")}</a>}
+          </div>
+        </div>
+        <h3 style={{margin:"0 0 12px",fontFamily:FH,fontSize:14,color:G.gray9}}>{t("businesses_services")} ({bp.length})</h3>
+        {bp.length===0
+          ?<p style={{color:G.gray5,fontSize:13}}>{t("fdm_no_listings")}</p>
+          :<div>
+              {bp.map(p=>(
+                <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${G.gray1}`}}>
+                  <span style={{fontSize:13,color:G.gray9}}>{p.name}<span style={{color:G.gray5}}> · {p.category||p.type}{p.price?` · ${p.price} RWF${p.unit?`/${p.unit}`:""}`:""}</span></span>
+                </div>
+              ))}
+            </div>}
+      </Modal>
+    );
+  };
+
   /* ── LOADING SCREEN ── */
   if(loading){
     return(
@@ -3705,7 +4551,14 @@ function AppInner(){
     <div style={{fontFamily:FB,background:G.pageBg,minHeight:"100vh",color:G.gray9}}>
       <style>{`
         *{box-sizing:border-box;margin:0;padding:0}
-        body{background:#f7f9f7}
+        /* Section 20 fix: some devices render native form controls
+           (inputs/selects/checkboxes/radios) in OS dark-mode chrome
+           even though every color in this app is an explicit inline
+           style. Forcing the color-scheme keeps native controls light
+           and consistent across devices without touching the app's
+           actual palette, cards, or layout. */
+        html{color-scheme:light}
+        body{background:#f7f9f7;color-scheme:light}
         input::placeholder{color:#9ca3af}
         ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#a5d6a7;border-radius:3px}
         button{transition:filter 180ms ease,transform 180ms ease,background 180ms ease,color 180ms ease,border-color 180ms ease}
@@ -3783,8 +4636,10 @@ function AppInner(){
         {page==="home"&&renderHome()}
         {page==="marketplace"&&renderMarketplace()}
         {page==="farmers"&&renderFarmers()}
+        {page==="businesses"&&renderBusinesses()}
         {page==="dashboard"&&renderDashboard()}
         {page==="wpanel"&&renderWholesalerPanel()}
+        {page==="bizpanel"&&renderBusinessPanel()}
         {page==="admin"&&renderAdmin()}
         {page==="prices"&&<MarketPricesPage user={user} notify={notify}/>}
         {page==="tips"&&<FarmingTipsPage user={user} notify={notify}/>}
@@ -3854,12 +4709,14 @@ function AppInner(){
       {/* MODALS */}
       <LoginModal open={showLogin} onClose={()=>setShowLogin(false)} onLogin={doLogin} onGoReg={openRegChoice} onResetPassword={DB.resetPassword}/>
       <RoleChoiceModal open={showRoleChoice} onClose={()=>setShowRoleChoice(false)} onChoose={chooseRegRole} site={site}/>
-      <RegModal open={showReg} onClose={()=>setShowReg(false)} onRegister={doRegister} site={site} role={regRole}/>
+      <RegModal open={showReg&&regRole!=="business"} onClose={()=>setShowReg(false)} onRegister={doRegister} site={site} role={regRole}/>
+      <BusinessRegModal open={showReg&&regRole==="business"} onClose={()=>setShowReg(false)} onRegister={doRegister} site={site}/>
       <TermsModal open={legalOpen==="terms"} onClose={()=>setLegalOpen("")}/>
       <PrivacyModal open={legalOpen==="privacy"} onClose={()=>setLegalOpen("")}/>
       <SupportModal open={legalOpen==="support"} onClose={()=>setLegalOpen("")} site={site}/>
       <ProductDetailModal product={selProd} farmers={farmers} open={!!selProd} onClose={()=>setSelProd(null)} onReload={reload}/>
       <FarmerDetailModal farmer={selFarmer} open={!!selFarmer} onClose={()=>setSelFarmer(null)}/>
+      <BusinessDetailModal biz={selBiz} products={selBizProducts} open={!!selBiz} onClose={()=>setSelBiz(null)}/>
       <AdDetailModal ad={selAd} open={!!selAd} onClose={()=>setSelAd(null)}/>
 
       <Modal open={showForm} onClose={()=>{setShowForm(false);setEditP(null)}} title={editP?"Edit Listing":"List Product"} maxW={620}>
@@ -3926,6 +4783,129 @@ function AppInner(){
               {d.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await DB.setFarmerStatus(d.id,"approved");if(r.ok){await reload();notify(t("msg_updated"));setDetailFarmer(null)}else notify(r.reason||"Could not update status","error")}} icon={<Ic.check size={13}/>}>Verify / Approve</Btn>}
               {d.status!=="pending"&&<Btn size="sm" variant="secondary" onClick={async()=>{const r=await DB.setFarmerStatus(d.id,"pending");if(r.ok){await reload();notify(t("msg_updated"))}else notify(r.reason||"Could not update status","error")}}>Keep Pending</Btn>}
               <Btn size="sm" variant="ghost" onClick={()=>setDetailFarmer(null)}>Close</Btn>
+            </div>
+          </>);
+        })()}
+      </Modal>
+
+      {/* Business Detail modal — Section F. Same pattern as the Farmer
+          Detail modal above (row() helper, freshest-copy lookup by id
+          from the live `businesses` array). Compliance fields are only
+          shown when the business actually submitted them
+          (requires_auth), never invented. */}
+      <Modal open={!!detailBusiness} onClose={()=>setDetailBusiness(null)} title="Business Details" maxW={560}>
+        {detailBusiness&&(()=>{
+          const d=businesses.find(x=>x.id===detailBusiness.id)||detailBusiness;
+          const np=v=>(v===undefined||v===null||v==="")?<span style={{color:G.gray4,fontStyle:"italic"}}>Not provided</span>:v;
+          const row=(label,val)=>(
+            <div style={{display:"flex",justifyContent:"space-between",gap:10,padding:"7px 0",borderBottom:`1px solid ${G.gray1}`,fontSize:13}}>
+              <span style={{color:G.gray5,fontWeight:600}}>{label}</span>
+              <span style={{color:G.gray9,textAlign:"right"}}>{np(val)}</span>
+            </div>
+          );
+          return(<>
+            <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:16}}>
+              <div style={{width:56,height:56,borderRadius:13,overflow:"hidden",background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                {d.image_url?<img src={cldThumb(d.image_url,112)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={22} color={G.gray5}/>}
+              </div>
+              <div>
+                <p style={{margin:0,fontWeight:800,fontSize:16,color:G.gray9,fontFamily:FH}}>{d.trading_name||d.contact_name}</p>
+                <Badge color={d.status==="approved"?"green":d.status==="blocked"?"red":"gold"}>{d.status==="approved"?<><Ic.check size={10}/> Approved</>:d.status==="blocked"?<><Ic.close size={10}/> Blocked</>:<><Ic.pending size={10}/> Pending</>}</Badge>
+              </div>
+            </div>
+            <div style={{background:G.g0,borderRadius:G.r,padding:"4px 12px",marginBottom:14}}>
+              {row("Trading name",d.trading_name)}
+              {row("Legal name",d.legal_name)}
+              {row("Contact person",d.contact_name)}
+              {row("Email",d.email)}
+              {row("Phone",d.phone)}
+              {row("WhatsApp",d.whatsapp===true?"Yes":d.whatsapp===false?"No":undefined)}
+              {row("Primary category",d.primary_category)}
+              {row("Secondary categories",d.secondary_categories?.length>0?d.secondary_categories.join(", "):undefined)}
+              {row("District",d.district)}
+              {row("Sector",d.sector)}
+              {row("Village",d.village)}
+              {row("Description",d.description)}
+              {row("Requires compliance",d.requires_auth===true?"Yes":d.requires_auth===false?"No":undefined)}
+              {d.requires_auth&&row("Issuing authority",d.issuing_authority)}
+              {d.requires_auth&&row("License number",d.license_number)}
+              {d.requires_auth&&row("Compliance status",d.auth_status)}
+              {row("Registered",d.created_at?new Date(d.created_at).toLocaleDateString():undefined)}
+            </div>
+            {/* Products/services moderation — Phase 2. SELECT is public,
+                and DELETE already permits is_admin() per the live-verified
+                RLS on business_products, so no policy change was needed. */}
+            {detailBusinessProducts.length>0&&(
+              <div style={{marginBottom:14}}>
+                <p style={{margin:"0 0 6px",fontSize:12,fontWeight:700,color:G.gray7}}>Products / Services ({detailBusinessProducts.length})</p>
+                {detailBusinessProducts.map(p=>(
+                  <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderBottom:`1px solid ${G.gray1}`}}>
+                    <span style={{fontSize:12,color:G.gray9}}>{p.name}<span style={{color:G.gray5}}> · {p.category||p.type}{p.price?` · ${p.price} RWF${p.unit?`/${p.unit}`:""}`:""}</span></span>
+                    <Btn size="sm" variant="ghost" onClick={async()=>{if(!confirm(`Remove "${p.name}"?`))return;const r=await BizProd.remove(p.id);if(r.ok){setDetailBusinessProducts(ps=>ps.filter(x=>x.id!==p.id));await AuditLog.log(user,"BUSINESS_PRODUCT_REMOVED",`${p.name} (${d.trading_name||d.contact_name})`);notify(t("msg_updated"))}else notify(r.reason||"Could not remove","error")}} icon={<Ic.close size={12}/>}/>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+              {d.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await Biz._patchBusiness(d.id,{status:"approved"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_APPROVED",d.trading_name||d.contact_name);notify(t("msg_updated"))}else notify(r.reason||"Could not update status","error")}} icon={<Ic.check size={13}/>}>Approve</Btn>}
+              {d.status!=="blocked"&&<Btn size="sm" variant="secondary" onClick={async()=>{const r=await Biz._patchBusiness(d.id,{status:"blocked"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_BLOCKED",d.trading_name||d.contact_name)}else notify(r.reason||"Could not update status","error")}}>Block</Btn>}
+              <Btn size="sm" variant="secondary" onClick={()=>{setDetailBusiness(null);setEditBusiness(d)}} icon={<Ic.edit size={13}/>}>Edit</Btn>
+              <Btn size="sm" variant="danger" onClick={async()=>{
+                // Business Deletion (Phase 2) — confirmation deliberately
+                // restates name/category/id and spells out irreversibility
+                // before calling the admin-only delete_business RPC
+                // (verified live: is_admin()-checked, SECURITY DEFINER,
+                // EXECUTE granted to `authenticated` only — not callable
+                // by a non-admin even directly against the REST API).
+                const warn=`Delete this business permanently?\n\n"${d.trading_name||d.contact_name}" (${d.primary_category})\nID: ${d.id}\n\nThis cannot be undone. All of this business's products/services and compliance records will be deleted along with it. The business's login account itself is not deleted and would need separate handling.`;
+                if(!confirm(warn))return;
+                const r=await Biz.remove(d.id);
+                if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_DELETED",`${d.trading_name||d.contact_name} (${d.primary_category})`);setDetailBusiness(null);notify(t("msg_updated"))}
+                else notify(r.reason||"Could not delete business","error");
+              }} icon={<Ic.delete size={13}/>}>Delete</Btn>
+              <Btn size="sm" variant="ghost" onClick={()=>setDetailBusiness(null)}>Close</Btn>
+            </div>
+          </>);
+        })()}
+      </Modal>
+
+      {/* Business Edit modal — Section G. Reuses the existing
+          Biz._patchBusiness column-scoped UPDATE (the same call already
+          used for approve/block above) — only the fields edited here
+          are sent, so untouched fields are never overwritten with
+          undefined/null (Section V). Same RLS caveat as approve/block:
+          this UI is Admin-gated client-side only, not itself a security
+          boundary — see the completion report's Security section. */}
+      <Modal open={!!editBusiness} onClose={()=>setEditBusiness(null)} title="Edit Business" maxW={520}>
+        {editBusiness&&(()=>{
+          const f=editBusiness,setF=v=>setEditBusiness(x=>({...x,...v}));
+          const fld=(label,key,type="text")=>(
+            <div style={{marginBottom:11}}>
+              <label style={{display:"block",fontSize:12,fontWeight:600,color:G.gray7,marginBottom:4}}>{label}</label>
+              <input type={type} value={f[key]||""} onChange={e=>setF({[key]:e.target.value})} style={{width:"100%",padding:"8px 11px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:13,fontFamily:FB,outline:"none"}}/>
+            </div>
+          );
+          return(<>
+            {fld("Trading name","trading_name")}
+            {fld("Legal name","legal_name")}
+            {fld("Contact person","contact_name")}
+            {fld("Phone","phone","tel")}
+            {fld("Email","email","email")}
+            <div style={{marginBottom:11}}>
+              <label style={{display:"block",fontSize:12,fontWeight:600,color:G.gray7,marginBottom:4}}>Primary category</label>
+              <select value={f.primary_category||""} onChange={e=>setF({primary_category:e.target.value})} style={{width:"100%",padding:"8px 11px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:13,fontFamily:FB}}>
+                {BUSINESS_CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            {fld("Description","description")}
+            <div style={{display:"flex",gap:8,marginTop:6}}>
+              <Btn full onClick={async()=>{
+                const{id,status,created_at,email:_e,...patch}=f; // status changes go through Approve/Block, not this form; id/created_at/email are never re-sent
+                const r=await Biz._patchBusiness(editBusiness.id,patch);
+                if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_EDITED",f.trading_name||f.contact_name);notify(t("msg_updated"));setEditBusiness(null)}
+                else notify(r.reason||"Could not save changes","error");
+              }}>Save Changes</Btn>
+              <Btn full variant="secondary" onClick={()=>setEditBusiness(null)}>Cancel</Btn>
             </div>
           </>);
         })()}
