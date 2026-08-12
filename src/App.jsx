@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, createContext, useContext, Component } from "react";
+import * as XLSX from "xlsx";
 import {
   Eye, EyeOff, Search, Sprout, Beef, Wheat, Calendar, TrendingUp, TrendingDown, Minus, Leaf, Bug,
   Store, Phone, LifeBuoy, ShieldCheck, LayoutDashboard, Bell, Upload, Trash2,
@@ -3523,12 +3524,17 @@ const DataMgr={
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
   },
   downloadXLSX(rows,cols,filename){
-    // Pure JS minimal XLSX (CSV inside .xlsx via data URI for compatibility)
-    // For real XLSX use SheetJS — here we output a well-formatted CSV named .xlsx
-    // In production swap this with: import * as XLSX from 'xlsx'; XLSX.writeFile(...)
-    const csv=this.toCSV(rows,cols);
-    const blob=new Blob([csv],{type:"application/vnd.ms-excel"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+    const data=rows.map(row=>{
+      const obj={};
+      cols.forEach((col,i)=>{
+        obj[col]=row[i]??"";
+      });
+      return obj;
+    });
+    const ws=XLSX.utils.json_to_sheet(data);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Sheet1");
+    XLSX.writeFile(wb,filename);
   },
 };
 
