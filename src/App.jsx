@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
+import { useState, useEffect, useRef, useCallback, createContext, useContext, Component } from "react";
 import {
   Eye, EyeOff, Search, Sprout, Beef, Wheat, Calendar, TrendingUp, TrendingDown, Minus, Leaf, Bug,
   Store, Phone, LifeBuoy, ShieldCheck, LayoutDashboard, Bell, Upload, Trash2,
@@ -136,6 +136,13 @@ const TRANSLATIONS = {
   reg_photo:{en:"Photo representing what you sell",rw:"Ifoto igaragaza ibyo ugurisha",fr:"Photo représentant ce que vous vendez"},
   reg_submit:{en:"Register",rw:"Iyandikishe",fr:"S'inscrire"},
   reg_submitting:{en:"Submitting…",rw:"Kohereza…",fr:"Envoi…"},
+  session_expired:{en:"Your session expired — please sign in again.",rw:"Igihe cyo kwinjira kirangiye — ongera winjire.",fr:"Votre session a expiré — veuillez vous reconnecter."},
+  upload_too_large:{en:"Image is too large — please use a file under 5 MB.",rw:"Ifoto ni nini cyane — koresha idasumba 5 MB.",fr:"L'image est trop volumineuse — utilisez un fichier de moins de 5 Mo."},
+  upload_bad_type:{en:"Only JPG, PNG, or WebP images are allowed.",rw:"Gusa amafoto ya JPG, PNG, cyangwa WebP niyo yemewe.",fr:"Seules les images JPG, PNG ou WebP sont autorisées."},
+  upload_failed:{en:"Upload failed:",rw:"Kohereza byanze:",fr:"Échec du téléversement :"},
+  error_boundary_title:{en:"Something went wrong",rw:"Hari ikitagenze neza",fr:"Une erreur est survenue"},
+  error_boundary_body:{en:"This page ran into a problem. Reloading usually fixes it — your data has not been lost.",rw:"Iyi paji yagize ikibazo. Kongera gufungura biratunganya ikibazo — amakuru yawe ntiyabuze.",fr:"Cette page a rencontré un problème. Recharger la page résout généralement le souci — vos données n'ont pas été perdues."},
+  error_boundary_reload:{en:"Reload page",rw:"Ongera ufungure paji",fr:"Recharger la page"},
   // Validation messages
   err_required:{en:"Required",rw:"Birakenewe",fr:"Obligatoire"},
   err_valid_email:{en:"Enter a valid email address",rw:"Andika imeyili nyayo",fr:"Saisissez une adresse e-mail valide"},
@@ -657,7 +664,19 @@ const SB = (() => {
   };
   const req = async (url, opts={}) => {
     const r = await fetch(url, {...opts, headers:{"Content-Type":"application/json",...authHeaders(),...opts.headers}});
-    if (!r.ok) throw new Error(await r.text());
+    if (!r.ok) {
+      // A 401 here means the access token Supabase received was rejected —
+      // typically an expired/revoked session that Auth.restoreSession()'s
+      // refresh didn't catch (e.g. the refresh token itself expired, or the
+      // session was revoked server-side). Only fire this once per storm of
+      // requests, and only when we actually had a session to begin with —
+      // an anonymous 401 on a public-select endpoint is not a session event.
+      if (r.status === 401 && Auth?.getSession()) {
+        Auth.clearSession();
+        window.dispatchEvent(new CustomEvent("ik:session-expired"));
+      }
+      throw new Error(await r.text());
+    }
     const t = r.headers.get("content-type")||"";
     return t.includes("json") ? r.json() : r.text();
   };
@@ -1682,17 +1701,20 @@ function LocPicker({district,sector,village,onChange}){
 }
 
 /* ── IMAGE UPLOAD ── */
+const MAX_UPLOAD_BYTES=5*1024*1024; // 5 MB — rejected client-side before ever hitting Cloudinary
 function ImageUpload({label,value,onChange,placeholder}){
+  const{t}=useLang();
   const[preview,setPreview]=useState(value||"");
   const[uploading,setUploading]=useState(false);
   useEffect(()=>setPreview(value||""),[value]);
   const handleFile=async e=>{
     const file=e.target.files[0];
     if(!file)return;
-    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){alert("Only JPG, PNG, WebP allowed");return}
+    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){alert(t("upload_bad_type")||"Only JPG, PNG, WebP allowed");return}
+    if(file.size>MAX_UPLOAD_BYTES){alert(t("upload_too_large")||"Image is too large — please use a file under 5 MB.");return}
     setUploading(true);
     try{const url=await uploadImage(file);setPreview(url);onChange(url)}
-    catch(err){alert("Upload failed: "+err.message)}
+    catch(err){alert((t("upload_failed")||"Upload failed:")+" "+err.message)}
     finally{setUploading(false)}
   };
   const handleUrl=v=>{setPreview(v);onChange(v)};
@@ -2434,14 +2456,19 @@ function MarketPricesPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard, same idiom as registration/sign-in forms
   const save=async()=>{
+    if(busy)return;
     if(!form.product||!form.current){notify(t("msg_fill_required"),"error");return}
-    const entry={...form,current:parseFloat(form.current),previous:parseFloat(form.previous)||0,updatedAt:new Date().toISOString()};
-    const ps=await DB.prices();
-    if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify(t("msg_updated"))}
-    else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);
-    setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});
+    setBusy(true);
+    try{
+      const entry={...form,current:parseFloat(form.current),previous:parseFloat(form.previous)||0,updatedAt:new Date().toISOString()};
+      const ps=await DB.prices();
+      if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify(t("msg_updated"))}
+      else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);
+      setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePrices((await DB.prices()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const trendIcon=t=>t==="up"?<Ic.trendUp size={13}/>:t==="down"?<Ic.trendDown size={13}/>:<Ic.trendFlat size={13}/>;
@@ -2512,7 +2539,7 @@ function MarketPricesPage({user,notify}){
             <Inp label={t("prices_form_current")} type="number" value={form.current} onChange={e=>set("current",e.target.value)}/>
             <Inp label={t("prices_form_previous")} type="number" value={form.previous} onChange={e=>set("previous",e.target.value)}/>
           </div>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("prices_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("prices_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2532,13 +2559,18 @@ function FarmingTipsPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.title||!form.content){notify(tr("msg_title_content_required"),"error");return}
-    const entry={...form,publishedAt:editing?.publishedAt||new Date().toISOString()};
-    const ts=await DB.tips();
-    if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify(tr("msg_tip_updated"))}
-    else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify(tr("msg_tip_published"))}
-    reload();setShowForm(false);setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});
+    setBusy(true);
+    try{
+      const entry={...form,publishedAt:editing?.publishedAt||new Date().toISOString()};
+      const ts=await DB.tips();
+      if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify(tr("msg_tip_updated"))}
+      else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify(tr("msg_tip_published"))}
+      reload();setShowForm(false);setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(tr("confirm_delete")))return;await DB.saveTips((await DB.tips()).filter(t=>t.id!==id));reload();notify(tr("msg_deleted"))};
   const cats=["All","Crops","Livestock","Soil","Water","Business"];
@@ -2625,7 +2657,7 @@ function FarmingTipsPage({user,notify}){
           <Sel label={tr("tips_form_category")} value={form.category} onChange={e=>set("category",e.target.value)}>{"Crops,Livestock,Soil,Water,Business".split(",").map(c=><option key={c} value={c}>{c}</option>)}</Sel>
           <ImageUpload label={tr("tips_form_image")} value={form.image} onChange={v=>set("image",v)}/>
           <Txt label={tr("tips_form_content")} value={form.content} onChange={e=>set("content",e.target.value)} style={{minHeight:170}}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?tr("prices_save"):tr("tips_publish")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{tr("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?tr("reg_submitting"):(editing?tr("prices_save"):tr("tips_publish"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{tr("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2645,13 +2677,18 @@ function PestsCenterPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.name||!form.cropOrAnimal){notify(t("msg_fill_required"),"error");return}
-    const ps=await DB.pests();
-    if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify(t("msg_updated"))}
-    else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);
-    setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});
+    setBusy(true);
+    try{
+      const ps=await DB.pests();
+      if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify(t("msg_updated"))}
+      else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);
+      setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePests((await DB.pests()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=pests.filter(p=>{
@@ -2733,7 +2770,7 @@ function PestsCenterPage({user,notify}){
           <Txt label={t("pests_form_causes")} value={form.causes} onChange={e=>set("causes",e.target.value)}/>
           <Txt label={t("pests_form_prevention")} value={form.prevention} onChange={e=>set("prevention",e.target.value)}/>
           <Txt label={t("pests_form_treatment")} value={form.treatment} onChange={e=>set("treatment",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("pests_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("pests_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2753,12 +2790,17 @@ function PlantingCalendarPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.crop){notify(t("msg_crop_required"),"error");return}
-    const cs=await DB.calendar();
-    if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify(t("msg_updated"))}
-    else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});
+    setBusy(true);
+    try{
+      const cs=await DB.calendar();
+      if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify(t("msg_updated"))}
+      else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.saveCalendar((await DB.calendar()).filter(c=>c.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=entries.filter(e=>{
@@ -2865,7 +2907,7 @@ function PlantingCalendarPage({user,notify}){
             <div style={{gridColumn:"1/-1"}}><Inp label={t("calendar_form_growing_days")} type="number" value={form.growingDays} onChange={e=>set("growingDays",e.target.value)}/></div>
           </div>
           <Txt label={t("calendar_form_notes")} value={form.notes} onChange={e=>set("notes",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("calendar_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("calendar_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -3372,12 +3414,51 @@ const ADMIN_ROLES={superadmin:{label:"Super Admin",color:"#7c3aed",bg:"#ede9fe"}
 
 const AuditLog={
   async log(user,action,details=""){
+    // Existing kv_store rolling log — UNCHANGED. This remains the source
+    // `getAll()` reads from, so nothing about current admin Activity-tab
+    // behavior changes. Kept exactly as-is deliberately: migrating reads
+    // to the new table is a separate, larger change than this pass covers.
     const entries=(await SA.getKV("audit_log"))||[];
     entries.unshift({id:"al"+Date.now(),adminId:user?.id||"system",adminName:user?.name||"System",adminRole:user?.adminRole||"admin",action,details,timestamp:new Date().toISOString()});
     await SA.setKV("audit_log",entries.slice(0,500)); // keep last 500
+
+    // NEW: best-effort mirror into the real `audit_logs` table (see
+    // SCHEMA_BUSINESS.sql), which has no 500-row cap and can be queried/
+    // filtered at the database level. This is intentionally additive and
+    // non-blocking — if it fails (e.g. RLS rejects a non-admin caller, or
+    // the table isn't reachable yet), the write is silently skipped and
+    // the existing kv_store log above is completely unaffected.
+    if(HAS_SUPABASE){
+      try{
+        await SB.post("audit_logs",{actor_id:user?.id||null,actor_name:user?.name||"System",action,details,created_at:new Date().toISOString()});
+      }catch{/* non-fatal — kv_store write above already succeeded */}
+    }
   },
   async getAll(){return (await SA.getKV("audit_log"))||[]},
 };
+
+/* ── LIGHTWEIGHT CLIENT ERROR VISIBILITY ──
+   Minimum-viable monitoring per the audit: no third-party service, nothing
+   sensitive sent anywhere external — just a capped local record of render
+   errors and uncaught exceptions so "something broke" is discoverable
+   (e.g. via a future admin panel reading this key) instead of invisible.
+   Deliberately isolated from AuditLog (which is for admin actions on real
+   data) and guarded against recursively logging its own failures. */
+let _lastClientErrorAt=0;
+async function logClientError(kind,message,stack){
+  try{
+    const now=Date.now();
+    if(now-_lastClientErrorAt<1000)return; // crude de-dupe against error storms
+    _lastClientErrorAt=now;
+    const entries=(await SA.getKV("client_errors"))||[];
+    entries.unshift({id:"ce"+now,kind,message:String(message||"").slice(0,500),stack:String(stack||"").slice(0,1000),url:window.location.href,timestamp:new Date().toISOString()});
+    await SA.setKV("client_errors",entries.slice(0,200));
+  }catch{/* never let error logging itself throw */}
+}
+if(typeof window!=="undefined"){
+  window.addEventListener("error",e=>{logClientError("window_error",e.message,e.error?.stack)});
+  window.addEventListener("unhandledrejection",e=>{logClientError("unhandled_rejection",e.reason?.message||String(e.reason),e.reason?.stack)});
+}
 
 const Trash={
   async add(type,record,deletedBy){
@@ -3544,6 +3625,11 @@ function AppInner(){
   const searchRef=useRef(null);
 
   const notify=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)};
+  useEffect(()=>{ // graceful session-expiry: SB's req() dispatches this on a hard 401
+    const onExpired=()=>{setUser(null);setPage("home");notify(t("session_expired")||"Your session expired — please sign in again.","warn")};
+    window.addEventListener("ik:session-expired",onExpired);
+    return ()=>window.removeEventListener("ik:session-expired",onExpired);
+  },[t]);
   const reload=useCallback(async()=>{
     const[f,p,a,s,w,b]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site(),WS.getAll(),Biz.getAll()]);
     setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);setWholesalers(w);setBusinesses(b);
@@ -4918,6 +5004,41 @@ function AppInner(){
 // actual app (state, pages, all existing logic) is unchanged, just now
 // rendered inside the language context instead of being the default
 // export directly.
+
+/* ── ERROR BOUNDARY ──
+   Catches otherwise-uncaught render errors anywhere in the tree below it
+   (AppInner and everything it renders) so a single bad render doesn't blank
+   the entire app for the user. Deliberately minimal: no new state system,
+   no telemetry service — logs via the same AuditLog/monitoring hook the
+   rest of the app already uses (see logClientError below), and shows a
+   translated recovery screen with a reload button. Does not swallow or
+   alter normal application behavior — only activates when React itself
+   would otherwise unmount the whole tree. */
+class ErrorBoundary extends Component {
+  constructor(props){ super(props); this.state={hasError:false}; }
+  static getDerivedStateFromError(){ return {hasError:true}; }
+  componentDidCatch(error, info){
+    try{ logClientError("render_error", error?.message||String(error), info?.componentStack); }catch{}
+  }
+  render(){
+    if(this.state.hasError) return <ErrorBoundaryFallback onReload={()=>window.location.reload()}/>;
+    return this.props.children;
+  }
+}
+function ErrorBoundaryFallback({onReload}){
+  const{t}=useLang();
+  return(
+    <div style={{minHeight:"70vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24,background:"#f7f9f7"}}>
+      <div style={{maxWidth:420,textAlign:"center",background:"#fff",borderRadius:16,padding:"32px 28px",boxShadow:"0 4px 24px rgba(0,0,0,.08)"}}>
+        <div style={{fontSize:38,marginBottom:10}}>⚠️</div>
+        <h2 style={{margin:"0 0 8px",fontSize:18,fontFamily:"Georgia,serif",color:"#1a1a1a"}}>{t("error_boundary_title")||"Something went wrong"}</h2>
+        <p style={{margin:"0 0 20px",fontSize:13.5,color:"#666",lineHeight:1.6}}>{t("error_boundary_body")||"This page ran into a problem. Reloading usually fixes it — your data has not been lost."}</p>
+        <button onClick={onReload} style={{background:"#2e7d32",color:"#fff",border:"none",borderRadius:10,padding:"11px 22px",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t("error_boundary_reload")||"Reload page"}</button>
+      </div>
+    </div>
+  );
+}
+
 export default function App(){
-  return <LangProvider><AppInner/></LangProvider>;
+  return <LangProvider><ErrorBoundary><AppInner/></ErrorBoundary></LangProvider>;
 }
