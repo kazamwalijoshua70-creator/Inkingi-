@@ -4518,7 +4518,7 @@ function AppInner(){
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:15}}>
                 <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{t("admin_all_listings")} ({allP.length})</h3>
-                <Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn>
+                <div style={{display:"flex",gap:6}}><Btn size="sm" variant="secondary" icon={<Ic.download size={14}/>} onClick={()=>{const rows=allP.map(p=>[p.name,p.category||p.type,p.price||"",p.unit||"",p.fname||"",p.views||0,p.inStock?"In Stock":"Out of Stock",p.featured?"Yes":"No",p.status||"",p.district||"",p.sector||""]);DataMgr.downloadXLSX(rows,["Product","Category","Price (RWF)","Unit","Farmer/Wholesaler","Views","Stock","Featured","Status","District","Sector"],"Inkingi-Products.xlsx")}}>Export Excel</Btn><Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn></div>
               </div>
               {allP.map(p=>(
                 <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
