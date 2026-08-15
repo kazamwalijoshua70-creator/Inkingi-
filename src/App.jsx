@@ -141,6 +141,56 @@ const TRANSLATIONS = {
   upload_too_large:{en:"Image is too large — please use a file under 5 MB.",rw:"Ifoto ni nini cyane — koresha idasumba 5 MB.",fr:"L'image est trop volumineuse — utilisez un fichier de moins de 5 Mo."},
   upload_bad_type:{en:"Only JPG, PNG, or WebP images are allowed.",rw:"Gusa amafoto ya JPG, PNG, cyangwa WebP niyo yemewe.",fr:"Seules les images JPG, PNG ou WebP sont autorisées."},
   upload_failed:{en:"Upload failed:",rw:"Kohereza byanze:",fr:"Échec du téléversement :"},
+  modal_close:{en:"Close",rw:"Funga",fr:"Fermer"},
+  search_placeholder:{en:"Search products…",rw:"Shakisha ibicuruzwa…",fr:"Rechercher des produits…"},
+  nav_search:{en:"Search",rw:"Shakisha",fr:"Rechercher"},
+  admin_tab_import:{en:"Bulk Import",rw:"Kwinjiza byinshi",fr:"Import groupé"},
+  import_title:{en:"Bulk Import / Export",rw:"Kwinjiza/Gusohora byinshi",fr:"Import / Export groupé"},
+  import_subtitle:{en:"Import records from a spreadsheet, or export the current data. Farmers, Wholesalers, and Businesses can only be updated (not created) via import — see the tab for details. Admin accounts are never importable.",rw:"Injiza amakuru uhereye kuri feuille de calcul, cyangwa usohore amakuru ariho. Abahinzi, Abacuruzi banini, n'Ubucuruzi bishobora kuvugururwa gusa (ntibishobora kuremwa) binyuze mu kwinjiza — reba iyi tab kubisobanuro birambuye. Konti z'abayobozi ntizishobora kwinjizwa.",fr:"Importez des enregistrements depuis un tableur, ou exportez les données actuelles. Les agriculteurs, grossistes et entreprises ne peuvent être que mis à jour (pas créés) via l'import — voir cet onglet pour les détails. Les comptes administrateur ne sont jamais importables."},
+  import_download_template:{en:"Download template",rw:"Manura urugero",fr:"Télécharger le modèle"},
+  import_upload_file:{en:"Upload spreadsheet",rw:"Ohereza feuille de calcul",fr:"Téléverser le fichier"},
+  export_csv:{en:"Export CSV",rw:"Sohora CSV",fr:"Exporter en CSV"},
+  export_no_rows:{en:"There is no data to export yet.",rw:"Nta makuru araho yo gusohora.",fr:"Aucune donnée à exporter pour le moment."},
+  import_lib_unavailable:{en:"The spreadsheet library isn't available right now — please reload the page and try again.",rw:"Igikoresho cya feuille de calcul ntikiraboneka — ongera ufungure paji hanyuma ugerageze.",fr:"La bibliothèque de tableur n'est pas disponible actuellement — veuillez recharger la page et réessayer."},
+  import_bad_filetype:{en:"Please upload a .xlsx or .csv file.",rw:"Nyamuneka ohereza dosiye ya .xlsx cyangwa .csv.",fr:"Veuillez téléverser un fichier .xlsx ou .csv."},
+  import_too_large:{en:"That file is too large — please use a spreadsheet under 5 MB.",rw:"Iyo dosiye ni nini cyane — koresha idasumba 5 MB.",fr:"Ce fichier est trop volumineux — utilisez un tableur de moins de 5 Mo."},
+  import_empty_file:{en:"That spreadsheet doesn't contain any rows.",rw:"Iyo feuille de calcul nta mirongo ifite.",fr:"Ce tableur ne contient aucune ligne."},
+  import_too_many_rows:{en:"That spreadsheet has too many rows (max {n}) — please split it into smaller files.",rw:"Iyo feuille de calcul ifite imirongo myinshi cyane (ntarengwa {n}) — yice mu dosiye ntoya.",fr:"Ce tableur contient trop de lignes (max {n}) — veuillez le diviser en fichiers plus petits."},
+  import_missing_columns:{en:"This file is missing required columns:",rw:"Iyi dosiye ibura inkingi zikenewe:",fr:"Ce fichier n'a pas les colonnes requises :"},
+  import_parse_failed:{en:"Could not read that file:",rw:"Ntibyashobotse gusoma iyo dosiye:",fr:"Impossible de lire ce fichier :"},
+  import_total_rows:{en:"Total rows",rw:"Imirongo yose",fr:"Lignes totales"},
+  import_valid_rows:{en:"Valid",rw:"Byiza",fr:"Valides"},
+  import_invalid_rows:{en:"Invalid",rw:"Bitariho",fr:"Invalides"},
+  import_duplicate_rows:{en:"Duplicates",rw:"Bisubiwemo",fr:"Doublons"},
+  import_errors_title:{en:"Row errors",rw:"Amakosa y'imirongo",fr:"Erreurs de ligne"},
+  import_row:{en:"Row",rw:"Umurongo",fr:"Ligne"},
+  import_field:{en:"field",rw:"umwanya",fr:"champ"},
+  import_more_errors:{en:"...and {n} more errors not shown here.",rw:"...n'andi makosa {n} atagaragajwe hano.",fr:"...et {n} autres erreurs non affichées ici."},
+  import_more_rows:{en:"...and {n} more rows not shown here.",rw:"...n'indi mirongo {n} itagaragajwe hano.",fr:"...et {n} autres lignes non affichées ici."},
+  import_err_required:{en:"This field is required.",rw:"Uyu mwanya ukenewe.",fr:"Ce champ est requis."},
+  import_err_required_fix:{en:"Fill in a value for this field.",rw:"Uzuza agaciro kuri uyu mwanya.",fr:"Renseignez une valeur pour ce champ."},
+  import_err_not_number:{en:"This must be a number.",rw:"Aha hakenewe umubare.",fr:"Ceci doit être un nombre."},
+  import_err_not_number_fix:{en:"Use digits only, e.g. 1200.",rw:"Koresha imibare gusa, urugero 1200.",fr:"Utilisez uniquement des chiffres, ex. 1200."},
+  import_err_invalid_value:{en:"This value isn't recognized.",rw:"Aka gaciro ntikazwi.",fr:"Cette valeur n'est pas reconnue."},
+  import_err_invalid_value_fix:{en:"Use one of:",rw:"Koresha kimwe muri:",fr:"Utilisez l'une de :"},
+  import_dup_in_sheet:{en:"This row duplicates another row already in this spreadsheet.",rw:"Uyu murongo usubiramo undi murongo uri muri iyi feuille de calcul.",fr:"Cette ligne duplique une autre ligne déjà présente dans ce tableur."},
+  import_preview_title:{en:"Preview — what will be written",rw:"Reba mbere — ibizanditswe",fr:"Aperçu — ce qui sera enregistré"},
+  import_mode:{en:"Action",rw:"Igikorwa",fr:"Action"},
+  import_mode_create:{en:"Create",rw:"Kurema",fr:"Créer"},
+  import_mode_update:{en:"Update",rw:"Kuvugurura",fr:"Mettre à jour"},
+  import_confirm:{en:"Confirm import",rw:"Emeza kwinjiza",fr:"Confirmer l'import"},
+  import_success:{en:"Import completed.",rw:"Kwinjiza byarangiye.",fr:"Import terminé."},
+  import_failed:{en:"Import failed:",rw:"Kwinjiza byanze:",fr:"Échec de l'import :"},
+  import_result_success:{en:"Done — {created} record(s) created, {updated} updated.",rw:"Byarangiye — {created} byaremwe, {updated} byavuguruwe.",fr:"Terminé — {created} enregistrement(s) créé(s), {updated} mis à jour."},
+  import_result_failure:{en:"The import did not complete:",rw:"Kwinjiza ntibyarangiye:",fr:"L'import ne s'est pas terminé :"},
+  import_label_wholesalers:{en:"Wholesalers",rw:"Abacuruzi banini",fr:"Grossistes"},
+  import_err_no_match:{en:"No existing account matches this phone number.",rw:"Nta konti iriho ihuye n'iyi nimero.",fr:"Aucun compte existant ne correspond à ce numéro."},
+  import_err_no_match_fix:{en:"This import only updates existing accounts — it cannot create new ones. Check the phone number, or register this account through the app first.",rw:"Iri njiza ryinshi ryavugurura gusa konti zisanzweho — ntirishobora kurema izindi. Reba nimero, cyangwa wandikishe iyo konti binyuze muri porogaramu mbere.",fr:"Cet import ne fait que mettre à jour des comptes existants — il ne peut pas en créer de nouveaux. Vérifiez le numéro, ou inscrivez d'abord ce compte via l'application."},
+  import_err_no_farmer:{en:"No approved farmer matches this phone number.",rw:"Nta muhinzi wemewe uhuye n'iyi nimero.",fr:"Aucun agriculteur approuvé ne correspond à ce numéro."},
+  import_err_no_farmer_fix:{en:"Products can only be imported for a farmer who is already registered. Check the farmer_phone value.",rw:"Ibicuruzwa bishobora kwinjizwa gusa ku muhinzi usanzwe wanditse. Reba agaciro ka farmer_phone.",fr:"Les produits ne peuvent être importés que pour un agriculteur déjà inscrit. Vérifiez la valeur de farmer_phone."},
+  pager_prev:{en:"Previous",rw:"Ibanziriza",fr:"Précédent"},
+  pager_next:{en:"Next",rw:"Ikurikira",fr:"Suivant"},
+  pager_page_of:{en:"Page {page} of {pages}",rw:"Paji {page} kuri {pages}",fr:"Page {page} sur {pages}"},
   error_boundary_title:{en:"Something went wrong",rw:"Hari ikitagenze neza",fr:"Une erreur est survenue"},
   error_boundary_body:{en:"This page ran into a problem. Reloading usually fixes it — your data has not been lost.",rw:"Iyi paji yagize ikibazo. Kongera gufungura biratunganya ikibazo — amakuru yawe ntiyabuze.",fr:"Cette page a rencontré un problème. Recharger la page résout généralement le souci — vos données n'ont pas été perdues."},
   error_boundary_reload:{en:"Reload page",rw:"Ongera ufungure paji",fr:"Recharger la page"},
@@ -866,6 +916,25 @@ const WS = {
       } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
     }
     const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,image_url}:w);
+    LS.s("wholesalers", cached);
+    return {ok:true};
+  },
+  // Generic single-row field update — added for the Bulk Import feature's
+  // wholesaler-update path. Same PATCH-and-sync-cache pattern as setStatus/
+  // updateImage above; never touches `status` (approval safety is handled
+  // entirely by keeping `status` out of any caller's patch object, not by
+  // logic in this function).
+  async updateFields(id, patch) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("wholesalers", `id=eq.${id}`, patch);
+        lastSyncOk = true;
+        const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,...patch}:w);
+        LS.s("wholesalers", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,...patch}:w);
     LS.s("wholesalers", cached);
     return {ok:true};
   },
@@ -1653,17 +1722,35 @@ function Txt({label,...p}){
 }
 
 function Modal({open,onClose,title,children,maxW=520}){
+  const{t}=useLang();
   useEffect(()=>{document.body.style.overflow=open?"hidden":"";return()=>{document.body.style.overflow=""}},[open]);
   if(!open)return null;
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(20,30,20,.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(6px)"}} onClick={onClose}>
-      <div style={{background:G.white,borderRadius:G.rL,width:"100%",maxWidth:maxW,maxHeight:"92vh",overflowY:"auto",boxShadow:G.shXL}} onClick={e=>e.stopPropagation()}>
+    <div role="presentation" style={{position:"fixed",inset:0,background:"rgba(20,30,20,.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(6px)"}} onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={title||undefined} style={{background:G.white,borderRadius:G.rL,width:"100%",maxWidth:maxW,maxHeight:"92vh",overflowY:"auto",boxShadow:G.shXL}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 20px 13px",borderBottom:`1px solid ${G.gray1}`}}>
           <h2 style={{margin:0,fontSize:16,fontWeight:800,color:G.gray9,fontFamily:FH}}>{title}</h2>
-          <button onClick={onClose} style={{background:G.gray1,border:"none",width:30,height:30,borderRadius:8,cursor:"pointer",color:G.gray5,display:"flex",alignItems:"center",justifyContent:"center"}}><X size={16}/></button>
+          <button onClick={onClose} aria-label={t("modal_close")||"Close"} style={{background:G.gray1,border:"none",width:30,height:30,borderRadius:8,cursor:"pointer",color:G.gray5,display:"flex",alignItems:"center",justifyContent:"center"}}><X size={16}/></button>
         </div>
         <div style={{padding:"16px 20px 20px"}}>{children}</div>
       </div>
+    </div>
+  );
+}
+
+const ADMIN_PAGE_SIZE=25;
+// Render-level pagination helper — the caller keeps filtering/searching the
+// full array exactly as before; this only slices what's rendered and shows
+// simple prev/next controls. No data-fetching or filtering behavior changes.
+function Pager({page,setPage,total,pageSize=ADMIN_PAGE_SIZE}){
+  const{t}=useLang();
+  const pages=Math.max(1,Math.ceil(total/pageSize));
+  if(pages<=1)return null;
+  return(
+    <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:10,marginTop:16,paddingTop:14,borderTop:`1px solid ${G.gray1}`}}>
+      <Btn size="sm" variant="secondary" onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page<=1}>{t("pager_prev")}</Btn>
+      <span style={{fontSize:12,color:G.gray5}}>{t("pager_page_of").replace("{page}",page).replace("{pages}",pages)}</span>
+      <Btn size="sm" variant="secondary" onClick={()=>setPage(p=>Math.min(pages,p+1))} disabled={page>=pages}>{t("pager_next")}</Btn>
     </div>
   );
 }
@@ -2990,12 +3077,17 @@ function AdManager({notify}){
   const reload=async()=>setAds(await DB.ads());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard, same idiom as registration/sign-in forms
   const save=async()=>{
+    if(busy)return;
     if(!form.title){notify(t("msg_title_required"),"error");return}
-    const all=await DB.ads();
-    if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify(t("msg_updated"))}
-    else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify(t("msg_published"))}
-    reload();setShowForm(false);setEditing(null);setForm(BLANK);
+    setBusy(true);
+    try{
+      const all=await DB.ads();
+      if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify(t("msg_updated"))}
+      else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify(t("msg_published"))}
+      reload();setShowForm(false);setEditing(null);setForm(BLANK);
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete_ad")))return;await DB.saveAds((await DB.ads()).filter(a=>a.id!==id));reload();notify(t("msg_removed"))};
   const toggle=async id=>{await DB.saveAds((await DB.ads()).map(a=>a.id===id?{...a,active:!a.active}:a));reload()};
@@ -3060,7 +3152,7 @@ function AdManager({notify}){
             ))}
           </div>
         </div>
-        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save}>{editing?t("adm_save_changes"):t("adm_publish_ad")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("adm_save_changes"):t("adm_publish_ad"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
       </Modal>
     </div>
   );
@@ -3076,7 +3168,8 @@ function SiteSettingsManager({notify}){
   const reload=async()=>setForm(await DB.site());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const save=async()=>{await DB.saveSite(form);notify(getLastSyncOk()?t("msg_site_saved"):t("msg_saved_locally"),"warn")};
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
+  const save=async()=>{if(busy)return;setBusy(true);try{await DB.saveSite(form);notify(getLastSyncOk()?t("msg_site_saved"):t("msg_saved_locally"),"warn")}finally{setBusy(false)}};
   const runMigration=async()=>{
     setMigrating(true);
     const r=await SA.pushLocalCacheToRemote();
@@ -3130,7 +3223,7 @@ function SiteSettingsManager({notify}){
         <Txt value={(form.quickLinks||[]).join("\n")} onChange={e=>set("quickLinks",e.target.value.split("\n").map(s=>s.trim()).filter(Boolean))} style={{minHeight:120,fontFamily:FB,fontSize:13}}/>
       </div>
       <div style={{gridColumn:"1/-1",display:"flex",justifyContent:"flex-end"}}>
-        <Btn onClick={save} icon={<Ic.save size={14}/>}>{t("ss_save_all")}</Btn>
+        <Btn onClick={save} disabled={busy} icon={<Ic.save size={14}/>}>{busy?t("reg_submitting"):t("ss_save_all")}</Btn>
       </div>
     </div>
   );
@@ -3158,10 +3251,15 @@ function CarouselManager({notify}){
     setEditForm(ns);setEditOpen(true);
   };
   const openEdit=s=>{setEditForm(JSON.parse(JSON.stringify(s)));setEditOpen(true)};
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const saveEdit=async()=>{
-    const exists=allSlides.find(s=>s.id===editForm.id);
-    const updated=exists?allSlides.map(s=>s.id===editForm.id?{...editForm}:s):[...allSlides,{...editForm}];
-    await persist(updated);setEditOpen(false);notify(exists?t("msg_slide_updated"):t("msg_slide_created"));
+    if(busy)return;
+    setBusy(true);
+    try{
+      const exists=allSlides.find(s=>s.id===editForm.id);
+      const updated=exists?allSlides.map(s=>s.id===editForm.id?{...editForm}:s):[...allSlides,{...editForm}];
+      await persist(updated);setEditOpen(false);notify(exists?t("msg_slide_updated"):t("msg_slide_created"));
+    }finally{setBusy(false)}
   };
   const delSlide=async id=>{if(!window.confirm(t("confirm_delete_slide")))return;await persist(allSlides.filter(s=>s.id!==id));notify(t("msg_deleted"))};
   const togglePublish=async id=>{await persist(allSlides.map(s=>s.id===id?{...s,published:!s.published}:s));notify(t("msg_status_updated"))};
@@ -3297,7 +3395,7 @@ function CarouselManager({notify}){
           </div>
         )}
         <div style={{display:"flex",gap:9,marginTop:13}}>
-          <Btn full onClick={saveEdit}>{t("cm_save_slide")}</Btn>
+          <Btn full onClick={saveEdit} disabled={busy}>{busy?t("reg_submitting"):t("cm_save_slide")}</Btn>
           <Btn variant="secondary" onClick={()=>setEditOpen(false)}>{t("prices_cancel")}</Btn>
         </div>
       </Modal>
@@ -3570,6 +3668,408 @@ function AnimatedHeading({text,style:s}){
 }
 
 /* ════════════════════════════════════
+   BULK IMPORT / EXPORT (admin) — Excel/XLSX import workflow
+════════════════════════════════════
+   Design notes:
+   - Requires the `xlsx` (SheetJS) package, already a real dependency in
+     this project (added for the Admin -> Products/Listings "Export Excel"
+     feature, xlsx@0.18.5 per package.json/lockfile). Reuses that same
+     dependency rather than introducing a second spreadsheet library.
+     Deliberately references the bare `XLSX` identifier rather than adding
+     a second `import * as XLSX from "xlsx"` line, to avoid any risk of a
+     duplicate-import collision with the existing one at the top of this
+     file.
+   - Account-backed datasets (Farmers, Wholesalers, Businesses) all have
+     `id = auth.users.id` — a real Supabase Auth login. There is no safe
+     client-side way to bulk-create an auth account from a spreadsheet, so
+     import for these three is UPDATE-ONLY: a row with no matching existing
+     account (by phone number) is reported invalid, never silently turned
+     into a new account. For Businesses, `status` (approval) is never part
+     of the importable field list at all — approval safety is enforced by
+     omission, not by extra logic that could have a bug in it.
+   - Products have no auth account of their own, so real create+update is
+     safe, but every row must resolve to an existing farmer via a
+     `farmer_phone` column; on update, ownership fields are always taken
+     from the resolved farmer, never the sheet, preventing accidental
+     reassignment.
+   - Never touches DataMgr/downloadXLSX or the Admin -> Products/Listings
+     Export Excel button — entirely separate code path, confirmed by
+     direct search before this was written.
+*/
+// Safely turns whatever SheetJS hands back for a phone-like cell into a
+// digits-only string, regardless of whether it parsed as a string, a
+// number, or something else. SheetJS/Excel silently store a numeric-
+// looking cell (e.g. an unformatted phone number) as a JS number, not a
+// string — that's the real cause of a real bug found in mobile testing:
+// (r.phone||"").replace(...) only guards against falsy values, not
+// against non-zero numbers, which pass straight through and crash on
+// .replace since Number has no such method.
+// NOTE on leading zeros: if the spreadsheet cell was stored as a number
+// (e.g. Excel auto-detected "0788111222" as numeric), the leading zero is
+// already gone by the time this function ever sees the value — no amount
+// of string handling afterward can recover a digit Excel itself dropped.
+// This function preserves whatever leading zero is present in what it's
+// given; downloadTemplate below is also updated to write phone-type
+// columns as explicit text cells, so a phone number typed directly into
+// our own generated template keeps its leading zero on save.
+const normalizePhone=v=>{
+  if(v===undefined||v===null)return"";
+  return String(v).replace(/\D/g,"");
+};
+
+const IMPORT_DATASETS={
+  prices:{
+    label:"admin_tab_prices",
+    columns:["product","category","province","district","market","unit","current","previous","trend"],
+    required:["product","category","current"],
+    numeric:["current","previous"],
+    enums:{category:["Crops","Livestock"],trend:["up","down","stable"]},
+    naturalKey:r=>`${(r.product||"").toLowerCase()}|${(r.market||"").toLowerCase()}|${(r.district||"").toLowerCase()}`,
+    fetch:()=>DB.prices(),
+    save:rows=>DB.savePrices(rows),
+    makeNew:r=>({id:"pr"+Date.now()+Math.random().toString(36).slice(2,7),product:r.product,category:r.category||"Crops",province:r.province||"",district:r.district||"",market:r.market||"",unit:r.unit||"kg",current:parseFloat(r.current),previous:parseFloat(r.previous)||0,trend:r.trend||"stable",updatedAt:new Date().toISOString()}),
+    applyUpdate:(existing,r)=>({...existing,product:r.product,category:r.category||existing.category,province:r.province??existing.province,district:r.district??existing.district,market:r.market??existing.market,unit:r.unit||existing.unit,current:parseFloat(r.current),previous:r.previous!==undefined&&r.previous!==""?parseFloat(r.previous):existing.previous,trend:r.trend||existing.trend,updatedAt:new Date().toISOString()}),
+  },
+  tips:{
+    label:"admin_tab_tips",
+    columns:["title","category","image","content","author"],
+    required:["title","content"],
+    numeric:[],
+    enums:{category:["Crops","Livestock","General"]},
+    naturalKey:r=>(r.title||"").toLowerCase().trim(),
+    fetch:()=>DB.tips(),
+    save:rows=>DB.saveTips(rows),
+    makeNew:r=>({id:"t"+Date.now()+Math.random().toString(36).slice(2,7),title:r.title,category:r.category||"General",image:r.image||"",content:r.content,author:r.author||"Admin",publishedAt:new Date().toISOString()}),
+    applyUpdate:(existing,r)=>({...existing,title:r.title,category:r.category||existing.category,image:r.image||existing.image,content:r.content,author:r.author||existing.author}),
+  },
+  pests:{
+    label:"admin_tab_pests",
+    columns:["cropOrAnimal","name","symptoms","causes","prevention","treatment","severity","category"],
+    required:["cropOrAnimal","name"],
+    numeric:[],
+    enums:{severity:["low","medium","high"],category:["Crops","Livestock"]},
+    naturalKey:r=>`${(r.cropOrAnimal||"").toLowerCase()}|${(r.name||"").toLowerCase()}`,
+    fetch:()=>DB.pests(),
+    save:rows=>DB.savePests(rows),
+    makeNew:r=>({id:"pe"+Date.now()+Math.random().toString(36).slice(2,7),cropOrAnimal:r.cropOrAnimal,name:r.name,images:[""],symptoms:r.symptoms||"",causes:r.causes||"",prevention:r.prevention||"",treatment:r.treatment||"",severity:r.severity||"medium",category:r.category||"Crops"}),
+    applyUpdate:(existing,r)=>({...existing,cropOrAnimal:r.cropOrAnimal,name:r.name,symptoms:r.symptoms||existing.symptoms,causes:r.causes||existing.causes,prevention:r.prevention||existing.prevention,treatment:r.treatment||existing.treatment,severity:r.severity||existing.severity,category:r.category||existing.category}),
+  },
+  calendar:{
+    label:"admin_tab_calendar",
+    columns:["crop","province","district","plantMonth","harvestMonth","growingDays","notes"],
+    required:["crop","plantMonth","harvestMonth"],
+    numeric:["plantMonth","harvestMonth","growingDays"],
+    enums:{},
+    naturalKey:r=>`${(r.crop||"").toLowerCase()}|${(r.district||"").toLowerCase()}`,
+    fetch:()=>DB.calendar(),
+    save:rows=>DB.saveCalendar(rows),
+    makeNew:r=>({id:"cal"+Date.now()+Math.random().toString(36).slice(2,7),crop:r.crop,province:r.province||"",district:r.district||"",plantMonth:parseInt(r.plantMonth),harvestMonth:parseInt(r.harvestMonth),growingDays:parseInt(r.growingDays)||90,notes:r.notes||""}),
+    applyUpdate:(existing,r)=>({...existing,crop:r.crop,province:r.province??existing.province,district:r.district??existing.district,plantMonth:parseInt(r.plantMonth),harvestMonth:parseInt(r.harvestMonth),growingDays:r.growingDays?parseInt(r.growingDays):existing.growingDays,notes:r.notes??existing.notes}),
+  },
+  farmers:{
+    label:"admin_tab_farmers",
+    mode:"account-update",
+    columns:["phone","name","fType","district","sector","village","bio"],
+    required:["phone"],
+    numeric:[],
+    enums:{fType:["abahinzi","aborozi"]},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>DB.farmers(),
+    buildPatch:(existing,r)=>({name:r.name||existing.name,fType:r.fType||existing.fType,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village,bio:r.bio??existing.bio}),
+    applyPatch:(existing,patch)=>DB.updateFarmer(existing.id,patch),
+  },
+  wholesalers:{
+    label:"import_label_wholesalers",
+    mode:"account-update",
+    columns:["phone","company_name","contact_name","email","district","sector","products_description"],
+    required:["phone","company_name"],
+    numeric:[],
+    enums:{},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>WS.getAll(),
+    buildPatch:(existing,r)=>({company_name:r.company_name||existing.company_name,contact_name:r.contact_name??existing.contact_name,email:r.email??existing.email,district:r.district??existing.district,sector:r.sector??existing.sector,products_description:r.products_description??existing.products_description}),
+    applyPatch:(existing,patch)=>WS.updateFields(existing.id,patch),
+  },
+  businesses:{
+    label:"admin_tab_businesses",
+    mode:"account-update",
+    columns:["phone","trading_name","primary_category","contact_name","district","sector","village","description"],
+    required:["phone","trading_name"],
+    numeric:[],
+    enums:{primary_category:BUSINESS_CATEGORIES},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>Biz.getAll(),
+    // `status` is not in this list on purpose — see note above. Updating an
+    // existing business here can never change whether it's approved.
+    buildPatch:(existing,r)=>({trading_name:r.trading_name||existing.trading_name,primary_category:r.primary_category||existing.primary_category,contact_name:r.contact_name??existing.contact_name,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village,description:r.description??existing.description}),
+    applyPatch:(existing,patch)=>Biz._patchBusiness(existing.id,patch),
+  },
+  products:{
+    label:"admin_tab_products",
+    mode:"products",
+    columns:["farmer_phone","name","type","sub","price","qty","unit","district","sector","village","desc"],
+    required:["farmer_phone","name","type","price"],
+    numeric:["price","qty"],
+    enums:{type:["crop","animal"]},
+    naturalKey:r=>`${normalizePhone(r.farmer_phone)}|${(r.name||"").toLowerCase().trim()}`,
+    fetch:()=>DB.products(),
+    save:rows=>DB.saveProducts(rows),
+    resolveFarmer:(farmers,r)=>farmers.find(f=>normalizePhone(f.phone)===normalizePhone(r.farmer_phone)),
+    makeNew:(r,farmer)=>({id:"p"+Date.now()+Math.random().toString(36).slice(2,7),fid:farmer.id,fname:farmer.name,fphone:farmer.phone,name:r.name,type:r.type,sub:r.sub||"",price:parseFloat(r.price),desc:r.desc||"",qty:parseFloat(r.qty)||0,unit:r.unit||"kg",inStock:true,district:r.district||farmer.district||"",sector:r.sector||farmer.sector||"",village:r.village||farmer.village||"",views:0,featured:false,img1:"",img2:"",createdAt:new Date().toISOString()}),
+    applyUpdate:(existing,r,farmer)=>({...existing,fid:farmer.id,fname:farmer.name,fphone:farmer.phone,name:r.name,type:r.type,sub:r.sub||existing.sub,price:parseFloat(r.price),desc:r.desc||existing.desc,qty:r.qty!==undefined&&r.qty!==""?parseFloat(r.qty):existing.qty,unit:r.unit||existing.unit,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village}),
+  },
+};
+const MAX_IMPORT_BYTES=5*1024*1024; // 5 MB, same limit as image uploads
+const MAX_IMPORT_ROWS=2000; // sanity cap — a spreadsheet bigger than this needs a different tool, not this admin UI
+
+function BulkImportManager({user,notify}){
+  const{t}=useLang();
+  const[dataset,setDataset]=useState("prices");
+  const[fileErr,setFileErr]=useState("");
+  const[parsedRows,setParsedRows]=useState(null);
+  const[validation,setValidation]=useState(null);
+  const[busy,setBusy]=useState(false);
+  const[result,setResult]=useState(null);
+  const cfg=IMPORT_DATASETS[dataset];
+
+  const reset=()=>{setFileErr("");setParsedRows(null);setValidation(null);setResult(null)};
+  const changeDataset=d=>{setDataset(d);reset()};
+
+  const downloadTemplate=()=>{
+    if(typeof XLSX==="undefined"){notify(t("import_lib_unavailable"),"error");return}
+    const exampleRow={};
+    cfg.columns.forEach(c=>{
+      if(c==="phone"||c==="farmer_phone")exampleRow[c]="0788000000"; // realistic example, not a blank cell — see cell-typing note below
+      else exampleRow[c]=cfg.enums[c]?cfg.enums[c][0]:(cfg.numeric.includes(c)?0:"");
+    });
+    const ws=XLSX.utils.json_to_sheet([exampleRow],{header:cfg.columns});
+    // Force the phone example cell to an explicit text type ('s'), not a
+    // number — otherwise SheetJS may write/read it back as numeric and an
+    // admin re-opening the template could see (or accidentally cause) a
+    // dropped leading zero. This only protects the example row SheetJS
+    // controls directly; if an admin later types a new phone number into
+    // an untouched cell, their spreadsheet app's own auto-formatting still
+    // applies — there is no reliable cross-app way to force that from a
+    // template, so normalizePhone() above is the real, always-effective
+    // safety net regardless of how a cell ends up typed.
+    const phoneCol=cfg.columns.indexOf("phone")>=0?cfg.columns.indexOf("phone"):cfg.columns.indexOf("farmer_phone");
+    if(phoneCol>=0){
+      const addr=XLSX.utils.encode_cell({r:1,c:phoneCol}); // row 1 = first data row (row 0 is the header)
+      if(ws[addr]){ws[addr].t="s";ws[addr].z="@"}
+    }
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Template");
+    XLSX.writeFile(wb,`Inkingi-${dataset}-template.xlsx`);
+  };
+
+  const handleFile=async e=>{
+    reset();
+    const file=e.target.files[0];
+    if(!file)return;
+    if(!/\.(xlsx|csv)$/i.test(file.name)){setFileErr(t("import_bad_filetype"));return}
+    if(file.size>MAX_IMPORT_BYTES){setFileErr(t("import_too_large"));return}
+    if(typeof XLSX==="undefined"){setFileErr(t("import_lib_unavailable"));return}
+    setBusy(true);
+    try{
+      await AuditLog.log(user,"IMPORT_STARTED",`dataset=${dataset} file=${file.name}`);
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:"array"});
+      const sheet=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(sheet,{defval:""});
+      if(rows.length===0){setFileErr(t("import_empty_file"));return}
+      if(rows.length>MAX_IMPORT_ROWS){setFileErr(t("import_too_many_rows").replace("{n}",MAX_IMPORT_ROWS));return}
+      const gotCols=Object.keys(rows[0]);
+      const missingCols=cfg.columns.filter(c=>cfg.required.includes(c)&&!gotCols.includes(c));
+      if(missingCols.length>0){setFileErr(t("import_missing_columns")+" "+missingCols.join(", "));return}
+      setParsedRows(rows);
+      await validateRows(rows);
+    }catch(err){
+      setFileErr(t("import_parse_failed")+" "+err.message);
+      await AuditLog.log(user,"IMPORT_VALIDATION_FAILED",`dataset=${dataset} parse error: ${err.message}`);
+    }finally{setBusy(false)}
+  };
+
+  const validateRows=async rows=>{
+    const existing=await cfg.fetch();
+    const existingByKey=new Map(existing.map(r=>[cfg.naturalKey(r),r]));
+    const farmersList=cfg.mode==="products"?await DB.farmers():null;
+    const seenInSheet=new Set();
+    const valid=[],invalid=[],duplicates=[];
+    rows.forEach((r,idx)=>{
+      const rowNum=idx+2;
+      const errs=[];
+      for(const field of cfg.required){
+        if(r[field]===undefined||r[field]===null||String(r[field]).trim()===""){
+          errs.push({field,value:r[field],problem:t("import_err_required"),suggestion:t("import_err_required_fix")});
+        }
+      }
+      for(const field of cfg.numeric){
+        if(r[field]!==undefined&&r[field]!==""&&isNaN(parseFloat(r[field]))){
+          errs.push({field,value:r[field],problem:t("import_err_not_number"),suggestion:t("import_err_not_number_fix")});
+        }
+      }
+      for(const field of Object.keys(cfg.enums)){
+        if(r[field]&&!cfg.enums[field].some(v=>v.toLowerCase()===String(r[field]).toLowerCase())){
+          errs.push({field,value:r[field],problem:t("import_err_invalid_value"),suggestion:t("import_err_invalid_value_fix")+" "+cfg.enums[field].join("/")});
+        }
+      }
+      let farmer=null;
+      if(cfg.mode==="products"&&errs.length===0){
+        farmer=cfg.resolveFarmer(farmersList,r);
+        if(!farmer){errs.push({field:"farmer_phone",value:r.farmer_phone,problem:t("import_err_no_farmer"),suggestion:t("import_err_no_farmer_fix")})}
+      }
+      if(errs.length>0){invalid.push({rowNum,row:r,errors:errs});return}
+      const key=cfg.naturalKey(r);
+      if(seenInSheet.has(key)){duplicates.push({rowNum,row:r,reason:t("import_dup_in_sheet")});return}
+      seenInSheet.add(key);
+      const matchesExisting=existingByKey.get(key);
+      if(cfg.mode==="account-update"&&!matchesExisting){
+        invalid.push({rowNum,row:r,errors:[{field:"phone",value:r.phone,problem:t("import_err_no_match"),suggestion:t("import_err_no_match_fix")}]});
+        return;
+      }
+      valid.push({rowNum,row:r,mode:matchesExisting?"update":"create",existing:matchesExisting||null,farmer});
+    });
+    setValidation({valid,invalid,duplicates,total:rows.length});
+  };
+
+  const confirmImport=async()=>{
+    if(busy||!validation||validation.valid.length===0)return;
+    setBusy(true);
+    try{
+      let created=0,updatedCount=0;
+      if(cfg.mode==="account-update"){
+        for(const v of validation.valid){
+          const patch=cfg.buildPatch(v.existing,v.row);
+          const r=await cfg.applyPatch(v.existing,patch);
+          if(!r.ok)throw new Error(r.reason||"Update failed");
+          updatedCount++;
+        }
+      }else{
+        const existing=await cfg.fetch();
+        let updated=[...existing];
+        for(const v of validation.valid){
+          if(v.mode==="update"){
+            updated=updated.map(row=>cfg.naturalKey(row)===cfg.naturalKey(v.row)?(cfg.mode==="products"?cfg.applyUpdate(row,v.row,v.farmer):cfg.applyUpdate(row,v.row)):row);
+            updatedCount++;
+          }else{
+            updated.push(cfg.mode==="products"?cfg.makeNew(v.row,v.farmer):cfg.makeNew(v.row));
+            created++;
+          }
+        }
+        await cfg.save(updated);
+      }
+      const summary=`dataset=${dataset} created=${created} updated=${updatedCount} skipped_invalid=${validation.invalid.length} skipped_duplicate=${validation.duplicates.length}`;
+      await AuditLog.log(user,"IMPORT_COMPLETED",summary);
+      setResult({ok:true,created,updated:updatedCount});
+      notify(t("import_success"));
+    }catch(err){
+      await AuditLog.log(user,"IMPORT_PARTIAL_FAILURE",`dataset=${dataset} error=${err.message}`);
+      setResult({ok:false,error:err.message});
+      notify(t("import_failed")+" "+err.message,"error");
+    }finally{setBusy(false)}
+  };
+
+  const exportCSV=async()=>{
+    const rows=await cfg.fetch();
+    if(rows.length===0){notify(t("export_no_rows"),"warn");return}
+    const cols=cfg.columns;
+    const escape=v=>{const s=String(v??"");return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s};
+    const csv=[cols.join(","),...rows.map(r=>cols.map(c=>escape(r[c])).join(","))].join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=`Inkingi-${dataset}.csv`;a.click();URL.revokeObjectURL(url);
+    await AuditLog.log(user,"EXPORT_CREATED",`dataset=${dataset} format=csv rows=${rows.length}`);
+  };
+
+  return(
+    <div>
+      <div style={{marginBottom:16}}>
+        <h3 style={{margin:"0 0 3px",fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.upload size={16} color={G.g6}/> {t("import_title")}</h3>
+        <p style={{margin:0,fontSize:12,color:G.gray5}}>{t("import_subtitle")}</p>
+      </div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+        {Object.keys(IMPORT_DATASETS).map(d=>(
+          <button key={d} onClick={()=>changeDataset(d)} style={{padding:"7px 14px",borderRadius:99,border:"none",fontWeight:700,fontSize:12,cursor:"pointer",background:dataset===d?G.g6:G.gray1,color:dataset===d?G.white:G.gray7,fontFamily:FB}}>{t(IMPORT_DATASETS[d].label)}</button>
+        ))}
+      </div>
+      <div style={{background:G.white,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16,display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+        <Btn variant="secondary" onClick={downloadTemplate} icon={<Ic.download size={14}/>}>{t("import_download_template")}</Btn>
+        <label style={{display:"inline-flex",alignItems:"center",gap:6,background:G.g6,color:G.white,padding:"9px 16px",borderRadius:G.r,cursor:busy?"default":"pointer",fontWeight:700,fontSize:13,fontFamily:FB,opacity:busy?.6:1}}>
+          <Ic.upload size={14}/> {t("import_upload_file")}
+          <input type="file" accept=".xlsx,.csv" onChange={handleFile} disabled={busy} style={{display:"none"}}/>
+        </label>
+        <Btn variant="secondary" onClick={exportCSV} icon={<Ic.download size={14}/>}>{t("export_csv")}</Btn>
+      </div>
+
+      {fileErr&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:G.r,padding:"12px 16px",color:"#991b1b",fontSize:13,marginBottom:16}}>{fileErr}</div>}
+
+      {validation&&(
+        <div style={{background:G.white,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16}}>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:14}}>
+            <Badge color="blue">{t("import_total_rows")}: {validation.total}</Badge>
+            <Badge color="green">{t("import_valid_rows")}: {validation.valid.length}</Badge>
+            <Badge color="red">{t("import_invalid_rows")}: {validation.invalid.length}</Badge>
+            <Badge color="gold">{t("import_duplicate_rows")}: {validation.duplicates.length}</Badge>
+          </div>
+
+          {validation.invalid.length>0&&(
+            <div style={{marginBottom:14}}>
+              <h4 style={{margin:"0 0 8px",fontSize:13,color:G.gray9}}>{t("import_errors_title")}</h4>
+              <div style={{overflowX:"auto"}}>
+                <div style={{display:"flex",flexDirection:"column",gap:6,minWidth:320}}>
+                  {validation.invalid.slice(0,50).map((iv,i)=>(
+                    <div key={i} style={{fontSize:12,color:G.gray7,background:"#fef2f2",borderRadius:8,padding:"7px 10px"}}>
+                      <strong>{t("import_row")} {iv.rowNum}:</strong> {iv.errors.map((e,ei)=>(
+                        <span key={ei}>{t("import_field")} <code>{e.field}</code> = "{String(e.value)}" — {e.problem} ({e.suggestion}){ei<iv.errors.length-1?"; ":""}</span>
+                      ))}
+                    </div>
+                  ))}
+                  {validation.invalid.length>50&&<p style={{fontSize:11,color:G.gray5}}>{t("import_more_errors").replace("{n}",validation.invalid.length-50)}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {validation.valid.length>0&&(
+            <div style={{marginBottom:14}}>
+              <h4 style={{margin:"0 0 8px",fontSize:13,color:G.gray9}}>{t("import_preview_title")}</h4>
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:420}}>
+                  <thead><tr style={{textAlign:"left",color:G.gray5,borderBottom:`1px solid ${G.gray1}`}}>
+                    <th style={{padding:"6px 8px"}}>{t("import_row")}</th>
+                    <th style={{padding:"6px 8px"}}>{t("import_mode")}</th>
+                    {cfg.columns.slice(0,4).map(c=><th key={c} style={{padding:"6px 8px"}}>{c}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    {validation.valid.slice(0,20).map((v,i)=>(
+                      <tr key={i} style={{borderBottom:`1px solid ${G.gray1}`}}>
+                        <td style={{padding:"6px 8px",color:G.gray5}}>{v.rowNum}</td>
+                        <td style={{padding:"6px 8px"}}><Badge color={v.mode==="create"?"green":"blue"}>{v.mode==="create"?t("import_mode_create"):t("import_mode_update")}</Badge></td>
+                        {cfg.columns.slice(0,4).map(c=><td key={c} style={{padding:"6px 8px",color:G.gray7}}>{String(v.row[c]??"")}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {validation.valid.length>20&&<p style={{fontSize:11,color:G.gray5,marginTop:6}}>{t("import_more_rows").replace("{n}",validation.valid.length-20)}</p>}
+              </div>
+            </div>
+          )}
+
+          {!result&&validation.valid.length>0&&(
+            <div style={{display:"flex",gap:9}}>
+              <Btn onClick={confirmImport} disabled={busy} icon={<Ic.check size={14}/>}>{busy?t("reg_submitting"):t("import_confirm")+` (${validation.valid.length})`}</Btn>
+              <Btn variant="secondary" onClick={reset} disabled={busy}>{t("prices_cancel")}</Btn>
+            </div>
+          )}
+          {result&&result.ok&&<div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:G.r,padding:"12px 16px",color:"#166534",fontSize:13}}>{t("import_result_success").replace("{created}",result.created).replace("{updated}",result.updated)}</div>}
+          {result&&!result.ok&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:G.r,padding:"12px 16px",color:"#991b1b",fontSize:13}}>{t("import_result_failure")} {result.error}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════
    MAIN APP
 ════════════════════════════════════ */
 function AppInner(){
@@ -3608,10 +4108,15 @@ function AppInner(){
     return ()=>clearInterval(t);
   },[]);
   const[farmerFilter,setFarmerFilter]=useState(""); // "" | "pending" — set when a dashboard stat card is clicked
+  const[farmerPage,setFarmerPage]=useState(1); // admin Farmers list — render-level pagination only; filtering/search still runs over the full array, this just controls how many rows are shown at once
+  const[bizPage,setBizPage]=useState(1); // same pattern for admin Businesses list
+  const[prodPage,setProdPage]=useState(1); // admin Products/Listings list — display-only, does NOT affect the existing Export Excel button (that reads the full `allP`/`products` array directly, untouched)
+  useEffect(()=>{setFarmerPage(1)},[farmerFilter]); // avoid landing on an out-of-range empty page when the filter changes
   const[bizFilter,setBizFilter]=useState(""); // "" | "pending" — same pattern as farmerFilter, for the Admin Businesses tab
   const[bizSearch,setBizSearch]=useState(""); // free-text search — trading/legal name, phone, email (client-side over the already-fetched businesses array, see Admin Businesses tab)
   const[bizCatFilter,setBizCatFilter]=useState(""); // "" | one of BUSINESS_CATEGORY_CONFIG's keys
   const[bizSort,setBizSort]=useState("newest"); // "newest" | "oldest"
+  useEffect(()=>{setBizPage(1)},[bizFilter,bizCatFilter,bizSearch]); // avoid an out-of-range empty page when filters change
   const[detailBusiness,setDetailBusiness]=useState(null); // business row shown in the Admin detail modal
   const[editBusiness,setEditBusiness]=useState(null); // business row currently open in the Admin edit modal
   const[myProducts,setMyProducts]=useState([]); // the logged-in business's own business_products rows (real schema/RLS verified live via Supabase connector)
@@ -4294,7 +4799,7 @@ function AppInner(){
     // up in "All Farmers" / Pending Approvals without touching the
     // underlying data or any delete/status function.
     const allF=farmers.filter(f=>f.role!=="admin");const allP=products;const allB=businesses;
-    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["activity",t("admin_tab_activity"),Ic.hours]];
+    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["import",t("admin_tab_import"),Ic.upload],["activity",t("admin_tab_activity"),Ic.hours]];
     return(
       <div style={{background:G.pageBg,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
@@ -4364,6 +4869,7 @@ function AppInner(){
 
           {adminTab==="farmers"&&(()=>{
             const shown=farmerFilter==="pending"?allF.filter(f=>f.status==="pending"):allF;
+            const pageRows=shown.slice((farmerPage-1)*ADMIN_PAGE_SIZE,farmerPage*ADMIN_PAGE_SIZE);
             return(
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
@@ -4371,7 +4877,7 @@ function AppInner(){
                 {farmerFilter&&<Btn size="sm" variant="ghost" onClick={()=>setFarmerFilter("")} icon={<Ic.close size={13}/>}>{t("admin_clear_filter")}</Btn>}
               </div>
               {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_farmers_match")}</div>}
-              {shown.map(f=>(
+              {pageRows.map(f=>(
                 <div key={f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
                     <FarmerPhoto farmer={f} size={40} radius={10}/>
@@ -4391,6 +4897,7 @@ function AppInner(){
                   </div>
                 </div>
               ))}
+              <Pager page={farmerPage} setPage={setFarmerPage} total={shown.length}/>
             </div>
           );})()}
 
@@ -4478,7 +4985,7 @@ function AppInner(){
                 </select>
               </div>
               {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_businesses_match")}</div>}
-              {shown.map(b=>(
+              {shown.slice((bizPage-1)*ADMIN_PAGE_SIZE,bizPage*ADMIN_PAGE_SIZE).map(b=>(
                 <div key={b.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div onClick={()=>setDetailBusiness(b)} style={{display:"flex",gap:10,alignItems:"center",cursor:"pointer"}}>
                     <div style={{width:40,height:40,borderRadius:10,overflow:"hidden",background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
@@ -4511,6 +5018,7 @@ function AppInner(){
                   </div>
                 </div>
               ))}
+              <Pager page={bizPage} setPage={setBizPage} total={shown.length}/>
             </div>
           );})()}
 
@@ -4520,7 +5028,11 @@ function AppInner(){
                 <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{t("admin_all_listings")} ({allP.length})</h3>
                 <div style={{display:"flex",gap:6}}><Btn size="sm" variant="secondary" icon={<Ic.download size={14}/>} onClick={()=>{const rows=allP.map(p=>[p.name,p.category||p.type,p.price||"",p.unit||"",p.fname||"",p.views||0,p.inStock?"In Stock":"Out of Stock",p.featured?"Yes":"No",p.status||"",p.district||"",p.sector||""]);DataMgr.downloadXLSX(rows,["Product","Category","Price (RWF)","Unit","Farmer/Wholesaler","Views","Stock","Featured","Status","District","Sector"],"Inkingi-Products.xlsx")}}>Export Excel</Btn><Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn></div>
               </div>
-              {allP.map(p=>(
+              {/* Display-only pagination — `allP` itself (the full product
+                  array) is untouched and still what the existing Export
+                  Excel button and DataMgr.downloadXLSX() above read from;
+                  only what's rendered here is sliced. */}
+              {allP.slice((prodPage-1)*ADMIN_PAGE_SIZE,prodPage*ADMIN_PAGE_SIZE).map(p=>(
                 <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
                     <div style={{width:46,height:38,borderRadius:7,overflow:"hidden",background:G.gray1,flexShrink:0}}>
@@ -4538,6 +5050,7 @@ function AppInner(){
                   </div>
                 </div>
               ))}
+              <Pager page={prodPage} setPage={setProdPage} total={allP.length}/>
             </div>
           )}
 
@@ -4548,6 +5061,7 @@ function AppInner(){
           {adminTab==="carousel"&&<CarouselManager notify={notify}/>}
           {adminTab==="ads"&&<AdManager notify={notify}/>}
           {adminTab==="site"&&<SiteSettingsManager notify={notify}/>}
+          {adminTab==="import"&&<BulkImportManager user={user} notify={notify}/>}
         </div>
       </div>
     );
@@ -4693,8 +5207,8 @@ function AppInner(){
           </div>
           <div ref={searchRef} className="ik-navbar-search" style={{position:"relative",flex:1,maxWidth:400}}>
             <div style={{display:"flex",background:"rgba(255,255,255,.11)",border:"1.5px solid rgba(255,255,255,.18)",borderRadius:99,overflow:"hidden"}}>
-              <input value={searchQ} onChange={e=>handleSugInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder="Search products…" style={{flex:1,background:"none",border:"none",outline:"none",padding:"7px 13px",color:G.white,fontSize:12,fontFamily:FB}}/>
-              <button onClick={()=>doSearch()} style={{background:"rgba(255,255,255,.14)",border:"none",color:G.white,padding:"7px 11px",cursor:"pointer",display:"flex",alignItems:"center"}}><Ic.search size={14}/></button>
+              <input value={searchQ} onChange={e=>handleSugInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder={t("search_placeholder")||"Search products…"} aria-label={t("search_placeholder")||"Search products"} style={{flex:1,background:"none",border:"none",outline:"none",padding:"7px 13px",color:G.white,fontSize:12,fontFamily:FB}}/>
+              <button onClick={()=>doSearch()} aria-label={t("nav_search")||"Search"} style={{background:"rgba(255,255,255,.14)",border:"none",color:G.white,padding:"7px 11px",cursor:"pointer",display:"flex",alignItems:"center"}}><Ic.search size={14}/></button>
             </div>
             {showSugg&&sugg.length>0&&(
               <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:G.white,borderRadius:G.r,boxShadow:G.shXL,overflow:"hidden",zIndex:300}}>
