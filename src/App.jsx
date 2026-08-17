@@ -821,7 +821,6 @@ const SA = {
   // comment there for why: two sessions saving the farmers table with
   // different/stale snapshots must never be able to delete each other's
   // rows as a side effect of an unrelated save.
-  //
   // `cacheRows`: optional. When provided, the LOCAL cache (this
   // browser's offline/instant-UI copy) is written using this fuller
   // array, while the actual network request to Supabase still only
@@ -866,7 +865,6 @@ const SA = {
   // connected, to push whatever this browser has cached in localStorage up to
   // the database — useful the first time credentials are added after
   // developing locally, so existing content isn't lost.
-  //
   // Deliberately does NOT push "farmers" — real farmer/admin accounts must
   // be genuine Supabase Auth users (see SETUP.md "Create your first admin
   // account"), not localStorage rows copied in directly, since those would
@@ -1154,7 +1152,6 @@ const BizProd = {
 // live in their own `admins` table (separate from `farmers`/`wholesalers`
 // on purpose) so that farmer/wholesaler management actions (delete/block/
 // edit) can never touch an Admin account, structurally, by construction.
-//
 // The `admins` table itself has RLS enabled with NO policies at all — no
 // role (not even a logged-in admin) can read or write it directly via
 // PostgREST. Every operation below goes through a SECURITY DEFINER RPC
@@ -1189,12 +1186,63 @@ const AdminTbl = {
   // Super-admin-only. Creates a pending admin_invites row; does NOT create
   // a Supabase Auth account (see the Admins tab's inline note about this
   // limitation — that's Phase 1b work, deliberately not done here).
-  async invite(email, permissions) {
-    const row = await SB.post("rpc/invite_admin", { p_email: email, p_permissions: permissions || [] });
-    lastSyncOk = true;
-    return row;
-  },
-  // Super-admin-only.
+async invite(email, permissions) {
+  const row = await SB.post("rpc/invite_admin", {
+    p_email: email,
+    p_permissions: permissions || []
+  });
+
+  lastSyncOk = true;
+
+  if (!row?.id) {
+    throw new Error("Invitation was not created");
+  }
+
+  try {
+    const session = DB.getSession();
+
+    if (!session?.access_token) {
+      throw new Error("No active authentication session");
+    }
+
+    const response = await fetch(
+      `${ENV.supabaseUrl}/functions/v1/send-admin-invite`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: ENV.supabaseAnonKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invite_id: row.id
+        })
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        result?.error ||
+        "Invitation was created, but the email could not be sent"
+      );
+    }
+
+    return {
+      ...row,
+      email_sent: true,
+      email_message_id: result?.messageId || null
+    };
+  } catch (emailError) {
+    console.error("Admin invitation email error:", emailError);
+
+    throw new Error(
+      emailError?.message ||
+      "Invitation was created, but the invitation email could not be sent"
+    );
+  }
+},
   async revokeInvite(inviteId) {
     const ok = await SB.post("rpc/revoke_admin_invite", { p_invite_id: inviteId });
     lastSyncOk = true;
@@ -1597,7 +1645,6 @@ const DB = {
   // effect of an incomplete/stale array — see SA.save's comment. Actual
   // farmer deletion is handled explicitly by deleteFarmer() below, via a
   // direct single-row DELETE rather than this diff mechanism.
-  //
   // cacheRows (optional): lets a caller send only the one row that
   // actually needs to reach Supabase (v) while keeping this browser's
   // local cache showing the full known set — see register()/login()
@@ -1626,7 +1673,6 @@ const DB = {
   // matching public profile row in `farmers`, linked by the same id so
   // RLS policies (e.g. "a farmer can only edit their own profile/products")
   // can check `id = auth.uid()`.
-  //
   // `role` defaults to "farmer" (unchanged original behavior). Passing
   // role:"wholesaler" writes the profile row into `wholesalers` instead,
   // via WS.add — same auth.signUp step, same pending-approval status, same
@@ -1707,7 +1753,6 @@ const DB = {
   // were never actually reached. A direct SB.patch is a genuine SQL
   // UPDATE, checked only against the UPDATE policies — same fix already
   // proven working in WS.setStatus/WS.updateImage above.
-  //
   // farmers is the jsonb-wrapped table (id, data, created_at) — unlike
   // wholesalers' flat columns, every field lives inside `data`, and a
   // PATCH replaces that column's value outright rather than merging by
