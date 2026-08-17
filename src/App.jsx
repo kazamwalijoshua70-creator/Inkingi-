@@ -450,6 +450,46 @@ const TRANSLATIONS = {
   admin_tab_site:{en:"Site Settings",rw:"Igenamiterere ry'Urubuga",fr:"Paramètres du site"},
   admin_tab_activity:{en:"Activity",rw:"Ibikorwa",fr:"Activité"},
   admin_tab_businesses:{en:"Businesses",rw:"Ubucuruzi",fr:"Entreprises"},
+  // Phase 1a — Admins (Super Admin / Sub-Admin management) tab
+  admin_tab_admins:{en:"Admins",rw:"Abayobozi",fr:"Administrateurs"},
+  admins_subtitle:{en:"Invite and manage sub-administrators and their permissions",rw:"Tumira kandi ugenzure abayobozi bafasha n'uburenganzira bwabo",fr:"Invitez et gérez les sous-administrateurs et leurs autorisations"},
+  admins_super_only:{en:"Only the Super Admin can access administrator management.",rw:"Ni Umuyobozi Mukuru gusa wemerewe kugenzura abandi bayobozi.",fr:"Seul le Super Administrateur peut gérer les administrateurs."},
+  admins_invite_admin:{en:"Invite Admin",rw:"Tumira Umuyobozi",fr:"Inviter un administrateur"},
+  admins_invite_limitation:{en:"Note: the invited person must sign in (or register) using this exact email address before they can become an administrator — sending an invite does not create their account for them.",rw:"Icyitonderwa: uwatumiwe agomba kwinjira (cyangwa kwiyandikisha) akoresheje iyi imeli nyayo mbere yo kuba umuyobozi — kohereza ubutumire ntibihita bikora konti ye.",fr:"Remarque : la personne invitée doit se connecter (ou s'inscrire) avec cette adresse e-mail exacte avant de pouvoir devenir administrateur — l'envoi d'une invitation ne crée pas son compte automatiquement."},
+  admins_invalid_email:{en:"Enter a valid email address",rw:"Andika imeli inyayo",fr:"Saisissez une adresse e-mail valide"},
+  admins_invite_sent:{en:"Invitation sent",rw:"Ubutumire bwoherejwe",fr:"Invitation envoyée"},
+  admins_action_failed:{en:"That action could not be completed",rw:"Iki gikorwa ntikirakunda",fr:"Cette action n'a pas pu être effectuée"},
+  admins_email:{en:"Email",rw:"Imeli",fr:"E-mail"},
+  admins_permissions:{en:"Permissions",rw:"Uburenganzira",fr:"Autorisations"},
+  admins_send_invite:{en:"Send Invite",rw:"Ohereza Ubutumire",fr:"Envoyer l'invitation"},
+  admins_edit_permissions:{en:"Edit Permissions",rw:"Hindura Uburenganzira",fr:"Modifier les autorisations"},
+  admins_save_changes:{en:"Save Changes",rw:"Bika Impinduka",fr:"Enregistrer les modifications"},
+  admins_role_super:{en:"Super Admin",rw:"Umuyobozi Mukuru",fr:"Super administrateur"},
+  admins_role_sub:{en:"Sub-Admin",rw:"Umuyobozi Wungirije",fr:"Sous-administrateur"},
+  admins_active:{en:"Active",rw:"Arakora",fr:"Actif"},
+  admins_inactive:{en:"Inactive",rw:"Ntabwo akora",fr:"Inactif"},
+  admins_you:{en:"You",rw:"Wowe",fr:"Vous"},
+  admins_created:{en:"Created",rw:"Yashyizweho",fr:"Créé"},
+  admins_no_permissions:{en:"No permissions assigned yet",rw:"Nta burenganzira buhawe",fr:"Aucune autorisation attribuée"},
+  admins_super_full_access:{en:"Super Admin — full access to all areas",rw:"Umuyobozi Mukuru — afite uburenganzira bwose",fr:"Super administrateur — accès complet à tous les domaines"},
+  admins_deactivate:{en:"Deactivate",rw:"Hagarika",fr:"Désactiver"},
+  admins_activate:{en:"Activate",rw:"Fungura",fr:"Activer"},
+  admins_remove_admin:{en:"Remove Admin",rw:"Kuraho Umuyobozi",fr:"Supprimer l'administrateur"},
+  admins_remove_confirm:{en:"Remove {name} as an administrator? This cannot be undone from this screen.",rw:"Kuraho {name} nk'umuyobozi? Ibi ntibishobora gusubizwa muri iki gice.",fr:"Supprimer {name} en tant qu'administrateur ? Cette action est irréversible depuis cet écran."},
+  admins_removed:{en:"Administrator removed",rw:"Umuyobozi yakuweho",fr:"Administrateur supprimé"},
+  admins_none:{en:"No administrators found",rw:"Nta muyobozi uboneka",fr:"Aucun administrateur trouvé"},
+  admins_pending_invitations:{en:"Pending Invitations",rw:"Ubutumire Bugitegereje",fr:"Invitations en attente"},
+  admins_no_pending_invitations:{en:"No pending invitations",rw:"Nta butumire bugitegereje",fr:"Aucune invitation en attente"},
+  admins_invited:{en:"Invited",rw:"Yatumiwe",fr:"Invité le"},
+  admins_expires:{en:"Expires",rw:"Irangira",fr:"Expire le"},
+  admins_expired_on:{en:"Expired",rw:"Yarangiye",fr:"Expirée le"},
+  admins_expired:{en:"Expired",rw:"Byarangiye",fr:"Expirée"},
+  admins_revoke:{en:"Revoke",rw:"Kuraho",fr:"Révoquer"},
+  admins_invite_revoked:{en:"Invitation revoked",rw:"Ubutumire bwakuweho",fr:"Invitation révoquée"},
+  admins_invite_prompt:{en:"If a Super Admin has invited you to help manage Inkingi, you can activate that invitation below.",rw:"Niba Umuyobozi Mukuru yakutumiye gufasha gucunga Inkingi, ushobora gukoresha ubwo butumire hano.",fr:"Si un super administrateur vous a invité à aider à gérer Inkingi, vous pouvez activer cette invitation ci-dessous."},
+  admins_check_invite:{en:"Activate Admin Invitation",rw:"Koresha Ubutumire bw'Ubuyobozi",fr:"Activer l'invitation d'administrateur"},
+  admins_invite_accepted:{en:"Welcome — your administrator access is now active.",rw:"Murakaza neza — uburenganzira bwawe bw'ubuyobozi burakora ubu.",fr:"Bienvenue — votre accès administrateur est maintenant actif."},
+  admins_no_pending_invite:{en:"No pending admin invitation was found for your account",rw:"Nta butumire bw'ubuyobozi bwabonetse kuri konti yawe",fr:"Aucune invitation d'administrateur en attente n'a été trouvée pour votre compte"},
   admin_all_businesses:{en:"All Businesses",rw:"Ubucuruzi Bwose",fr:"Toutes les entreprises"},
   admin_pending_businesses:{en:"Pending Businesses",rw:"Ubucuruzi Butegereje",fr:"Entreprises en attente"},
   admin_total_businesses:{en:"Total Businesses",rw:"Ubucuruzi Bwose",fr:"Total entreprises"},
@@ -1110,25 +1150,21 @@ const BizProd = {
   },
 };
 
-// Dedicated Admin profile lookup — deliberately read-only from the app.
-// Admin accounts live in their own `admins` table (separate from
-// `farmers`/`wholesalers` on purpose) so that farmer/wholesaler
-// management actions (delete/block/edit) can never touch an Admin
-// account, structurally, by construction. There is no add/update/delete
-// here: per the RLS policy this table uses, only the Supabase service
-// role can write to it — admin accounts are provisioned via SQL in the
-// Supabase dashboard, the same way the very first admin account was.
+// Dedicated Admin profile lookup + Super Admin management. Admin accounts
+// live in their own `admins` table (separate from `farmers`/`wholesalers`
+// on purpose) so that farmer/wholesaler management actions (delete/block/
+// edit) can never touch an Admin account, structurally, by construction.
 //
-// The `admins` table itself has NO select policy for authenticated
-// users (see admin-table-migration.sql) — a farmer/wholesaler cannot
-// read it directly. The only way to check "is the current user an
-// admin?" is this security-definer RPC, which uses auth.uid() from the
-// caller's own verified session server-side (never a client-supplied
-// value) and returns only the caller's own row, or nothing. The `uid`
-// parameter here is used purely to keep this function's call signature
-// consistent with the rest of the file (WS.getOne-style lookups) — the
-// database ignores it entirely and answers strictly for whoever is
-// actually logged in.
+// The `admins` table itself has RLS enabled with NO policies at all — no
+// role (not even a logged-in admin) can read or write it directly via
+// PostgREST. Every operation below goes through a SECURITY DEFINER RPC
+// instead, each of which re-checks the caller's own permissions
+// server-side (via auth.uid()/is_super_admin()) before doing anything.
+// getOne() remains self-only and read-only, as before. The methods added
+// below (Phase 1a) reuse the RPCs that already existed in the database
+// before any frontend called them — none of them are new database
+// objects except list(), which calls the one function this phase added
+// (list_admins()) because no "list everyone" RPC previously existed.
 const AdminTbl = {
   async getOne(uid) {
     if (HAS_SUPABASE) {
@@ -1140,7 +1176,115 @@ const AdminTbl = {
     }
     return null;
   },
+  // Super-admin-only: returns every admin row. Throws (via SB.post's
+  // normal error path) with the database's own "Only a super admin may
+  // list administrators" message if called by anyone else — callers
+  // should catch and surface that, not assume success.
+  async list() {
+    if (!HAS_SUPABASE) return [];
+    const rows = await SB.post("rpc/list_admins", {});
+    lastSyncOk = true;
+    return rows || [];
+  },
+  // Super-admin-only. Creates a pending admin_invites row; does NOT create
+  // a Supabase Auth account (see the Admins tab's inline note about this
+  // limitation — that's Phase 1b work, deliberately not done here).
+  async invite(email, permissions) {
+    const row = await SB.post("rpc/invite_admin", { p_email: email, p_permissions: permissions || [] });
+    lastSyncOk = true;
+    return row;
+  },
+  // Super-admin-only.
+  async revokeInvite(inviteId) {
+    const ok = await SB.post("rpc/revoke_admin_invite", { p_invite_id: inviteId });
+    lastSyncOk = true;
+    return ok;
+  },
+  // Super-admin-only, enforced by the existing admin_invites RLS policy
+  // (admin_invites_super_all — FOR ALL USING(is_super_admin())), not a new
+  // RPC: that policy already permits a super admin to SELECT this table
+  // directly, so no new database object was needed to list invitations.
+  // For a non-super-admin, RLS silently filters every row (an empty
+  // array), rather than raising an exception the way the RPCs do — that
+  // is the table's own pre-existing, unmodified behavior, not something
+  // added here.
+  async listInvites() {
+    if (!HAS_SUPABASE) return [];
+    const rows = await SB.get("admin_invites", "select=id,email,permissions,invited_by,created_at,accepted_at,revoked,expires_at&order=created_at.desc");
+    lastSyncOk = true;
+    return rows || [];
+  },
+  // Super-admin-only. The database itself refuses to target a super_admin
+  // row (raises an exception) — this is not re-implemented client-side,
+  // only relied upon; the UI additionally never offers this action for a
+  // super admin row (see AdminsManager) as a second, defense-in-depth layer.
+  async setActive(adminId, active) {
+    const row = await SB.post("rpc/set_admin_active", { p_admin_id: adminId, p_active: active });
+    lastSyncOk = true;
+    return row;
+  },
+  // Super-admin-only; database refuses to target a super_admin row.
+  async updatePermissions(adminId, permissions) {
+    const row = await SB.post("rpc/update_admin_permissions", { p_admin_id: adminId, p_permissions: permissions || [] });
+    lastSyncOk = true;
+    return row;
+  },
+  // Super-admin-only; database refuses to target a super_admin row.
+  async remove(adminId) {
+    const ok = await SB.post("rpc/delete_sub_admin", { p_admin_id: adminId });
+    lastSyncOk = true;
+    return ok;
+  },
+  // Not super-admin-only — any authenticated caller may attempt this.
+  // accept_admin_invite() itself verifies everything server-side (matches
+  // the caller's own auth.jwt() email against a pending, unrevoked
+  // admin_invites row — never anything client-supplied) and raises an
+  // exception if there's no matching invite or the account is already an
+  // admin. Defined here, ready to use, but DELIBERATELY NOT called from
+  // DB.login/DB.restoreSession in this Phase 1a pass — wiring it into
+  // that shared control path (used by every user type on every login,
+  // not just admins) is a real, if small, behavior change to the most
+  // sensitive shared code in the app, and Phase 1a's brief was explicit:
+  // report the invite-acceptance limitation rather than build around it.
+  // See the Phase 1a implementation report for the two options this
+  // leaves for a future decision (auto-detect on login, using exactly
+  // this method — vs. a dedicated "Accept Invite" screen).
+  async tryAcceptInvite() {
+    if (!HAS_SUPABASE) return null;
+    try {
+      const row = await SB.post("rpc/accept_admin_invite", {});
+      lastSyncOk = true;
+      return row?.id ? row : (Array.isArray(row) ? row[0] : row) || null;
+    } catch { return null; }
+  },
 };
+
+// Phase 1a: the one grantable permission string per existing admin tab
+// (matches the tab ids already used by `adminTab` state in renderAdmin).
+// "manage_admins" deliberately does not exist anywhere in this map, and
+// is never offered as a selectable permission in the Invite/Edit UI —
+// Admin management is controlled exclusively by adminRole==="super_admin",
+// never by anything a Sub-Admin could hold or grant.
+const ADMIN_TAB_PERMISSIONS = {
+  farmers:"manage_farmers", businesses:"manage_businesses", products:"manage_products",
+  prices:"manage_prices", tips:"manage_tips", pests:"manage_pests", calendar:"manage_calendar",
+  carousel:"manage_carousel", ads:"manage_ads", site:"manage_site_settings",
+  import:"manage_import_export", activity:"view_activity_log",
+};
+const ADMIN_PERMISSION_LIST = Object.values(ADMIN_TAB_PERMISSIONS);
+
+// Centralized permission check — every new permission-aware UI check in
+// this file goes through this one function rather than re-deriving the
+// logic inline. Safe for every caller shape: null user, a normal farmer/
+// wholesaler/business user (role!=="admin" → false, permissions never
+// even inspected), a sub-admin with permissions undefined/null/not-an-array
+// (treated as no permissions, never a crash), and a super admin (always
+// true, permissions array never consulted).
+function hasPerm(user, permission) {
+  if (!user || user.role !== "admin") return false;
+  if (user.adminRole === "super_admin") return true;
+  return Array.isArray(user.permissions) && user.permissions.includes(permission);
+}
 
 const uploadImage = async (file) => {
   if (!(file instanceof File)) return file;
@@ -1311,7 +1455,14 @@ const DB = {
     // (the original admin account, created directly in Supabase, has
     // none — see SETUP.md), unlike the farmer fallback below.
     const adminProfile = await AdminTbl.getOne(uid);
-    if (adminProfile) return {...adminProfile, role:"admin"};
+    // Phase 1a fix: adminProfile.role from the database is the REAL value
+    // ('super_admin'|'sub_admin'). Every existing role==="admin" check
+    // elsewhere in this file must keep working unchanged, so `role` here
+    // stays the generic "admin" string — but the real value is now
+    // preserved separately as `adminRole`, along with `permissions`
+    // (already came through via the spread, previously just unused).
+    // Nothing that read `user.role` before behaves any differently.
+    if (adminProfile) return {...adminProfile, role:"admin", adminRole:adminProfile.role, permissions:Array.isArray(adminProfile.permissions)?adminProfile.permissions:[]};
     // Wholesaler accounts live in `wholesalers`, not `farmers` — check
     // there first (by role) so a wholesaler's profile is looked up (and,
     // below, rebuilt after an email-confirmation gap) in the right table.
@@ -1419,7 +1570,8 @@ const DB = {
     if (!session?.user?.id) return null;
     // Same admin-first check as login() above, for the same reason.
     const adminProfile = await AdminTbl.getOne(session.user.id);
-    if (adminProfile) return {...adminProfile, role:"admin"};
+    // Same Phase 1a fix as login() above, for the same reason.
+    if (adminProfile) return {...adminProfile, role:"admin", adminRole:adminProfile.role, permissions:Array.isArray(adminProfile.permissions)?adminProfile.permissions:[]};
     if (session.user?.user_metadata?.role === "wholesaler") {
       const wholesalers = await WS.getAll();
       const w = wholesalers.find(w=>w.id===session.user.id);
@@ -3534,6 +3686,20 @@ const AuditLog={
     }
   },
   async getAll(){return (await SA.getKV("audit_log"))||[]},
+  // Phase 1a (invite-expiration pass): kv_store-only variant, for the one
+  // case where the authoritative audit_logs row is now written atomically
+  // inside the database RPC itself (accept_admin_invite() — see its
+  // migration for why) rather than by the frontend. Using the regular
+  // log() here for ADMIN_INVITE_ACCEPTED specifically would insert a
+  // second, duplicate audit_logs row alongside the RPC's own unbypassable
+  // one. This keeps the visible Activity tab (which reads kv_store only)
+  // populated without duplicating the authoritative table. Every other
+  // call site is untouched and keeps using log() exactly as before.
+  async logUIOnly(user,action,details=""){
+    const entries=(await SA.getKV("audit_log"))||[];
+    entries.unshift({id:"al"+Date.now(),adminId:user?.id||"system",adminName:user?.name||"System",adminRole:user?.adminRole||"admin",action,details,timestamp:new Date().toISOString()});
+    await SA.setKV("audit_log",entries.slice(0,500));
+  },
 };
 
 /* ── LIGHTWEIGHT CLIENT ERROR VISIBILITY ──
@@ -4070,6 +4236,303 @@ function BulkImportManager({user,notify}){
 }
 
 /* ════════════════════════════════════
+   ADMINS MANAGER (Phase 1a — Super Admin only)
+   Wires the 6 previously-unused admin RPCs (invite_admin,
+   accept_admin_invite [indirectly, via DB.login/restoreSession],
+   revoke_admin_invite, set_admin_active, update_admin_permissions,
+   delete_sub_admin) plus the new list_admins() function. This
+   component does its own is_super_admin-equivalent check before
+   loading any data (defense in depth — renderAdmin's tab gating
+   already keeps a Sub-Admin from reaching this tab in the first
+   place, and every RPC below re-checks is_super_admin() server-side
+   regardless of what this component does).
+════════════════════════════════════ */
+function AdminsManager({user,notify}){
+  const{t}=useLang();
+  const isSuperAdmin=user?.adminRole==="super_admin";
+  const[admins,setAdmins]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[loadErr,setLoadErr]=useState("");
+  const[showInvite,setShowInvite]=useState(false);
+  const[inviteEmail,setInviteEmail]=useState("");
+  const[invitePerms,setInvitePerms]=useState([]);
+  const[inviteBusy,setInviteBusy]=useState(false);
+  const[editPerms,setEditPerms]=useState(null); // admin row currently open in the permissions modal
+  const[editPermsValue,setEditPermsValue]=useState([]);
+  const[editBusy,setEditBusy]=useState(false);
+  const[rowBusy,setRowBusy]=useState(""); // id of the row currently mid-action (activate/deactivate/remove), disables its buttons only
+  const[confirmRemove,setConfirmRemove]=useState(null); // admin row pending removal confirmation
+  const[invites,setInvites]=useState([]);
+  const[invitesLoading,setInvitesLoading]=useState(true);
+  const[invitesErr,setInvitesErr]=useState("");
+  const[revokeBusy,setRevokeBusy]=useState("");
+
+  const reload=async()=>{
+    setLoading(true);setLoadErr("");
+    try{ setAdmins(await AdminTbl.list()); }
+    catch(e){ setLoadErr(e.message||"Could not load administrators"); }
+    finally{ setLoading(false); }
+  };
+  const reloadInvites=async()=>{
+    setInvitesLoading(true);setInvitesErr("");
+    try{ setInvites(await AdminTbl.listInvites()); }
+    catch(e){ setInvitesErr(e.message||"Could not load invitations"); }
+    finally{ setInvitesLoading(false); }
+  };
+  useEffect(()=>{ if(isSuperAdmin){ reload(); reloadInvites(); } }, [isSuperAdmin]);
+
+  const PERM_LABELS={
+    manage_farmers:t("admin_tab_farmers"), manage_businesses:t("admin_tab_businesses"),
+    manage_products:t("admin_tab_products"), manage_prices:t("admin_tab_prices"),
+    manage_tips:t("admin_tab_tips"), manage_pests:t("admin_tab_pests"),
+    manage_calendar:t("admin_tab_calendar"), manage_carousel:t("admin_tab_slideshow"),
+    manage_ads:t("admin_tab_ads"), manage_site_settings:t("admin_tab_site"),
+    manage_import_export:t("admin_tab_import"), view_activity_log:t("admin_tab_activity"),
+  };
+
+  // Not a Super Admin: never even attempt to load or render admin data,
+  // regardless of how this component was reached (belt-and-braces on top
+  // of renderAdmin's own tab gating).
+  if(!isSuperAdmin){
+    return(
+      <div style={{textAlign:"center",padding:60,color:G.gray5}}>
+        <Ic.admin size={36} color={G.gray3}/>
+        <p style={{marginTop:10}}>{t("admins_super_only")}</p>
+      </div>
+    );
+  }
+
+  const togglePerm=(list,perm)=>list.includes(perm)?list.filter(p=>p!==perm):[...list,perm];
+
+  const doInvite=async()=>{
+    if(inviteBusy)return;
+    const email=inviteEmail.trim();
+    if(!email||!email.includes("@")){notify(t("admins_invalid_email"),"error");return}
+    setInviteBusy(true);
+    try{
+      await AdminTbl.invite(email,invitePerms);
+      await AuditLog.log(user,"ADMIN_INVITED",`${email} — permissions: ${invitePerms.join(", ")||"(none)"}`);
+      notify(t("admins_invite_sent"));
+      setShowInvite(false);setInviteEmail("");setInvitePerms([]);
+      await reload();
+      await reloadInvites();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setInviteBusy(false); }
+  };
+
+  const doRevokeInvite=async invite=>{
+    setRevokeBusy(invite.id);
+    try{
+      await AdminTbl.revokeInvite(invite.id);
+      await AuditLog.log(user,"ADMIN_INVITE_REVOKED",`${invite.email}`);
+      notify(t("admins_invite_revoked"));
+      await reloadInvites();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRevokeBusy(""); }
+  };
+
+  const doSetActive=async(admin,active)=>{
+    setRowBusy(admin.id);
+    try{
+      await AdminTbl.setActive(admin.id,active);
+      await AuditLog.log(user,active?"ADMIN_ACTIVATED":"ADMIN_DEACTIVATED",`${admin.name||admin.email||admin.id}`);
+      notify(t("msg_updated"));
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRowBusy(""); }
+  };
+
+  const openEditPerms=admin=>{ setEditPerms(admin); setEditPermsValue(Array.isArray(admin.permissions)?admin.permissions:[]); };
+
+  const doSavePerms=async()=>{
+    if(editBusy||!editPerms)return;
+    setEditBusy(true);
+    try{
+      const oldPerms=Array.isArray(editPerms.permissions)?editPerms.permissions:[];
+      await AdminTbl.updatePermissions(editPerms.id,editPermsValue);
+      await AuditLog.log(user,"ADMIN_PERMISSIONS_CHANGED",`${editPerms.name||editPerms.email||editPerms.id} — old: [${oldPerms.join(", ")}] → new: [${editPermsValue.join(", ")}]`);
+      notify(t("msg_updated"));
+      setEditPerms(null);
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setEditBusy(false); }
+  };
+
+  const doRemove=async admin=>{
+    setRowBusy(admin.id);
+    try{
+      await AdminTbl.remove(admin.id);
+      await AuditLog.log(user,"ADMIN_REMOVED",`${admin.name||admin.email||admin.id}`);
+      notify(t("admins_removed"));
+      setConfirmRemove(null);
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRowBusy(""); }
+  };
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
+        <div>
+          <h3 style={{margin:0,fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.admin size={16} color={G.g6}/> {t("admin_tab_admins")}</h3>
+          <p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>{t("admins_subtitle")}</p>
+        </div>
+        <Btn icon={<Ic.add size={14}/>} onClick={()=>setShowInvite(true)}>{t("admins_invite_admin")}</Btn>
+      </div>
+
+      {/* Phase 1a known limitation — see implementation report. Kept visible
+          in the UI itself, not just documented, since it directly affects
+          what a Super Admin should expect after clicking Invite. */}
+      <div style={{background:"#fffbea",border:"1px solid #fde68a",borderRadius:G.r,padding:"10px 14px",marginBottom:16,fontSize:12,color:"#92400e",display:"flex",gap:8,alignItems:"flex-start"}}>
+        <Ic.alert size={14} style={{flexShrink:0,marginTop:1}}/>
+        <span>{t("admins_invite_limitation")}</span>
+      </div>
+
+      {loading&&<div style={{textAlign:"center",padding:30,color:G.gray5}}>…</div>}
+      {!loading&&loadErr&&<div style={{textAlign:"center",padding:30,color:G.red}}>{loadErr}</div>}
+
+      {!loading&&!loadErr&&(
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {admins.map(a=>{
+            const isSelf=a.id===user.id;
+            const isSuper=a.role==="super_admin";
+            const perms=Array.isArray(a.permissions)?a.permissions:[];
+            return(
+              <div key={a.id} style={{background:G.white,borderRadius:G.r,padding:"12px 14px",boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+                  <div style={{minWidth:0}}>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:3}}>
+                      <strong style={{fontSize:13,color:G.gray9}}>{a.name||a.email||a.id}</strong>
+                      <Badge color={isSuper?"gold":"blue"}>{isSuper?t("admins_role_super"):t("admins_role_sub")}</Badge>
+                      <Badge color={a.active?"green":"gray"}>{a.active?t("admins_active"):t("admins_inactive")}</Badge>
+                      {isSelf&&<Badge color="gray">{t("admins_you")}</Badge>}
+                    </div>
+                    <p style={{margin:"0 0 4px",fontSize:12,color:G.gray5}}>{a.email}{a.phone?` · ${a.phone}`:""}</p>
+                    <p style={{margin:0,fontSize:11,color:G.gray5}}>{t("admins_created")}: {a.created_at?new Date(a.created_at).toLocaleDateString():"—"}</p>
+                    {!isSuper&&(
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:7}}>
+                        {perms.length===0
+                          ?<span style={{fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_no_permissions")}</span>
+                          :perms.map(p=><Badge key={p} color="gray">{PERM_LABELS[p]||p}</Badge>)}
+                      </div>
+                    )}
+                    {isSuper&&<p style={{margin:"7px 0 0",fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_super_full_access")}</p>}
+                  </div>
+                  {/* Super Admin rows never get management buttons — the
+                      database itself refuses to target them (set_admin_active/
+                      update_admin_permissions/delete_sub_admin all raise an
+                      exception for role='super_admin'), and this UI never even
+                      offers the option, as a second, independent layer. */}
+                  {!isSuper&&(
+                    <div style={{display:"flex",gap:5,flexWrap:"wrap",flexShrink:0}}>
+                      <Btn size="sm" variant="secondary" onClick={()=>openEditPerms(a)} disabled={rowBusy===a.id} icon={<Ic.edit size={13}/>}>{t("admins_edit_permissions")}</Btn>
+                      <Btn size="sm" variant={a.active?"secondary":"primary"} onClick={()=>doSetActive(a,!a.active)} disabled={rowBusy===a.id}>{a.active?t("admins_deactivate"):t("admins_activate")}</Btn>
+                      <Btn size="sm" variant="danger" onClick={()=>setConfirmRemove(a)} disabled={rowBusy===a.id} icon={<Ic.delete size={13}/>}/>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {admins.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admins_none")}</div>}
+        </div>
+      )}
+
+      {/* Pending invitations — read directly from admin_invites (RLS already
+          restricts this table's rows to is_super_admin(), same as every
+          write on it — see admin_invites_super_all policy, unchanged from
+          Phase 0/1a), filtered client-side to not-yet-accepted/not-revoked. */}
+      <div style={{marginTop:26}}>
+        <h4 style={{margin:"0 0 10px",fontFamily:FH,fontSize:14,color:G.gray9}}>{t("admins_pending_invitations")}</h4>
+        {invitesLoading&&<div style={{textAlign:"center",padding:20,color:G.gray5}}>…</div>}
+        {!invitesLoading&&invitesErr&&<div style={{textAlign:"center",padding:20,color:G.red}}>{invitesErr}</div>}
+        {!invitesLoading&&!invitesErr&&(()=>{
+          const pending=invites.filter(i=>!i.accepted_at&&!i.revoked);
+          if(pending.length===0)return <div style={{textAlign:"center",padding:"18px",color:G.gray5,fontSize:12}}>{t("admins_no_pending_invitations")}</div>;
+          return(
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {pending.map(inv=>{
+                const perms=Array.isArray(inv.permissions)?inv.permissions:[];
+                // expires_at is NOT NULL on every row as of the expiration
+                // migration; a still-pending (not accepted/revoked) row can
+                // now be expired without yet being revoked — surface that
+                // distinctly rather than implying it's still acceptable.
+                const isExpired=inv.expires_at?new Date(inv.expires_at).getTime()<=Date.now():false;
+                return(
+                  <div key={inv.id} style={{background:G.white,borderRadius:G.r,padding:"10px 14px",boxShadow:G.sh,border:`1px solid ${G.gray1}`,display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+                    <div style={{minWidth:0}}>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+                        <strong style={{fontSize:13,color:G.gray9}}>{inv.email}</strong>
+                        {isExpired&&<Badge color="gray">{t("admins_expired")}</Badge>}
+                      </div>
+                      <p style={{margin:"3px 0 0",fontSize:11,color:G.gray5}}>{t("admins_invited")}: {inv.created_at?new Date(inv.created_at).toLocaleDateString():"—"} · {isExpired?t("admins_expired_on"):t("admins_expires")}: {inv.expires_at?new Date(inv.expires_at).toLocaleDateString():"—"}</p>
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:6}}>
+                        {perms.length===0
+                          ?<span style={{fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_no_permissions")}</span>
+                          :perms.map(p=><Badge key={p} color="gray">{PERM_LABELS[p]||p}</Badge>)}
+                      </div>
+                    </div>
+                    <Btn size="sm" variant="danger" onClick={()=>doRevokeInvite(inv)} disabled={revokeBusy===inv.id} icon={<Ic.close size={13}/>}>{t("admins_revoke")}</Btn>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Invite modal */}
+      <Modal open={showInvite} onClose={()=>{if(!inviteBusy){setShowInvite(false);setInviteEmail("");setInvitePerms([])}}} title={t("admins_invite_admin")} maxW={520}>
+        <Inp label={t("admins_email")} type="email" value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)} placeholder="name@example.com"/>
+        <p style={{margin:"4px 0 8px",fontSize:12,fontWeight:600,color:G.gray7}}>{t("admins_permissions")}</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:14}}>
+          {ADMIN_PERMISSION_LIST.map(p=>(
+            <button key={p} type="button" onClick={()=>setInvitePerms(v=>togglePerm(v,p))}
+              style={{padding:"6px 12px",borderRadius:999,border:`1.5px solid ${invitePerms.includes(p)?G.g6:G.gray3}`,background:invitePerms.includes(p)?G.g6:G.white,color:invitePerms.includes(p)?G.white:G.gray7,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FB}}>
+              {PERM_LABELS[p]||p}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:9}}>
+          <Btn full onClick={doInvite} disabled={inviteBusy}>{inviteBusy?t("reg_submitting"):t("admins_send_invite")}</Btn>
+          <Btn variant="secondary" onClick={()=>{setShowInvite(false);setInviteEmail("");setInvitePerms([])}} disabled={inviteBusy}>{t("prices_cancel")}</Btn>
+        </div>
+      </Modal>
+
+      {/* Edit permissions modal */}
+      <Modal open={!!editPerms} onClose={()=>{if(!editBusy)setEditPerms(null)}} title={t("admins_edit_permissions")} maxW={520}>
+        {editPerms&&(<>
+          <p style={{margin:"0 0 10px",fontSize:13,color:G.gray7}}>{editPerms.name||editPerms.email}</p>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:14}}>
+            {ADMIN_PERMISSION_LIST.map(p=>(
+              <button key={p} type="button" onClick={()=>setEditPermsValue(v=>togglePerm(v,p))}
+                style={{padding:"6px 12px",borderRadius:999,border:`1.5px solid ${editPermsValue.includes(p)?G.g6:G.gray3}`,background:editPermsValue.includes(p)?G.g6:G.white,color:editPermsValue.includes(p)?G.white:G.gray7,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FB}}>
+                {PERM_LABELS[p]||p}
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",gap:9}}>
+            <Btn full onClick={doSavePerms} disabled={editBusy}>{editBusy?t("reg_submitting"):t("admins_save_changes")}</Btn>
+            <Btn variant="secondary" onClick={()=>setEditPerms(null)} disabled={editBusy}>{t("prices_cancel")}</Btn>
+          </div>
+        </>)}
+      </Modal>
+
+      {/* Remove confirmation modal */}
+      <Modal open={!!confirmRemove} onClose={()=>{if(rowBusy!==confirmRemove?.id)setConfirmRemove(null)}} title={t("admins_remove_admin")} maxW={440}>
+        {confirmRemove&&(<>
+          <p style={{margin:"0 0 16px",fontSize:13,color:G.gray7}}>{t("admins_remove_confirm").replace("{name}",confirmRemove.name||confirmRemove.email||"")}</p>
+          <div style={{display:"flex",gap:9}}>
+            <Btn full variant="danger" onClick={()=>doRemove(confirmRemove)} disabled={rowBusy===confirmRemove.id}>{rowBusy===confirmRemove.id?t("reg_submitting"):t("admins_remove_admin")}</Btn>
+            <Btn variant="secondary" onClick={()=>setConfirmRemove(null)} disabled={rowBusy===confirmRemove.id}>{t("prices_cancel")}</Btn>
+          </div>
+        </>)}
+      </Modal>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════
    MAIN APP
 ════════════════════════════════════ */
 function AppInner(){
@@ -4101,6 +4564,35 @@ function AppInner(){
   const[showForm,setShowForm]=useState(false);const[editP,setEditP]=useState(null);const[delP,setDelP]=useState(null);
   const[detailFarmer,setDetailFarmer]=useState(null);
   const[adminTab,setAdminTab]=useState("dashboard");
+  // Explicit, user-initiated admin-invite acceptance (see renderAdmin's
+  // access-denied branch). Deliberately NOT wired into DB.login/
+  // restoreSession — see the Phase 1a report for why: this keeps the
+  // shared login path used by every user type completely untouched, and
+  // only ever runs when an already-logged-in, non-admin user explicitly
+  // clicks the button below, on the Admin page's own access-denied screen.
+  const[acceptInviteBusy,setAcceptInviteBusy]=useState(false);
+  const doAcceptAdminInvite=async()=>{
+    if(acceptInviteBusy)return;
+    setAcceptInviteBusy(true);
+    try{
+      const accepted=await AdminTbl.tryAcceptInvite();
+      if(accepted){
+        const newAdminUser={...accepted, role:"admin", adminRole:accepted.role, permissions:Array.isArray(accepted.permissions)?accepted.permissions:[]};
+        setUser(newAdminUser);
+        setAdminTab("dashboard");
+        // The authoritative ADMIN_INVITE_ACCEPTED audit_logs row is now
+        // written atomically inside accept_admin_invite() itself (see the
+        // migration) — unbypassable even if this RPC is called directly.
+        // Only the UI-facing kv_store log is written here, so the Activity
+        // tab shows this event without duplicating the audit_logs row.
+        await AuditLog.logUIOnly(newAdminUser,"ADMIN_INVITE_ACCEPTED",`${newAdminUser.email||newAdminUser.id}`);
+        notify(t("admins_invite_accepted"));
+      }else{
+        notify(t("admins_no_pending_invite"),"error");
+      }
+    }catch(e){ notify(e.message||t("admins_no_pending_invite"),"error"); }
+    finally{ setAcceptInviteBusy(false); }
+  };
   const[syncOk,setSyncOk]=useState(true);
   useEffect(()=>{ // lightweight poll so the admin badge reflects real Supabase health without wiring every save call
     if(!HAS_SUPABASE) return;
@@ -4172,6 +4664,20 @@ function AppInner(){
   useEffect(()=>{
     if(user?.role==="admin"&&adminTab==="activity"){AuditLog.getAll().then(setActivityLog)}
   },[user?.role,adminTab]);
+  // Phase 1a defense-in-depth: if a Sub-Admin's permissions are edited by
+  // the Super Admin while they're sitting on a tab they no longer have
+  // access to (or somehow lands on "admins", which they should never be
+  // able to reach), drop them back to Dashboard rather than leaving a
+  // stale, now-unauthorized tab rendered. This is UI-navigation safety
+  // only — it does not substitute for the tab's own render-time gating
+  // above, nor for the database's own RLS/RPC checks.
+  useEffect(()=>{
+    if(user?.role!=="admin"||user?.adminRole==="super_admin")return;
+    if(adminTab==="admins"){setAdminTab("dashboard");return}
+    if(adminTab==="dashboard")return;
+    const perm=ADMIN_TAB_PERMISSIONS[adminTab];
+    if(perm&&!hasPerm(user,perm))setAdminTab("dashboard");
+  },[user,adminTab]);
   // Fetch the viewed business's products when the Admin opens its detail
   // modal — moderation (Phase 2): SELECT is public and DELETE/UPDATE
   // already permit is_admin() per the live-verified RLS, so no policy
@@ -4788,7 +5294,18 @@ function AppInner(){
         <div style={{textAlign:"center",padding:80}}>
           <div style={{display:"flex",justifyContent:"center",color:G.gray3}}><ShieldCheck size={48}/></div>
           <h2 style={{color:G.gray9,fontFamily:FH}}>{t("admin_access_required")}</h2>
-          <Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>{t("nav_signin")}</Btn>
+          {!user&&<Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>{t("nav_signin")}</Btn>}
+          {/* Only for an already-logged-in, non-admin user (farmer/
+              wholesaler/business) — an explicit, opt-in action, never
+              automatic. Calls the existing accept_admin_invite() RPC via
+              AdminTbl.tryAcceptInvite(); does nothing to session/login
+              behavior for anyone who doesn't click it. */}
+          {user&&(
+            <div style={{marginTop:16,maxWidth:360,marginLeft:"auto",marginRight:"auto"}}>
+              <p style={{fontSize:12,color:G.gray5,marginBottom:9}}>{t("admins_invite_prompt")}</p>
+              <Btn variant="secondary" onClick={doAcceptAdminInvite} disabled={acceptInviteBusy}>{acceptInviteBusy?t("reg_submitting"):t("admins_check_invite")}</Btn>
+            </div>
+          )}
         </div>
       );
     }
@@ -4799,7 +5316,17 @@ function AppInner(){
     // up in "All Farmers" / Pending Approvals without touching the
     // underlying data or any delete/status function.
     const allF=farmers.filter(f=>f.role!=="admin");const allP=products;const allB=businesses;
-    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["import",t("admin_tab_import"),Ic.upload],["activity",t("admin_tab_activity"),Ic.hours]];
+    const tabsAll=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["import",t("admin_tab_import"),Ic.upload],["activity",t("admin_tab_activity"),Ic.hours]];
+    // Phase 1a tab-level permission gating. Super Admin (adminRole==="super_admin")
+    // always sees every existing tab plus the new Admins tab — permissions[]
+    // is never even consulted for a super admin. A Sub-Admin always sees
+    // Dashboard (never gated — "a Sub-Admin should always have a safe
+    // dashboard/home state even if their permissions array is empty") plus
+    // any tab whose mapped permission they hold; they never see Admins.
+    const isSuperAdmin=user?.adminRole==="super_admin";
+    const tabs=isSuperAdmin
+      ? [...tabsAll,["admins",t("admin_tab_admins"),Ic.admin]]
+      : tabsAll.filter(([tab])=>tab==="dashboard"||hasPerm(user,ADMIN_TAB_PERMISSIONS[tab]));
     return(
       <div style={{background:G.pageBg,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
@@ -5062,6 +5589,7 @@ function AppInner(){
           {adminTab==="ads"&&<AdManager notify={notify}/>}
           {adminTab==="site"&&<SiteSettingsManager notify={notify}/>}
           {adminTab==="import"&&<BulkImportManager user={user} notify={notify}/>}
+          {adminTab==="admins"&&<AdminsManager user={user} notify={notify}/>}
         </div>
       </div>
     );
