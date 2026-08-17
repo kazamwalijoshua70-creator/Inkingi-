@@ -77,7 +77,11 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { data: adminProfile, error: adminError } = await supabase
+    const serviceKey = Deno.env.get("INKINGI_SERVICE_KEY");
+    if (!serviceKey) throw new Error("INKINGI_SERVICE_KEY is not configured");
+    const adminClient = createClient(supabaseUrl, serviceKey);
+
+    const { data: adminProfile, error: adminError } = await adminClient
       .from("admins")
       .select("id, role, active")
       .eq("id", user.id)
