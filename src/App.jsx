@@ -1199,7 +1199,7 @@ async invite(email, permissions) {
   }
 
   try {
-    const session = DB.getSession();
+    const session = getSession();
 
     if (!session?.access_token) {
       throw new Error("No active authentication session");
