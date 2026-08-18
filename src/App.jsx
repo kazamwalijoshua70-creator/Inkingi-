@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback, createContext, useContext } from "react";
+import { useState, useEffect, useRef, useCallback, createContext, useContext, Component } from "react";
+import * as XLSX from "xlsx";
 import {
   Eye, EyeOff, Search, Sprout, Beef, Wheat, Calendar, TrendingUp, TrendingDown, Minus, Leaf, Bug,
   Store, Phone, LifeBuoy, ShieldCheck, LayoutDashboard, Bell, Upload, Trash2,
@@ -136,6 +137,63 @@ const TRANSLATIONS = {
   reg_photo:{en:"Photo representing what you sell",rw:"Ifoto igaragaza ibyo ugurisha",fr:"Photo représentant ce que vous vendez"},
   reg_submit:{en:"Register",rw:"Iyandikishe",fr:"S'inscrire"},
   reg_submitting:{en:"Submitting…",rw:"Kohereza…",fr:"Envoi…"},
+  session_expired:{en:"Your session expired — please sign in again.",rw:"Igihe cyo kwinjira kirangiye — ongera winjire.",fr:"Votre session a expiré — veuillez vous reconnecter."},
+  upload_too_large:{en:"Image is too large — please use a file under 5 MB.",rw:"Ifoto ni nini cyane — koresha idasumba 5 MB.",fr:"L'image est trop volumineuse — utilisez un fichier de moins de 5 Mo."},
+  upload_bad_type:{en:"Only JPG, PNG, or WebP images are allowed.",rw:"Gusa amafoto ya JPG, PNG, cyangwa WebP niyo yemewe.",fr:"Seules les images JPG, PNG ou WebP sont autorisées."},
+  upload_failed:{en:"Upload failed:",rw:"Kohereza byanze:",fr:"Échec du téléversement :"},
+  modal_close:{en:"Close",rw:"Funga",fr:"Fermer"},
+  search_placeholder:{en:"Search products…",rw:"Shakisha ibicuruzwa…",fr:"Rechercher des produits…"},
+  nav_search:{en:"Search",rw:"Shakisha",fr:"Rechercher"},
+  admin_tab_import:{en:"Bulk Import",rw:"Kwinjiza byinshi",fr:"Import groupé"},
+  import_title:{en:"Bulk Import / Export",rw:"Kwinjiza/Gusohora byinshi",fr:"Import / Export groupé"},
+  import_subtitle:{en:"Import records from a spreadsheet, or export the current data. Farmers, Wholesalers, and Businesses can only be updated (not created) via import — see the tab for details. Admin accounts are never importable.",rw:"Injiza amakuru uhereye kuri feuille de calcul, cyangwa usohore amakuru ariho. Abahinzi, Abacuruzi banini, n'Ubucuruzi bishobora kuvugururwa gusa (ntibishobora kuremwa) binyuze mu kwinjiza — reba iyi tab kubisobanuro birambuye. Konti z'abayobozi ntizishobora kwinjizwa.",fr:"Importez des enregistrements depuis un tableur, ou exportez les données actuelles. Les agriculteurs, grossistes et entreprises ne peuvent être que mis à jour (pas créés) via l'import — voir cet onglet pour les détails. Les comptes administrateur ne sont jamais importables."},
+  import_download_template:{en:"Download template",rw:"Manura urugero",fr:"Télécharger le modèle"},
+  import_upload_file:{en:"Upload spreadsheet",rw:"Ohereza feuille de calcul",fr:"Téléverser le fichier"},
+  export_csv:{en:"Export CSV",rw:"Sohora CSV",fr:"Exporter en CSV"},
+  export_no_rows:{en:"There is no data to export yet.",rw:"Nta makuru araho yo gusohora.",fr:"Aucune donnée à exporter pour le moment."},
+  import_lib_unavailable:{en:"The spreadsheet library isn't available right now — please reload the page and try again.",rw:"Igikoresho cya feuille de calcul ntikiraboneka — ongera ufungure paji hanyuma ugerageze.",fr:"La bibliothèque de tableur n'est pas disponible actuellement — veuillez recharger la page et réessayer."},
+  import_bad_filetype:{en:"Please upload a .xlsx or .csv file.",rw:"Nyamuneka ohereza dosiye ya .xlsx cyangwa .csv.",fr:"Veuillez téléverser un fichier .xlsx ou .csv."},
+  import_too_large:{en:"That file is too large — please use a spreadsheet under 5 MB.",rw:"Iyo dosiye ni nini cyane — koresha idasumba 5 MB.",fr:"Ce fichier est trop volumineux — utilisez un tableur de moins de 5 Mo."},
+  import_empty_file:{en:"That spreadsheet doesn't contain any rows.",rw:"Iyo feuille de calcul nta mirongo ifite.",fr:"Ce tableur ne contient aucune ligne."},
+  import_too_many_rows:{en:"That spreadsheet has too many rows (max {n}) — please split it into smaller files.",rw:"Iyo feuille de calcul ifite imirongo myinshi cyane (ntarengwa {n}) — yice mu dosiye ntoya.",fr:"Ce tableur contient trop de lignes (max {n}) — veuillez le diviser en fichiers plus petits."},
+  import_missing_columns:{en:"This file is missing required columns:",rw:"Iyi dosiye ibura inkingi zikenewe:",fr:"Ce fichier n'a pas les colonnes requises :"},
+  import_parse_failed:{en:"Could not read that file:",rw:"Ntibyashobotse gusoma iyo dosiye:",fr:"Impossible de lire ce fichier :"},
+  import_total_rows:{en:"Total rows",rw:"Imirongo yose",fr:"Lignes totales"},
+  import_valid_rows:{en:"Valid",rw:"Byiza",fr:"Valides"},
+  import_invalid_rows:{en:"Invalid",rw:"Bitariho",fr:"Invalides"},
+  import_duplicate_rows:{en:"Duplicates",rw:"Bisubiwemo",fr:"Doublons"},
+  import_errors_title:{en:"Row errors",rw:"Amakosa y'imirongo",fr:"Erreurs de ligne"},
+  import_row:{en:"Row",rw:"Umurongo",fr:"Ligne"},
+  import_field:{en:"field",rw:"umwanya",fr:"champ"},
+  import_more_errors:{en:"...and {n} more errors not shown here.",rw:"...n'andi makosa {n} atagaragajwe hano.",fr:"...et {n} autres erreurs non affichées ici."},
+  import_more_rows:{en:"...and {n} more rows not shown here.",rw:"...n'indi mirongo {n} itagaragajwe hano.",fr:"...et {n} autres lignes non affichées ici."},
+  import_err_required:{en:"This field is required.",rw:"Uyu mwanya ukenewe.",fr:"Ce champ est requis."},
+  import_err_required_fix:{en:"Fill in a value for this field.",rw:"Uzuza agaciro kuri uyu mwanya.",fr:"Renseignez une valeur pour ce champ."},
+  import_err_not_number:{en:"This must be a number.",rw:"Aha hakenewe umubare.",fr:"Ceci doit être un nombre."},
+  import_err_not_number_fix:{en:"Use digits only, e.g. 1200.",rw:"Koresha imibare gusa, urugero 1200.",fr:"Utilisez uniquement des chiffres, ex. 1200."},
+  import_err_invalid_value:{en:"This value isn't recognized.",rw:"Aka gaciro ntikazwi.",fr:"Cette valeur n'est pas reconnue."},
+  import_err_invalid_value_fix:{en:"Use one of:",rw:"Koresha kimwe muri:",fr:"Utilisez l'une de :"},
+  import_dup_in_sheet:{en:"This row duplicates another row already in this spreadsheet.",rw:"Uyu murongo usubiramo undi murongo uri muri iyi feuille de calcul.",fr:"Cette ligne duplique une autre ligne déjà présente dans ce tableur."},
+  import_preview_title:{en:"Preview — what will be written",rw:"Reba mbere — ibizanditswe",fr:"Aperçu — ce qui sera enregistré"},
+  import_mode:{en:"Action",rw:"Igikorwa",fr:"Action"},
+  import_mode_create:{en:"Create",rw:"Kurema",fr:"Créer"},
+  import_mode_update:{en:"Update",rw:"Kuvugurura",fr:"Mettre à jour"},
+  import_confirm:{en:"Confirm import",rw:"Emeza kwinjiza",fr:"Confirmer l'import"},
+  import_success:{en:"Import completed.",rw:"Kwinjiza byarangiye.",fr:"Import terminé."},
+  import_failed:{en:"Import failed:",rw:"Kwinjiza byanze:",fr:"Échec de l'import :"},
+  import_result_success:{en:"Done — {created} record(s) created, {updated} updated.",rw:"Byarangiye — {created} byaremwe, {updated} byavuguruwe.",fr:"Terminé — {created} enregistrement(s) créé(s), {updated} mis à jour."},
+  import_result_failure:{en:"The import did not complete:",rw:"Kwinjiza ntibyarangiye:",fr:"L'import ne s'est pas terminé :"},
+  import_label_wholesalers:{en:"Wholesalers",rw:"Abacuruzi banini",fr:"Grossistes"},
+  import_err_no_match:{en:"No existing account matches this phone number.",rw:"Nta konti iriho ihuye n'iyi nimero.",fr:"Aucun compte existant ne correspond à ce numéro."},
+  import_err_no_match_fix:{en:"This import only updates existing accounts — it cannot create new ones. Check the phone number, or register this account through the app first.",rw:"Iri njiza ryinshi ryavugurura gusa konti zisanzweho — ntirishobora kurema izindi. Reba nimero, cyangwa wandikishe iyo konti binyuze muri porogaramu mbere.",fr:"Cet import ne fait que mettre à jour des comptes existants — il ne peut pas en créer de nouveaux. Vérifiez le numéro, ou inscrivez d'abord ce compte via l'application."},
+  import_err_no_farmer:{en:"No approved farmer matches this phone number.",rw:"Nta muhinzi wemewe uhuye n'iyi nimero.",fr:"Aucun agriculteur approuvé ne correspond à ce numéro."},
+  import_err_no_farmer_fix:{en:"Products can only be imported for a farmer who is already registered. Check the farmer_phone value.",rw:"Ibicuruzwa bishobora kwinjizwa gusa ku muhinzi usanzwe wanditse. Reba agaciro ka farmer_phone.",fr:"Les produits ne peuvent être importés que pour un agriculteur déjà inscrit. Vérifiez la valeur de farmer_phone."},
+  pager_prev:{en:"Previous",rw:"Ibanziriza",fr:"Précédent"},
+  pager_next:{en:"Next",rw:"Ikurikira",fr:"Suivant"},
+  pager_page_of:{en:"Page {page} of {pages}",rw:"Paji {page} kuri {pages}",fr:"Page {page} sur {pages}"},
+  error_boundary_title:{en:"Something went wrong",rw:"Hari ikitagenze neza",fr:"Une erreur est survenue"},
+  error_boundary_body:{en:"This page ran into a problem. Reloading usually fixes it — your data has not been lost.",rw:"Iyi paji yagize ikibazo. Kongera gufungura biratunganya ikibazo — amakuru yawe ntiyabuze.",fr:"Cette page a rencontré un problème. Recharger la page résout généralement le souci — vos données n'ont pas été perdues."},
+  error_boundary_reload:{en:"Reload page",rw:"Ongera ufungure paji",fr:"Recharger la page"},
   // Validation messages
   err_required:{en:"Required",rw:"Birakenewe",fr:"Obligatoire"},
   err_valid_email:{en:"Enter a valid email address",rw:"Andika imeyili nyayo",fr:"Saisissez une adresse e-mail valide"},
@@ -392,6 +450,50 @@ const TRANSLATIONS = {
   admin_tab_site:{en:"Site Settings",rw:"Igenamiterere ry'Urubuga",fr:"Paramètres du site"},
   admin_tab_activity:{en:"Activity",rw:"Ibikorwa",fr:"Activité"},
   admin_tab_businesses:{en:"Businesses",rw:"Ubucuruzi",fr:"Entreprises"},
+  // Phase 1a — Admins (Super Admin / Sub-Admin management) tab
+  admin_tab_admins:{en:"Admins",rw:"Abayobozi",fr:"Administrateurs"},
+  admins_subtitle:{en:"Invite and manage sub-administrators and their permissions",rw:"Tumira kandi ugenzure abayobozi bafasha n'uburenganzira bwabo",fr:"Invitez et gérez les sous-administrateurs et leurs autorisations"},
+  admins_super_only:{en:"Only the Super Admin can access administrator management.",rw:"Ni Umuyobozi Mukuru gusa wemerewe kugenzura abandi bayobozi.",fr:"Seul le Super Administrateur peut gérer les administrateurs."},
+  admins_invite_admin:{en:"Invite Admin",rw:"Tumira Umuyobozi",fr:"Inviter un administrateur"},
+  admins_invite_limitation:{en:"Note: the invited person must sign in (or register) using this exact email address before they can become an administrator — sending an invite does not create their account for them.",rw:"Icyitonderwa: uwatumiwe agomba kwinjira (cyangwa kwiyandikisha) akoresheje iyi imeli nyayo mbere yo kuba umuyobozi — kohereza ubutumire ntibihita bikora konti ye.",fr:"Remarque : la personne invitée doit se connecter (ou s'inscrire) avec cette adresse e-mail exacte avant de pouvoir devenir administrateur — l'envoi d'une invitation ne crée pas son compte automatiquement."},
+  admins_invalid_email:{en:"Enter a valid email address",rw:"Andika imeli inyayo",fr:"Saisissez une adresse e-mail valide"},
+  admins_invite_sent:{en:"Invitation sent",rw:"Ubutumire bwoherejwe",fr:"Invitation envoyée"},
+  admins_action_failed:{en:"That action could not be completed",rw:"Iki gikorwa ntikirakunda",fr:"Cette action n'a pas pu être effectuée"},
+  admins_email:{en:"Email",rw:"Imeli",fr:"E-mail"},
+  admins_permissions:{en:"Permissions",rw:"Uburenganzira",fr:"Autorisations"},
+  admins_send_invite:{en:"Send Invite",rw:"Ohereza Ubutumire",fr:"Envoyer l'invitation"},
+  admins_edit_permissions:{en:"Edit Permissions",rw:"Hindura Uburenganzira",fr:"Modifier les autorisations"},
+  admins_save_changes:{en:"Save Changes",rw:"Bika Impinduka",fr:"Enregistrer les modifications"},
+  admins_role_super:{en:"Super Admin",rw:"Umuyobozi Mukuru",fr:"Super administrateur"},
+  admins_role_sub:{en:"Sub-Admin",rw:"Umuyobozi Wungirije",fr:"Sous-administrateur"},
+  admins_active:{en:"Active",rw:"Arakora",fr:"Actif"},
+  admins_inactive:{en:"Inactive",rw:"Ntabwo akora",fr:"Inactif"},
+  admins_you:{en:"You",rw:"Wowe",fr:"Vous"},
+  admins_created:{en:"Created",rw:"Yashyizweho",fr:"Créé"},
+  admins_no_permissions:{en:"No permissions assigned yet",rw:"Nta burenganzira buhawe",fr:"Aucune autorisation attribuée"},
+  admins_super_full_access:{en:"Super Admin — full access to all areas",rw:"Umuyobozi Mukuru — afite uburenganzira bwose",fr:"Super administrateur — accès complet à tous les domaines"},
+  admins_deactivate:{en:"Deactivate",rw:"Hagarika",fr:"Désactiver"},
+  admins_activate:{en:"Activate",rw:"Fungura",fr:"Activer"},
+  admins_remove_admin:{en:"Remove Admin",rw:"Kuraho Umuyobozi",fr:"Supprimer l'administrateur"},
+  admins_remove_confirm:{en:"Remove {name} as an administrator? This cannot be undone from this screen.",rw:"Kuraho {name} nk'umuyobozi? Ibi ntibishobora gusubizwa muri iki gice.",fr:"Supprimer {name} en tant qu'administrateur ? Cette action est irréversible depuis cet écran."},
+  admins_removed:{en:"Administrator removed",rw:"Umuyobozi yakuweho",fr:"Administrateur supprimé"},
+  admins_none:{en:"No administrators found",rw:"Nta muyobozi uboneka",fr:"Aucun administrateur trouvé"},
+  admins_pending_invitations:{en:"Pending Invitations",rw:"Ubutumire Bugitegereje",fr:"Invitations en attente"},
+  admins_no_pending_invitations:{en:"No pending invitations",rw:"Nta butumire bugitegereje",fr:"Aucune invitation d'administrateur en attente"},
+  admins_invited:{en:"Invited",rw:"Yatumiwe",fr:"Invité le"},
+  admins_expires:{en:"Expires",rw:"Irangira",fr:"Expire le"},
+  admins_expired_on:{en:"Expired",rw:"Yarangiye",fr:"Expirée le"},
+  admins_expired:{en:"Expired",rw:"Byarangiye",fr:"Expirée"},
+  admins_revoke:{en:"Revoke",rw:"Kuraho",fr:"Révoquer"},
+  admins_invite_revoked:{en:"Invitation revoked",rw:"Ubutumire bwakuweho",fr:"Invitation révoquée"},
+  admins_invite_prompt:{en:"If a Super Admin has invited you to help manage Inkingi, you can activate that invitation below.",rw:"Niba Umuyobozi Mukuru yakutumiye gufasha gucunga Inkingi, ushobora gukoresha ubwo butumire hano.",fr:"Si un super administrateur vous a invité à aider à gérer Inkingi, vous pouvez activer cette invitation ci-dessous."},
+  admins_check_invite:{en:"Activate Admin Invitation",rw:"Koresha Ubutumire bw'Ubuyobozi",fr:"Activer l'invitation d'administrateur"},
+  admins_invite_accepted:{en:"Welcome — your administrator access is now active.",rw:"Murakaza neza — uburenganzira bwawe bw'ubuyobozi burakora ubu.",fr:"Bienvenue — votre accès administrateur est maintenant actif."},
+  admins_no_pending_invite:{en:"No pending admin invitation was found for your account",rw:"Nta butumire bw'ubuyobozi bwabonetse kuri konti yawe",fr:"Aucune invitation d'administrateur en attente n'a été trouvée pour votre compte"},
+  admin_all_businesses:{en:"All Businesses",rw:"Ubucuruzi Bwose",fr:"Toutes les entreprises"},
+  admin_pending_businesses:{en:"Pending Businesses",rw:"Ubucuruzi Butegereje",fr:"Entreprises en attente"},
+  admin_total_businesses:{en:"Total Businesses",rw:"Ubucuruzi Bwose",fr:"Total entreprises"},
+  admin_no_businesses_match:{en:"No businesses match this filter.",rw:"Nta bucuruzi buhuye n'iri jambo.",fr:"Aucune entreprise ne correspond à ce filtre."},
   admin_all_businesses:{en:"All Businesses",rw:"Ubucuruzi Bwose",fr:"Toutes les entreprises"},
   admin_pending_businesses:{en:"Pending Businesses",rw:"Ubucuruzi Butegereje",fr:"Entreprises en attente"},
   admin_total_businesses:{en:"Total Businesses",rw:"Ubucuruzi Bwose",fr:"Total entreprises"},
@@ -657,7 +759,19 @@ const SB = (() => {
   };
   const req = async (url, opts={}) => {
     const r = await fetch(url, {...opts, headers:{"Content-Type":"application/json",...authHeaders(),...opts.headers}});
-    if (!r.ok) throw new Error(await r.text());
+    if (!r.ok) {
+      // A 401 here means the access token Supabase received was rejected —
+      // typically an expired/revoked session that Auth.restoreSession()'s
+      // refresh didn't catch (e.g. the refresh token itself expired, or the
+      // session was revoked server-side). Only fire this once per storm of
+      // requests, and only when we actually had a session to begin with —
+      // an anonymous 401 on a public-select endpoint is not a session event.
+      if (r.status === 401 && Auth?.getSession()) {
+        Auth.clearSession();
+        window.dispatchEvent(new CustomEvent("ik:session-expired"));
+      }
+      throw new Error(await r.text());
+    }
     const t = r.headers.get("content-type")||"";
     return t.includes("json") ? r.json() : r.text();
   };
@@ -711,7 +825,6 @@ const SA = {
   // comment there for why: two sessions saving the farmers table with
   // different/stale snapshots must never be able to delete each other's
   // rows as a side effect of an unrelated save.
-  //
   // `cacheRows`: optional. When provided, the LOCAL cache (this
   // browser's offline/instant-UI copy) is written using this fuller
   // array, while the actual network request to Supabase still only
@@ -756,7 +869,6 @@ const SA = {
   // connected, to push whatever this browser has cached in localStorage up to
   // the database — useful the first time credentials are added after
   // developing locally, so existing content isn't lost.
-  //
   // Deliberately does NOT push "farmers" — real farmer/admin accounts must
   // be genuine Supabase Auth users (see SETUP.md "Create your first admin
   // account"), not localStorage rows copied in directly, since those would
@@ -846,6 +958,25 @@ const WS = {
       } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
     }
     const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,image_url}:w);
+    LS.s("wholesalers", cached);
+    return {ok:true};
+  },
+  // Generic single-row field update — added for the Bulk Import feature's
+  // wholesaler-update path. Same PATCH-and-sync-cache pattern as setStatus/
+  // updateImage above; never touches `status` (approval safety is handled
+  // entirely by keeping `status` out of any caller's patch object, not by
+  // logic in this function).
+  async updateFields(id, patch) {
+    if (HAS_SUPABASE) {
+      try {
+        await SB.patch("wholesalers", `id=eq.${id}`, patch);
+        lastSyncOk = true;
+        const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,...patch}:w);
+        LS.s("wholesalers", cached);
+        return {ok:true};
+      } catch(e) { lastSyncOk = false; return {ok:false, reason:e.message||String(e)}; }
+    }
+    const cached = (LS.g("wholesalers")||[]).map(w=>w.id===id?{...w,...patch}:w);
     LS.s("wholesalers", cached);
     return {ok:true};
   },
@@ -1021,25 +1152,29 @@ const BizProd = {
   },
 };
 
-// Dedicated Admin profile lookup — deliberately read-only from the app.
-// Admin accounts live in their own `admins` table (separate from
-// `farmers`/`wholesalers` on purpose) so that farmer/wholesaler
-// management actions (delete/block/edit) can never touch an Admin
-// account, structurally, by construction. There is no add/update/delete
-// here: per the RLS policy this table uses, only the Supabase service
-// role can write to it — admin accounts are provisioned via SQL in the
-// Supabase dashboard, the same way the very first admin account was.
-//
-// The `admins` table itself has NO select policy for authenticated
-// users (see admin-table-migration.sql) — a farmer/wholesaler cannot
-// read it directly. The only way to check "is the current user an
-// admin?" is this security-definer RPC, which uses auth.uid() from the
-// caller's own verified session server-side (never a client-supplied
-// value) and returns only the caller's own row, or nothing. The `uid`
-// parameter here is used purely to keep this function's call signature
-// consistent with the rest of the file (WS.getOne-style lookups) — the
-// database ignores it entirely and answers strictly for whoever is
-// actually logged in.
+// business_products — real schema/RLS confirmed live via the Supabase
+// connector (not inferred): columns id/business_id/type/name/category/
+// description/price/unit/image_url/status/created_at, FK business_id ->
+// businesses(id) ON DELETE CASCADE. RLS: SELECT is public (true) — this
+// is the marketplace-facing side, anyone can browse a business's
+// products/services; INSERT requires auth.uid()=business_id; UPDATE/
+// DELETE require auth.uid()=business_id OR is_admin(). So ownership is
+// enforced by the database itself, not by this object — a business can
+// never touch another business's rows no matter what this code sends.
+// Dedicated Admin profile lookup + Super Admin management. Admin accounts
+// live in their own `admins` table (separate from `farmers`/`wholesalers`
+// on purpose) so that farmer/wholesaler management actions (delete/block/
+// edit) can never touch an Admin account, structurally, by construction.
+// The `admins` table itself has RLS enabled with NO policies at all — no
+// role (not even a logged-in admin) can read or write it directly via
+// PostgREST. Every operation below goes through a SECURITY DEFINER RPC
+// instead, each of which re-checks the caller's own permissions
+// server-side (via auth.uid()/is_super_admin()) before doing anything.
+// getOne() remains self-only and read-only, as before. The methods added
+// below (Phase 1a) reuse the RPCs that already existed in the database
+// before any frontend called them — none of them are new database
+// objects except list(), which calls the one function this phase added
+// (list_admins()) because no "list everyone" RPC previously existed.
 const AdminTbl = {
   async getOne(uid) {
     if (HAS_SUPABASE) {
@@ -1051,7 +1186,166 @@ const AdminTbl = {
     }
     return null;
   },
+  // Super-admin-only: returns every admin row. Throws (via SB.post's
+  // normal error path) with the database's own "Only a super admin may
+  // list administrators" message if called by anyone else — callers
+  // should catch and surface that, not assume success.
+  async list() {
+    if (!HAS_SUPABASE) return [];
+    const rows = await SB.post("rpc/list_admins", {});
+    lastSyncOk = true;
+    return rows || [];
+  },
+  // Super-admin-only. Creates a pending admin_invites row; does NOT create
+  // a Supabase Auth account (see the Admins tab's inline note about this
+  // limitation — that's Phase 1b work, deliberately not done here).
+async invite(email, permissions) {
+  const row = await SB.post("rpc/invite_admin", {
+    p_email: email,
+    p_permissions: permissions || []
+  });
+
+  lastSyncOk = true;
+
+  if (!row?.id) {
+    throw new Error("Invitation was not created");
+  }
+
+  try {
+    const session = Auth?.getSession();
+
+    if (!session?.access_token) {
+      throw new Error("No active authentication session");
+    }
+
+    const response = await fetch(
+      `${ENV.supabaseUrl}/functions/v1/send-admin-invite`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: ENV.supabaseAnonKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          invite_id: row.id
+        })
+      }
+    );
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(
+        result?.error ||
+        "Invitation was created, but the email could not be sent"
+      );
+    }
+
+    return {
+      ...row,
+      email_sent: true,
+      email_message_id: result?.messageId || null
+    };
+  } catch (emailError) {
+    console.error("Admin invitation email error:", emailError);
+
+    throw new Error(
+      emailError?.message ||
+      "Invitation was created, but the invitation email could not be sent"
+    );
+  }
+},
+  async revokeInvite(inviteId) {
+    const ok = await SB.post("rpc/revoke_admin_invite", { p_invite_id: inviteId });
+    lastSyncOk = true;
+    return ok;
+  },
+  // Super-admin-only, enforced by the existing admin_invites RLS policy
+  // (admin_invites_super_all — FOR ALL USING(is_super_admin())), not a new
+  // RPC: that policy already permits a super admin to SELECT this table
+  // directly, so no new database object was needed to list invitations.
+  // For a non-super-admin, RLS silently filters every row (an empty
+  // array), rather than raising an exception the way the RPCs do — that
+  // is the table's own pre-existing, unmodified behavior, not something
+  // added here.
+  async listInvites() {
+    if (!HAS_SUPABASE) return [];
+    const rows = await SB.get("admin_invites", "select=id,email,permissions,invited_by,created_at,accepted_at,revoked,expires_at&order=created_at.desc");
+    lastSyncOk = true;
+    return rows || [];
+  },
+  // Super-admin-only. The database itself refuses to target a super_admin
+  // row (raises an exception) — this is not re-implemented client-side,
+  // only relied upon; the UI additionally never offers this action for a
+  // super admin row (see AdminsManager) as a second, defense-in-depth layer.
+  async setActive(adminId, active) {
+    const row = await SB.post("rpc/set_admin_active", { p_admin_id: adminId, p_active: active });
+    lastSyncOk = true;
+    return row;
+  },
+  // Super-admin-only; database refuses to target a super_admin row.
+  async updatePermissions(adminId, permissions) {
+    const row = await SB.post("rpc/update_admin_permissions", { p_admin_id: adminId, p_permissions: permissions || [] });
+    lastSyncOk = true;
+    return row;
+  },
+  // Super-admin-only; database refuses to target a super_admin row.
+  async remove(adminId) {
+    const ok = await SB.post("rpc/delete_sub_admin", { p_admin_id: adminId });
+    lastSyncOk = true;
+    return ok;
+  },
+  // Not super-admin-only — any authenticated caller may attempt this.
+  // accept_admin_invite() itself verifies everything server-side (matches
+  // the caller's own auth.jwt() email against a pending, unrevoked
+  // admin_invites row — never anything client-supplied) and raises an
+  // exception if there's no matching invite or the account is already an
+  // admin. Defined here, ready to use, but DELIBERATELY NOT called from
+  // DB.login/DB.restoreSession in this Phase 1a pass — wiring it into
+  // that shared control path (used by every user type on every login,
+  // not just admins) is a real, if small, behavior change to the most
+  // sensitive shared code in the app, and Phase 1a's brief was explicit:
+  // report the invite-acceptance limitation rather than build around it.
+  // See the Phase 1a implementation report for the two options this
+  // leaves for a future decision (auto-detect on login, using exactly
+  // this method — vs. a dedicated "Accept Invite" screen).
+  async tryAcceptInvite() {
+    if (!HAS_SUPABASE) return null;
+    try {
+      const row = await SB.post("rpc/accept_admin_invite", {});
+      lastSyncOk = true;
+      return row?.id ? row : (Array.isArray(row) ? row[0] : row) || null;
+    } catch { return null; }
+  },
 };
+
+// Phase 1a: the one grantable permission string per existing admin tab
+// (matches the tab ids already used by `adminTab` state in renderAdmin).
+// "manage_admins" deliberately does not exist anywhere in this map, and
+// is never offered as a selectable permission in the Invite/Edit UI —
+// Admin management is controlled exclusively by adminRole==="super_admin",
+// never by anything a Sub-Admin could hold or grant.
+const ADMIN_TAB_PERMISSIONS = {
+  farmers:"manage_farmers", businesses:"manage_businesses", products:"manage_products",
+  prices:"manage_prices", tips:"manage_tips", pests:"manage_pests", calendar:"manage_calendar",
+  carousel:"manage_carousel", ads:"manage_ads", site:"manage_site_settings",
+  import:"manage_import_export", activity:"view_activity_log",
+};
+const ADMIN_PERMISSION_LIST = Object.values(ADMIN_TAB_PERMISSIONS);
+
+// Centralized permission check — every new permission-aware UI check in
+// this file goes through this one function rather than re-deriving the
+// logic inline. Safe for every caller shape: null user, a normal farmer/
+// wholesaler/business user (role!=="admin" → false, permissions never
+// even inspected), a sub-admin with permissions undefined/null/not-an-array
+// (treated as no permissions, never a crash), and a super admin (always
+// true, permissions array never consulted).
+function hasPerm(user, permission) {
+  if (!user || user.role !== "admin") return false;
+  if (user.adminRole === "super_admin") return true;
+  return Array.isArray(user.permissions) && user.permissions.includes(permission);
+}
 
 const uploadImage = async (file) => {
   if (!(file instanceof File)) return file;
@@ -1222,7 +1516,14 @@ const DB = {
     // (the original admin account, created directly in Supabase, has
     // none — see SETUP.md), unlike the farmer fallback below.
     const adminProfile = await AdminTbl.getOne(uid);
-    if (adminProfile) return {...adminProfile, role:"admin"};
+    // Phase 1a fix: adminProfile.role from the database is the REAL value
+    // ('super_admin'|'sub_admin'). Every existing role==="admin" check
+    // elsewhere in this file must keep working unchanged, so `role` here
+    // stays the generic "admin" string — but the real value is now
+    // preserved separately as `adminRole`, along with `permissions`
+    // (already came through via the spread, previously just unused).
+    // Nothing that read `user.role` before behaves any differently.
+    if (adminProfile) return {...adminProfile, role:"admin", adminRole:adminProfile.role, permissions:Array.isArray(adminProfile.permissions)?adminProfile.permissions:[]};
     // Wholesaler accounts live in `wholesalers`, not `farmers` — check
     // there first (by role) so a wholesaler's profile is looked up (and,
     // below, rebuilt after an email-confirmation gap) in the right table.
@@ -1330,7 +1631,8 @@ const DB = {
     if (!session?.user?.id) return null;
     // Same admin-first check as login() above, for the same reason.
     const adminProfile = await AdminTbl.getOne(session.user.id);
-    if (adminProfile) return {...adminProfile, role:"admin"};
+    // Same Phase 1a fix as login() above, for the same reason.
+    if (adminProfile) return {...adminProfile, role:"admin", adminRole:adminProfile.role, permissions:Array.isArray(adminProfile.permissions)?adminProfile.permissions:[]};
     if (session.user?.user_metadata?.role === "wholesaler") {
       const wholesalers = await WS.getAll();
       const w = wholesalers.find(w=>w.id===session.user.id);
@@ -1356,7 +1658,6 @@ const DB = {
   // effect of an incomplete/stale array — see SA.save's comment. Actual
   // farmer deletion is handled explicitly by deleteFarmer() below, via a
   // direct single-row DELETE rather than this diff mechanism.
-  //
   // cacheRows (optional): lets a caller send only the one row that
   // actually needs to reach Supabase (v) while keeping this browser's
   // local cache showing the full known set — see register()/login()
@@ -1385,7 +1686,6 @@ const DB = {
   // matching public profile row in `farmers`, linked by the same id so
   // RLS policies (e.g. "a farmer can only edit their own profile/products")
   // can check `id = auth.uid()`.
-  //
   // `role` defaults to "farmer" (unchanged original behavior). Passing
   // role:"wholesaler" writes the profile row into `wholesalers` instead,
   // via WS.add — same auth.signUp step, same pending-approval status, same
@@ -1466,7 +1766,6 @@ const DB = {
   // were never actually reached. A direct SB.patch is a genuine SQL
   // UPDATE, checked only against the UPDATE policies — same fix already
   // proven working in WS.setStatus/WS.updateImage above.
-  //
   // farmers is the jsonb-wrapped table (id, data, created_at) — unlike
   // wholesalers' flat columns, every field lives inside `data`, and a
   // PATCH replaces that column's value outright rather than merging by
@@ -1633,17 +1932,35 @@ function Txt({label,...p}){
 }
 
 function Modal({open,onClose,title,children,maxW=520}){
+  const{t}=useLang();
   useEffect(()=>{document.body.style.overflow=open?"hidden":"";return()=>{document.body.style.overflow=""}},[open]);
   if(!open)return null;
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(20,30,20,.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(6px)"}} onClick={onClose}>
-      <div style={{background:G.white,borderRadius:G.rL,width:"100%",maxWidth:maxW,maxHeight:"92vh",overflowY:"auto",boxShadow:G.shXL}} onClick={e=>e.stopPropagation()}>
+    <div role="presentation" style={{position:"fixed",inset:0,background:"rgba(20,30,20,.5)",zIndex:1000,display:"flex",alignItems:"center",justifyContent:"center",padding:16,backdropFilter:"blur(6px)"}} onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-label={title||undefined} style={{background:G.white,borderRadius:G.rL,width:"100%",maxWidth:maxW,maxHeight:"92vh",overflowY:"auto",boxShadow:G.shXL}} onClick={e=>e.stopPropagation()}>
         <div style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"18px 20px 13px",borderBottom:`1px solid ${G.gray1}`}}>
           <h2 style={{margin:0,fontSize:16,fontWeight:800,color:G.gray9,fontFamily:FH}}>{title}</h2>
-          <button onClick={onClose} style={{background:G.gray1,border:"none",width:30,height:30,borderRadius:8,cursor:"pointer",color:G.gray5,display:"flex",alignItems:"center",justifyContent:"center"}}><X size={16}/></button>
+          <button onClick={onClose} aria-label={t("modal_close")||"Close"} style={{background:G.gray1,border:"none",width:30,height:30,borderRadius:8,cursor:"pointer",color:G.gray5,display:"flex",alignItems:"center",justifyContent:"center"}}><X size={16}/></button>
         </div>
         <div style={{padding:"16px 20px 20px"}}>{children}</div>
       </div>
+    </div>
+  );
+}
+
+const ADMIN_PAGE_SIZE=25;
+// Render-level pagination helper — the caller keeps filtering/searching the
+// full array exactly as before; this only slices what's rendered and shows
+// simple prev/next controls. No data-fetching or filtering behavior changes.
+function Pager({page,setPage,total,pageSize=ADMIN_PAGE_SIZE}){
+  const{t}=useLang();
+  const pages=Math.max(1,Math.ceil(total/pageSize));
+  if(pages<=1)return null;
+  return(
+    <div style={{display:"flex",justifyContent:"center",alignItems:"center",gap:10,marginTop:16,paddingTop:14,borderTop:`1px solid ${G.gray1}`}}>
+      <Btn size="sm" variant="secondary" onClick={()=>setPage(p=>Math.max(1,p-1))} disabled={page<=1}>{t("pager_prev")}</Btn>
+      <span style={{fontSize:12,color:G.gray5}}>{t("pager_page_of").replace("{page}",page).replace("{pages}",pages)}</span>
+      <Btn size="sm" variant="secondary" onClick={()=>setPage(p=>Math.min(pages,p+1))} disabled={page>=pages}>{t("pager_next")}</Btn>
     </div>
   );
 }
@@ -1682,17 +1999,20 @@ function LocPicker({district,sector,village,onChange}){
 }
 
 /* ── IMAGE UPLOAD ── */
+const MAX_UPLOAD_BYTES=5*1024*1024; // 5 MB — rejected client-side before ever hitting Cloudinary
 function ImageUpload({label,value,onChange,placeholder}){
+  const{t}=useLang();
   const[preview,setPreview]=useState(value||"");
   const[uploading,setUploading]=useState(false);
   useEffect(()=>setPreview(value||""),[value]);
   const handleFile=async e=>{
     const file=e.target.files[0];
     if(!file)return;
-    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){alert("Only JPG, PNG, WebP allowed");return}
+    if(!["image/jpeg","image/png","image/webp"].includes(file.type)){alert(t("upload_bad_type")||"Only JPG, PNG, WebP allowed");return}
+    if(file.size>MAX_UPLOAD_BYTES){alert(t("upload_too_large")||"Image is too large — please use a file under 5 MB.");return}
     setUploading(true);
     try{const url=await uploadImage(file);setPreview(url);onChange(url)}
-    catch(err){alert("Upload failed: "+err.message)}
+    catch(err){alert((t("upload_failed")||"Upload failed:")+" "+err.message)}
     finally{setUploading(false)}
   };
   const handleUrl=v=>{setPreview(v);onChange(v)};
@@ -2434,14 +2754,19 @@ function MarketPricesPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard, same idiom as registration/sign-in forms
   const save=async()=>{
+    if(busy)return;
     if(!form.product||!form.current){notify(t("msg_fill_required"),"error");return}
-    const entry={...form,current:parseFloat(form.current),previous:parseFloat(form.previous)||0,updatedAt:new Date().toISOString()};
-    const ps=await DB.prices();
-    if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify(t("msg_updated"))}
-    else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);
-    setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});
+    setBusy(true);
+    try{
+      const entry={...form,current:parseFloat(form.current),previous:parseFloat(form.previous)||0,updatedAt:new Date().toISOString()};
+      const ps=await DB.prices();
+      if(editing){await DB.savePrices(ps.map(p=>p.id===editing.id?{...p,...entry}:p));notify(t("msg_updated"))}
+      else{entry.id="pr"+Date.now();await DB.savePrices([...ps,entry]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);
+      setForm({product:"",category:"Crops",province:"",district:"",market:"",unit:"kg",current:"",previous:"",trend:"stable"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePrices((await DB.prices()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const trendIcon=t=>t==="up"?<Ic.trendUp size={13}/>:t==="down"?<Ic.trendDown size={13}/>:<Ic.trendFlat size={13}/>;
@@ -2512,7 +2837,7 @@ function MarketPricesPage({user,notify}){
             <Inp label={t("prices_form_current")} type="number" value={form.current} onChange={e=>set("current",e.target.value)}/>
             <Inp label={t("prices_form_previous")} type="number" value={form.previous} onChange={e=>set("previous",e.target.value)}/>
           </div>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("prices_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("prices_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2532,13 +2857,18 @@ function FarmingTipsPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.title||!form.content){notify(tr("msg_title_content_required"),"error");return}
-    const entry={...form,publishedAt:editing?.publishedAt||new Date().toISOString()};
-    const ts=await DB.tips();
-    if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify(tr("msg_tip_updated"))}
-    else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify(tr("msg_tip_published"))}
-    reload();setShowForm(false);setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});
+    setBusy(true);
+    try{
+      const entry={...form,publishedAt:editing?.publishedAt||new Date().toISOString()};
+      const ts=await DB.tips();
+      if(editing){await DB.saveTips(ts.map(t=>t.id===editing.id?{...t,...entry}:t));notify(tr("msg_tip_updated"))}
+      else{entry.id="t"+Date.now();await DB.saveTips([...ts,entry]);notify(tr("msg_tip_published"))}
+      reload();setShowForm(false);setEditing(null);setForm({title:"",category:"Crops",image:"",content:"",author:"Admin"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(tr("confirm_delete")))return;await DB.saveTips((await DB.tips()).filter(t=>t.id!==id));reload();notify(tr("msg_deleted"))};
   const cats=["All","Crops","Livestock","Soil","Water","Business"];
@@ -2625,7 +2955,7 @@ function FarmingTipsPage({user,notify}){
           <Sel label={tr("tips_form_category")} value={form.category} onChange={e=>set("category",e.target.value)}>{"Crops,Livestock,Soil,Water,Business".split(",").map(c=><option key={c} value={c}>{c}</option>)}</Sel>
           <ImageUpload label={tr("tips_form_image")} value={form.image} onChange={v=>set("image",v)}/>
           <Txt label={tr("tips_form_content")} value={form.content} onChange={e=>set("content",e.target.value)} style={{minHeight:170}}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?tr("prices_save"):tr("tips_publish")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{tr("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?tr("reg_submitting"):(editing?tr("prices_save"):tr("tips_publish"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{tr("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2645,13 +2975,18 @@ function PestsCenterPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.name||!form.cropOrAnimal){notify(t("msg_fill_required"),"error");return}
-    const ps=await DB.pests();
-    if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify(t("msg_updated"))}
-    else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);
-    setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});
+    setBusy(true);
+    try{
+      const ps=await DB.pests();
+      if(editing){await DB.savePests(ps.map(p=>p.id===editing.id?{...p,...form}:p));notify(t("msg_updated"))}
+      else{await DB.savePests([...ps,{...form,id:"pe"+Date.now()}]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);
+      setForm({cropOrAnimal:"",name:"",images:[""],symptoms:"",causes:"",prevention:"",treatment:"",severity:"medium",category:"Crops"});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.savePests((await DB.pests()).filter(p=>p.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=pests.filter(p=>{
@@ -2733,7 +3068,7 @@ function PestsCenterPage({user,notify}){
           <Txt label={t("pests_form_causes")} value={form.causes} onChange={e=>set("causes",e.target.value)}/>
           <Txt label={t("pests_form_prevention")} value={form.prevention} onChange={e=>set("prevention",e.target.value)}/>
           <Txt label={t("pests_form_treatment")} value={form.treatment} onChange={e=>set("treatment",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("pests_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("pests_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2753,12 +3088,17 @@ function PlantingCalendarPage({user,notify}){
   useEffect(()=>{reload()},[]);
   const isAdmin=user?.role==="admin";
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const save=async()=>{
+    if(busy)return;
     if(!form.crop){notify(t("msg_crop_required"),"error");return}
-    const cs=await DB.calendar();
-    if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify(t("msg_updated"))}
-    else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify(t("msg_added"))}
-    reload();setShowForm(false);setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});
+    setBusy(true);
+    try{
+      const cs=await DB.calendar();
+      if(editing){await DB.saveCalendar(cs.map(c=>c.id===editing.id?{...c,...form}:c));notify(t("msg_updated"))}
+      else{await DB.saveCalendar([...cs,{...form,id:"cal"+Date.now(),growingDays:parseInt(form.growingDays)||90}]);notify(t("msg_added"))}
+      reload();setShowForm(false);setEditing(null);setForm({crop:"",province:"",district:"",plantMonth:1,harvestMonth:6,growingDays:"",notes:""});
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete")))return;await DB.saveCalendar((await DB.calendar()).filter(c=>c.id!==id));reload();notify(t("msg_deleted"))};
   const filtered=entries.filter(e=>{
@@ -2865,7 +3205,7 @@ function PlantingCalendarPage({user,notify}){
             <div style={{gridColumn:"1/-1"}}><Inp label={t("calendar_form_growing_days")} type="number" value={form.growingDays} onChange={e=>set("growingDays",e.target.value)}/></div>
           </div>
           <Txt label={t("calendar_form_notes")} value={form.notes} onChange={e=>set("notes",e.target.value)}/>
-          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save}>{editing?t("prices_save"):t("calendar_add")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+          <div style={{display:"flex",gap:9,marginTop:6}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("prices_save"):t("calendar_add"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
         </Modal>
       </div>
     </div>
@@ -2947,12 +3287,17 @@ function AdManager({notify}){
   const reload=async()=>setAds(await DB.ads());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
+  const[busy,setBusy]=useState(false); // duplicate-submission guard, same idiom as registration/sign-in forms
   const save=async()=>{
+    if(busy)return;
     if(!form.title){notify(t("msg_title_required"),"error");return}
-    const all=await DB.ads();
-    if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify(t("msg_updated"))}
-    else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify(t("msg_published"))}
-    reload();setShowForm(false);setEditing(null);setForm(BLANK);
+    setBusy(true);
+    try{
+      const all=await DB.ads();
+      if(editing){await DB.saveAds(all.map(a=>a.id===editing.id?{...a,...form}:a));notify(t("msg_updated"))}
+      else{await DB.saveAds([...all,{...form,id:"ad"+Date.now(),order:all.length}]);notify(t("msg_published"))}
+      reload();setShowForm(false);setEditing(null);setForm(BLANK);
+    }finally{setBusy(false)}
   };
   const del=async id=>{if(!window.confirm(t("confirm_delete_ad")))return;await DB.saveAds((await DB.ads()).filter(a=>a.id!==id));reload();notify(t("msg_removed"))};
   const toggle=async id=>{await DB.saveAds((await DB.ads()).map(a=>a.id===id?{...a,active:!a.active}:a));reload()};
@@ -3017,7 +3362,7 @@ function AdManager({notify}){
             ))}
           </div>
         </div>
-        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save}>{editing?t("adm_save_changes"):t("adm_publish_ad")}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}}>{t("prices_cancel")}</Btn></div>
+        <div style={{display:"flex",gap:9,marginTop:8}}><Btn full onClick={save} disabled={busy}>{busy?t("reg_submitting"):(editing?t("adm_save_changes"):t("adm_publish_ad"))}</Btn><Btn variant="secondary" onClick={()=>{setShowForm(false);setEditing(null)}} disabled={busy}>{t("prices_cancel")}</Btn></div>
       </Modal>
     </div>
   );
@@ -3033,7 +3378,8 @@ function SiteSettingsManager({notify}){
   const reload=async()=>setForm(await DB.site());
   useEffect(()=>{reload()},[]);
   const set=(k,v)=>setForm(f=>({...f,[k]:v}));
-  const save=async()=>{await DB.saveSite(form);notify(getLastSyncOk()?t("msg_site_saved"):t("msg_saved_locally"),"warn")};
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
+  const save=async()=>{if(busy)return;setBusy(true);try{await DB.saveSite(form);notify(getLastSyncOk()?t("msg_site_saved"):t("msg_saved_locally"),"warn")}finally{setBusy(false)}};
   const runMigration=async()=>{
     setMigrating(true);
     const r=await SA.pushLocalCacheToRemote();
@@ -3087,7 +3433,7 @@ function SiteSettingsManager({notify}){
         <Txt value={(form.quickLinks||[]).join("\n")} onChange={e=>set("quickLinks",e.target.value.split("\n").map(s=>s.trim()).filter(Boolean))} style={{minHeight:120,fontFamily:FB,fontSize:13}}/>
       </div>
       <div style={{gridColumn:"1/-1",display:"flex",justifyContent:"flex-end"}}>
-        <Btn onClick={save} icon={<Ic.save size={14}/>}>{t("ss_save_all")}</Btn>
+        <Btn onClick={save} disabled={busy} icon={<Ic.save size={14}/>}>{busy?t("reg_submitting"):t("ss_save_all")}</Btn>
       </div>
     </div>
   );
@@ -3115,10 +3461,15 @@ function CarouselManager({notify}){
     setEditForm(ns);setEditOpen(true);
   };
   const openEdit=s=>{setEditForm(JSON.parse(JSON.stringify(s)));setEditOpen(true)};
+  const[busy,setBusy]=useState(false); // duplicate-submission guard
   const saveEdit=async()=>{
-    const exists=allSlides.find(s=>s.id===editForm.id);
-    const updated=exists?allSlides.map(s=>s.id===editForm.id?{...editForm}:s):[...allSlides,{...editForm}];
-    await persist(updated);setEditOpen(false);notify(exists?t("msg_slide_updated"):t("msg_slide_created"));
+    if(busy)return;
+    setBusy(true);
+    try{
+      const exists=allSlides.find(s=>s.id===editForm.id);
+      const updated=exists?allSlides.map(s=>s.id===editForm.id?{...editForm}:s):[...allSlides,{...editForm}];
+      await persist(updated);setEditOpen(false);notify(exists?t("msg_slide_updated"):t("msg_slide_created"));
+    }finally{setBusy(false)}
   };
   const delSlide=async id=>{if(!window.confirm(t("confirm_delete_slide")))return;await persist(allSlides.filter(s=>s.id!==id));notify(t("msg_deleted"))};
   const togglePublish=async id=>{await persist(allSlides.map(s=>s.id===id?{...s,published:!s.published}:s));notify(t("msg_status_updated"))};
@@ -3254,7 +3605,7 @@ function CarouselManager({notify}){
           </div>
         )}
         <div style={{display:"flex",gap:9,marginTop:13}}>
-          <Btn full onClick={saveEdit}>{t("cm_save_slide")}</Btn>
+          <Btn full onClick={saveEdit} disabled={busy}>{busy?t("reg_submitting"):t("cm_save_slide")}</Btn>
           <Btn variant="secondary" onClick={()=>setEditOpen(false)}>{t("prices_cancel")}</Btn>
         </div>
       </Modal>
@@ -3372,12 +3723,65 @@ const ADMIN_ROLES={superadmin:{label:"Super Admin",color:"#7c3aed",bg:"#ede9fe"}
 
 const AuditLog={
   async log(user,action,details=""){
+    // Existing kv_store rolling log — UNCHANGED. This remains the source
+    // `getAll()` reads from, so nothing about current admin Activity-tab
+    // behavior changes. Kept exactly as-is deliberately: migrating reads
+    // to the new table is a separate, larger change than this pass covers.
     const entries=(await SA.getKV("audit_log"))||[];
     entries.unshift({id:"al"+Date.now(),adminId:user?.id||"system",adminName:user?.name||"System",adminRole:user?.adminRole||"admin",action,details,timestamp:new Date().toISOString()});
     await SA.setKV("audit_log",entries.slice(0,500)); // keep last 500
+
+    // NEW: best-effort mirror into the real `audit_logs` table (see
+    // SCHEMA_BUSINESS.sql), which has no 500-row cap and can be queried/
+    // filtered at the database level. This is intentionally additive and
+    // non-blocking — if it fails (e.g. RLS rejects a non-admin caller, or
+    // the table isn't reachable yet), the write is silently skipped and
+    // the existing kv_store log above is completely unaffected.
+    if(HAS_SUPABASE){
+      try{
+        await SB.post("audit_logs",{actor_id:user?.id||null,actor_name:user?.name||"System",action,details,created_at:new Date().toISOString()});
+      }catch{/* non-fatal — kv_store write above already succeeded */}
+    }
   },
   async getAll(){return (await SA.getKV("audit_log"))||[]},
+  // Phase 1a (invite-expiration pass): kv_store-only variant, for the one
+  // case where the authoritative audit_logs row is now written atomically
+  // inside the database RPC itself (accept_admin_invite() — see its
+  // migration for why) rather than by the frontend. Using the regular
+  // log() here for ADMIN_INVITE_ACCEPTED specifically would insert a
+  // second, duplicate audit_logs row alongside the RPC's own unbypassable
+  // one. This keeps the visible Activity tab (which reads kv_store only)
+  // populated without duplicating the authoritative table. Every other
+  // call site is untouched and keeps using log() exactly as before.
+  async logUIOnly(user,action,details=""){
+    const entries=(await SA.getKV("audit_log"))||[];
+    entries.unshift({id:"al"+Date.now(),adminId:user?.id||"system",adminName:user?.name||"System",adminRole:user?.adminRole||"admin",action,details,timestamp:new Date().toISOString()});
+    await SA.setKV("audit_log",entries.slice(0,500));
+  },
 };
+
+/* ── LIGHTWEIGHT CLIENT ERROR VISIBILITY ──
+   Minimum-viable monitoring per the audit: no third-party service, nothing
+   sensitive sent anywhere external — just a capped local record of render
+   errors and uncaught exceptions so "something broke" is discoverable
+   (e.g. via a future admin panel reading this key) instead of invisible.
+   Deliberately isolated from AuditLog (which is for admin actions on real
+   data) and guarded against recursively logging its own failures. */
+let _lastClientErrorAt=0;
+async function logClientError(kind,message,stack){
+  try{
+    const now=Date.now();
+    if(now-_lastClientErrorAt<1000)return; // crude de-dupe against error storms
+    _lastClientErrorAt=now;
+    const entries=(await SA.getKV("client_errors"))||[];
+    entries.unshift({id:"ce"+now,kind,message:String(message||"").slice(0,500),stack:String(stack||"").slice(0,1000),url:window.location.href,timestamp:new Date().toISOString()});
+    await SA.setKV("client_errors",entries.slice(0,200));
+  }catch{/* never let error logging itself throw */}
+}
+if(typeof window!=="undefined"){
+  window.addEventListener("error",e=>{logClientError("window_error",e.message,e.error?.stack)});
+  window.addEventListener("unhandledrejection",e=>{logClientError("unhandled_rejection",e.reason?.message||String(e.reason),e.reason?.stack)});
+}
 
 const Trash={
   async add(type,record,deletedBy){
@@ -3442,12 +3846,17 @@ const DataMgr={
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
   },
   downloadXLSX(rows,cols,filename){
-    // Pure JS minimal XLSX (CSV inside .xlsx via data URI for compatibility)
-    // For real XLSX use SheetJS — here we output a well-formatted CSV named .xlsx
-    // In production swap this with: import * as XLSX from 'xlsx'; XLSX.writeFile(...)
-    const csv=this.toCSV(rows,cols);
-    const blob=new Blob([csv],{type:"application/vnd.ms-excel"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+    const data=rows.map(row=>{
+      const obj={};
+      cols.forEach((col,i)=>{
+        obj[col]=row[i]??"";
+      });
+      return obj;
+    });
+    const ws=XLSX.utils.json_to_sheet(data);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Sheet1");
+    XLSX.writeFile(wb,filename);
   },
 };
 
@@ -3483,6 +3892,705 @@ function AnimatedHeading({text,style:s}){
 }
 
 /* ════════════════════════════════════
+   BULK IMPORT / EXPORT (admin) — Excel/XLSX import workflow
+════════════════════════════════════
+   Design notes:
+   - Requires the `xlsx` (SheetJS) package, already a real dependency in
+     this project (added for the Admin -> Products/Listings "Export Excel"
+     feature, xlsx@0.18.5 per package.json/lockfile). Reuses that same
+     dependency rather than introducing a second spreadsheet library.
+     Deliberately references the bare `XLSX` identifier rather than adding
+     a second `import * as XLSX from "xlsx"` line, to avoid any risk of a
+     duplicate-import collision with the existing one at the top of this
+     file.
+   - Account-backed datasets (Farmers, Wholesalers, Businesses) all have
+     `id = auth.users.id` — a real Supabase Auth login. There is no safe
+     client-side way to bulk-create an auth account from a spreadsheet, so
+     import for these three is UPDATE-ONLY: a row with no matching existing
+     account (by phone number) is reported invalid, never silently turned
+     into a new account. For Businesses, `status` (approval) is never part
+     of the importable field list at all — approval safety is enforced by
+     omission, not by extra logic that could have a bug in it.
+   - Products have no auth account of their own, so real create+update is
+     safe, but every row must resolve to an existing farmer via a
+     `farmer_phone` column; on update, ownership fields are always taken
+     from the resolved farmer, never the sheet, preventing accidental
+     reassignment.
+   - Never touches DataMgr/downloadXLSX or the Admin -> Products/Listings
+     Export Excel button — entirely separate code path, confirmed by
+     direct search before this was written.
+*/
+// Safely turns whatever SheetJS hands back for a phone-like cell into a
+// digits-only string, regardless of whether it parsed as a string, a
+// number, or something else. SheetJS/Excel silently store a numeric-
+// looking cell (e.g. an unformatted phone number) as a JS number, not a
+// string — that's the real cause of a real bug found in mobile testing:
+// (r.phone||"").replace(...) only guards against falsy values, not
+// against non-zero numbers, which pass straight through and crash on
+// .replace since Number has no such method.
+// NOTE on leading zeros: if the spreadsheet cell was stored as a number
+// (e.g. Excel auto-detected "0788111222" as numeric), the leading zero is
+// already gone by the time this function ever sees the value — no amount
+// of string handling afterward can recover a digit Excel itself dropped.
+// This function preserves whatever leading zero is present in what it's
+// given; downloadTemplate below is also updated to write phone-type
+// columns as explicit text cells, so a phone number typed directly into
+// our own generated template keeps its leading zero on save.
+const normalizePhone=v=>{
+  if(v===undefined||v===null)return"";
+  return String(v).replace(/\D/g,"");
+};
+
+const IMPORT_DATASETS={
+  prices:{
+    label:"admin_tab_prices",
+    columns:["product","category","province","district","market","unit","current","previous","trend"],
+    required:["product","category","current"],
+    numeric:["current","previous"],
+    enums:{category:["Crops","Livestock"],trend:["up","down","stable"]},
+    naturalKey:r=>`${(r.product||"").toLowerCase()}|${(r.market||"").toLowerCase()}|${(r.district||"").toLowerCase()}`,
+    fetch:()=>DB.prices(),
+    save:rows=>DB.savePrices(rows),
+    makeNew:r=>({id:"pr"+Date.now()+Math.random().toString(36).slice(2,7),product:r.product,category:r.category||"Crops",province:r.province||"",district:r.district||"",market:r.market||"",unit:r.unit||"kg",current:parseFloat(r.current),previous:parseFloat(r.previous)||0,trend:r.trend||"stable",updatedAt:new Date().toISOString()}),
+    applyUpdate:(existing,r)=>({...existing,product:r.product,category:r.category||existing.category,province:r.province??existing.province,district:r.district??existing.district,market:r.market??existing.market,unit:r.unit||existing.unit,current:parseFloat(r.current),previous:r.previous!==undefined&&r.previous!==""?parseFloat(r.previous):existing.previous,trend:r.trend||existing.trend,updatedAt:new Date().toISOString()}),
+  },
+  tips:{
+    label:"admin_tab_tips",
+    columns:["title","category","image","content","author"],
+    required:["title","content"],
+    numeric:[],
+    enums:{category:["Crops","Livestock","General"]},
+    naturalKey:r=>(r.title||"").toLowerCase().trim(),
+    fetch:()=>DB.tips(),
+    save:rows=>DB.saveTips(rows),
+    makeNew:r=>({id:"t"+Date.now()+Math.random().toString(36).slice(2,7),title:r.title,category:r.category||"General",image:r.image||"",content:r.content,author:r.author||"Admin",publishedAt:new Date().toISOString()}),
+    applyUpdate:(existing,r)=>({...existing,title:r.title,category:r.category||existing.category,image:r.image||existing.image,content:r.content,author:r.author||existing.author}),
+  },
+  pests:{
+    label:"admin_tab_pests",
+    columns:["cropOrAnimal","name","symptoms","causes","prevention","treatment","severity","category"],
+    required:["cropOrAnimal","name"],
+    numeric:[],
+    enums:{severity:["low","medium","high"],category:["Crops","Livestock"]},
+    naturalKey:r=>`${(r.cropOrAnimal||"").toLowerCase()}|${(r.name||"").toLowerCase()}`,
+    fetch:()=>DB.pests(),
+    save:rows=>DB.savePests(rows),
+    makeNew:r=>({id:"pe"+Date.now()+Math.random().toString(36).slice(2,7),cropOrAnimal:r.cropOrAnimal,name:r.name,images:[""],symptoms:r.symptoms||"",causes:r.causes||"",prevention:r.prevention||"",treatment:r.treatment||"",severity:r.severity||"medium",category:r.category||"Crops"}),
+    applyUpdate:(existing,r)=>({...existing,cropOrAnimal:r.cropOrAnimal,name:r.name,symptoms:r.symptoms||existing.symptoms,causes:r.causes||existing.causes,prevention:r.prevention||existing.prevention,treatment:r.treatment||existing.treatment,severity:r.severity||existing.severity,category:r.category||existing.category}),
+  },
+  calendar:{
+    label:"admin_tab_calendar",
+    columns:["crop","province","district","plantMonth","harvestMonth","growingDays","notes"],
+    required:["crop","plantMonth","harvestMonth"],
+    numeric:["plantMonth","harvestMonth","growingDays"],
+    enums:{},
+    naturalKey:r=>`${(r.crop||"").toLowerCase()}|${(r.district||"").toLowerCase()}`,
+    fetch:()=>DB.calendar(),
+    save:rows=>DB.saveCalendar(rows),
+    makeNew:r=>({id:"cal"+Date.now()+Math.random().toString(36).slice(2,7),crop:r.crop,province:r.province||"",district:r.district||"",plantMonth:parseInt(r.plantMonth),harvestMonth:parseInt(r.harvestMonth),growingDays:parseInt(r.growingDays)||90,notes:r.notes||""}),
+    applyUpdate:(existing,r)=>({...existing,crop:r.crop,province:r.province??existing.province,district:r.district??existing.district,plantMonth:parseInt(r.plantMonth),harvestMonth:parseInt(r.harvestMonth),growingDays:r.growingDays?parseInt(r.growingDays):existing.growingDays,notes:r.notes??existing.notes}),
+  },
+  farmers:{
+    label:"admin_tab_farmers",
+    mode:"account-update",
+    columns:["phone","name","fType","district","sector","village","bio"],
+    required:["phone"],
+    numeric:[],
+    enums:{fType:["abahinzi","aborozi"]},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>DB.farmers(),
+    buildPatch:(existing,r)=>({name:r.name||existing.name,fType:r.fType||existing.fType,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village,bio:r.bio??existing.bio}),
+    applyPatch:(existing,patch)=>DB.updateFarmer(existing.id,patch),
+  },
+  wholesalers:{
+    label:"import_label_wholesalers",
+    mode:"account-update",
+    columns:["phone","company_name","contact_name","email","district","sector","products_description"],
+    required:["phone","company_name"],
+    numeric:[],
+    enums:{},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>WS.getAll(),
+    buildPatch:(existing,r)=>({company_name:r.company_name||existing.company_name,contact_name:r.contact_name??existing.contact_name,email:r.email??existing.email,district:r.district??existing.district,sector:r.sector??existing.sector,products_description:r.products_description??existing.products_description}),
+    applyPatch:(existing,patch)=>WS.updateFields(existing.id,patch),
+  },
+  businesses:{
+    label:"admin_tab_businesses",
+    mode:"account-update",
+    columns:["phone","trading_name","primary_category","contact_name","district","sector","village","description"],
+    required:["phone","trading_name"],
+    numeric:[],
+    enums:{primary_category:BUSINESS_CATEGORIES},
+    naturalKey:r=>normalizePhone(r.phone),
+    fetch:()=>Biz.getAll(),
+    // `status` is not in this list on purpose — see note above. Updating an
+    // existing business here can never change whether it's approved.
+    buildPatch:(existing,r)=>({trading_name:r.trading_name||existing.trading_name,primary_category:r.primary_category||existing.primary_category,contact_name:r.contact_name??existing.contact_name,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village,description:r.description??existing.description}),
+    applyPatch:(existing,patch)=>Biz._patchBusiness(existing.id,patch),
+  },
+  products:{
+    label:"admin_tab_products",
+    mode:"products",
+    columns:["farmer_phone","name","type","sub","price","qty","unit","district","sector","village","desc"],
+    required:["farmer_phone","name","type","price"],
+    numeric:["price","qty"],
+    enums:{type:["crop","animal"]},
+    naturalKey:r=>`${normalizePhone(r.farmer_phone)}|${(r.name||"").toLowerCase().trim()}`,
+    fetch:()=>DB.products(),
+    save:rows=>DB.saveProducts(rows),
+    resolveFarmer:(farmers,r)=>farmers.find(f=>normalizePhone(f.phone)===normalizePhone(r.farmer_phone)),
+    makeNew:(r,farmer)=>({id:"p"+Date.now()+Math.random().toString(36).slice(2,7),fid:farmer.id,fname:farmer.name,fphone:farmer.phone,name:r.name,type:r.type,sub:r.sub||"",price:parseFloat(r.price),desc:r.desc||"",qty:parseFloat(r.qty)||0,unit:r.unit||"kg",inStock:true,district:r.district||farmer.district||"",sector:r.sector||farmer.sector||"",village:r.village||farmer.village||"",views:0,featured:false,img1:"",img2:"",createdAt:new Date().toISOString()}),
+    applyUpdate:(existing,r,farmer)=>({...existing,fid:farmer.id,fname:farmer.name,fphone:farmer.phone,name:r.name,type:r.type,sub:r.sub||existing.sub,price:parseFloat(r.price),desc:r.desc||existing.desc,qty:r.qty!==undefined&&r.qty!==""?parseFloat(r.qty):existing.qty,unit:r.unit||existing.unit,district:r.district??existing.district,sector:r.sector??existing.sector,village:r.village??existing.village}),
+  },
+};
+const MAX_IMPORT_BYTES=5*1024*1024; // 5 MB, same limit as image uploads
+const MAX_IMPORT_ROWS=2000; // sanity cap — a spreadsheet bigger than this needs a different tool, not this admin UI
+
+function BulkImportManager({user,notify}){
+  const{t}=useLang();
+  const[dataset,setDataset]=useState("prices");
+  const[fileErr,setFileErr]=useState("");
+  const[parsedRows,setParsedRows]=useState(null);
+  const[validation,setValidation]=useState(null);
+  const[busy,setBusy]=useState(false);
+  const[result,setResult]=useState(null);
+  const cfg=IMPORT_DATASETS[dataset];
+
+  const reset=()=>{setFileErr("");setParsedRows(null);setValidation(null);setResult(null)};
+  const changeDataset=d=>{setDataset(d);reset()};
+
+  const downloadTemplate=()=>{
+    if(typeof XLSX==="undefined"){notify(t("import_lib_unavailable"),"error");return}
+    const exampleRow={};
+    cfg.columns.forEach(c=>{
+      if(c==="phone"||c==="farmer_phone")exampleRow[c]="0788000000"; // realistic example, not a blank cell — see cell-typing note below
+      else exampleRow[c]=cfg.enums[c]?cfg.enums[c][0]:(cfg.numeric.includes(c)?0:"");
+    });
+    const ws=XLSX.utils.json_to_sheet([exampleRow],{header:cfg.columns});
+    // Force the phone example cell to an explicit text type ('s'), not a
+    // number — otherwise SheetJS may write/read it back as numeric and an
+    // admin re-opening the template could see (or accidentally cause) a
+    // dropped leading zero. This only protects the example row SheetJS
+    // controls directly; if an admin later types a new phone number into
+    // an untouched cell, their spreadsheet app's own auto-formatting still
+    // applies — there is no reliable cross-app way to force that from a
+    // template, so normalizePhone() above is the real, always-effective
+    // safety net regardless of how a cell ends up typed.
+    const phoneCol=cfg.columns.indexOf("phone")>=0?cfg.columns.indexOf("phone"):cfg.columns.indexOf("farmer_phone");
+    if(phoneCol>=0){
+      const addr=XLSX.utils.encode_cell({r:1,c:phoneCol}); // row 1 = first data row (row 0 is the header)
+      if(ws[addr]){ws[addr].t="s";ws[addr].z="@"}
+    }
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,"Template");
+    XLSX.writeFile(wb,`Inkingi-${dataset}-template.xlsx`);
+  };
+
+  const handleFile=async e=>{
+    reset();
+    const file=e.target.files[0];
+    if(!file)return;
+    if(!/\.(xlsx|csv)$/i.test(file.name)){setFileErr(t("import_bad_filetype"));return}
+    if(file.size>MAX_IMPORT_BYTES){setFileErr(t("import_too_large"));return}
+    if(typeof XLSX==="undefined"){setFileErr(t("import_lib_unavailable"));return}
+    setBusy(true);
+    try{
+      await AuditLog.log(user,"IMPORT_STARTED",`dataset=${dataset} file=${file.name}`);
+      const buf=await file.arrayBuffer();
+      const wb=XLSX.read(buf,{type:"array"});
+      const sheet=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(sheet,{defval:""});
+      if(rows.length===0){setFileErr(t("import_empty_file"));return}
+      if(rows.length>MAX_IMPORT_ROWS){setFileErr(t("import_too_many_rows").replace("{n}",MAX_IMPORT_ROWS));return}
+      const gotCols=Object.keys(rows[0]);
+      const missingCols=cfg.columns.filter(c=>cfg.required.includes(c)&&!gotCols.includes(c));
+      if(missingCols.length>0){setFileErr(t("import_missing_columns")+" "+missingCols.join(", "));return}
+      setParsedRows(rows);
+      await validateRows(rows);
+    }catch(err){
+      setFileErr(t("import_parse_failed")+" "+err.message);
+      await AuditLog.log(user,"IMPORT_VALIDATION_FAILED",`dataset=${dataset} parse error: ${err.message}`);
+    }finally{setBusy(false)}
+  };
+
+  const validateRows=async rows=>{
+    const existing=await cfg.fetch();
+    const existingByKey=new Map(existing.map(r=>[cfg.naturalKey(r),r]));
+    const farmersList=cfg.mode==="products"?await DB.farmers():null;
+    const seenInSheet=new Set();
+    const valid=[],invalid=[],duplicates=[];
+    rows.forEach((r,idx)=>{
+      const rowNum=idx+2;
+      const errs=[];
+      for(const field of cfg.required){
+        if(r[field]===undefined||r[field]===null||String(r[field]).trim()===""){
+          errs.push({field,value:r[field],problem:t("import_err_required"),suggestion:t("import_err_required_fix")});
+        }
+      }
+      for(const field of cfg.numeric){
+        if(r[field]!==undefined&&r[field]!==""&&isNaN(parseFloat(r[field]))){
+          errs.push({field,value:r[field],problem:t("import_err_not_number"),suggestion:t("import_err_not_number_fix")});
+        }
+      }
+      for(const field of Object.keys(cfg.enums)){
+        if(r[field]&&!cfg.enums[field].some(v=>v.toLowerCase()===String(r[field]).toLowerCase())){
+          errs.push({field,value:r[field],problem:t("import_err_invalid_value"),suggestion:t("import_err_invalid_value_fix")+" "+cfg.enums[field].join("/")});
+        }
+      }
+      let farmer=null;
+      if(cfg.mode==="products"&&errs.length===0){
+        farmer=cfg.resolveFarmer(farmersList,r);
+        if(!farmer){errs.push({field:"farmer_phone",value:r.farmer_phone,problem:t("import_err_no_farmer"),suggestion:t("import_err_no_farmer_fix")})}
+      }
+      if(errs.length>0){invalid.push({rowNum,row:r,errors:errs});return}
+      const key=cfg.naturalKey(r);
+      if(seenInSheet.has(key)){duplicates.push({rowNum,row:r,reason:t("import_dup_in_sheet")});return}
+      seenInSheet.add(key);
+      const matchesExisting=existingByKey.get(key);
+      if(cfg.mode==="account-update"&&!matchesExisting){
+        invalid.push({rowNum,row:r,errors:[{field:"phone",value:r.phone,problem:t("import_err_no_match"),suggestion:t("import_err_no_match_fix")}]});
+        return;
+      }
+      valid.push({rowNum,row:r,mode:matchesExisting?"update":"create",existing:matchesExisting||null,farmer});
+    });
+    setValidation({valid,invalid,duplicates,total:rows.length});
+  };
+
+  const confirmImport=async()=>{
+    if(busy||!validation||validation.valid.length===0)return;
+    setBusy(true);
+    try{
+      let created=0,updatedCount=0;
+      if(cfg.mode==="account-update"){
+        for(const v of validation.valid){
+          const patch=cfg.buildPatch(v.existing,v.row);
+          const r=await cfg.applyPatch(v.existing,patch);
+          if(!r.ok)throw new Error(r.reason||"Update failed");
+          updatedCount++;
+        }
+      }else{
+        const existing=await cfg.fetch();
+        let updated=[...existing];
+        for(const v of validation.valid){
+          if(v.mode==="update"){
+            updated=updated.map(row=>cfg.naturalKey(row)===cfg.naturalKey(v.row)?(cfg.mode==="products"?cfg.applyUpdate(row,v.row,v.farmer):cfg.applyUpdate(row,v.row)):row);
+            updatedCount++;
+          }else{
+            updated.push(cfg.mode==="products"?cfg.makeNew(v.row,v.farmer):cfg.makeNew(v.row));
+            created++;
+          }
+        }
+        await cfg.save(updated);
+      }
+      const summary=`dataset=${dataset} created=${created} updated=${updatedCount} skipped_invalid=${validation.invalid.length} skipped_duplicate=${validation.duplicates.length}`;
+      await AuditLog.log(user,"IMPORT_COMPLETED",summary);
+      setResult({ok:true,created,updated:updatedCount});
+      notify(t("import_success"));
+    }catch(err){
+      await AuditLog.log(user,"IMPORT_PARTIAL_FAILURE",`dataset=${dataset} error=${err.message}`);
+      setResult({ok:false,error:err.message});
+      notify(t("import_failed")+" "+err.message,"error");
+    }finally{setBusy(false)}
+  };
+
+  const exportCSV=async()=>{
+    const rows=await cfg.fetch();
+    if(rows.length===0){notify(t("export_no_rows"),"warn");return}
+    const cols=cfg.columns;
+    const escape=v=>{const s=String(v??"");return /[",\n]/.test(s)?`"${s.replace(/"/g,'""')}"`:s};
+    const csv=[cols.join(","),...rows.map(r=>cols.map(c=>escape(r[c])).join(","))].join("\n");
+    const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");a.href=url;a.download=`Inkingi-${dataset}.csv`;a.click();URL.revokeObjectURL(url);
+    await AuditLog.log(user,"EXPORT_CREATED",`dataset=${dataset} format=csv rows=${rows.length}`);
+  };
+
+  return(
+    <div>
+      <div style={{marginBottom:16}}>
+        <h3 style={{margin:"0 0 3px",fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.upload size={16} color={G.g6}/> {t("import_title")}</h3>
+        <p style={{margin:0,fontSize:12,color:G.gray5}}>{t("import_subtitle")}</p>
+      </div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+        {Object.keys(IMPORT_DATASETS).map(d=>(
+          <button key={d} onClick={()=>changeDataset(d)} style={{padding:"7px 14px",borderRadius:99,border:"none",fontWeight:700,fontSize:12,cursor:"pointer",background:dataset===d?G.g6:G.gray1,color:dataset===d?G.white:G.gray7,fontFamily:FB}}>{t(IMPORT_DATASETS[d].label)}</button>
+        ))}
+      </div>
+      <div style={{background:G.white,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16,display:"flex",gap:10,flexWrap:"wrap",alignItems:"center"}}>
+        <Btn variant="secondary" onClick={downloadTemplate} icon={<Ic.download size={14}/>}>{t("import_download_template")}</Btn>
+        <label style={{display:"inline-flex",alignItems:"center",gap:6,background:G.g6,color:G.white,padding:"9px 16px",borderRadius:G.r,cursor:busy?"default":"pointer",fontWeight:700,fontSize:13,fontFamily:FB,opacity:busy?.6:1}}>
+          <Ic.upload size={14}/> {t("import_upload_file")}
+          <input type="file" accept=".xlsx,.csv" onChange={handleFile} disabled={busy} style={{display:"none"}}/>
+        </label>
+        <Btn variant="secondary" onClick={exportCSV} icon={<Ic.download size={14}/>}>{t("export_csv")}</Btn>
+      </div>
+
+      {fileErr&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:G.r,padding:"12px 16px",color:"#991b1b",fontSize:13,marginBottom:16}}>{fileErr}</div>}
+
+      {validation&&(
+        <div style={{background:G.white,borderRadius:G.rL,padding:18,boxShadow:G.sh,marginBottom:16}}>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:14}}>
+            <Badge color="blue">{t("import_total_rows")}: {validation.total}</Badge>
+            <Badge color="green">{t("import_valid_rows")}: {validation.valid.length}</Badge>
+            <Badge color="red">{t("import_invalid_rows")}: {validation.invalid.length}</Badge>
+            <Badge color="gold">{t("import_duplicate_rows")}: {validation.duplicates.length}</Badge>
+          </div>
+
+          {validation.invalid.length>0&&(
+            <div style={{marginBottom:14}}>
+              <h4 style={{margin:"0 0 8px",fontSize:13,color:G.gray9}}>{t("import_errors_title")}</h4>
+              <div style={{overflowX:"auto"}}>
+                <div style={{display:"flex",flexDirection:"column",gap:6,minWidth:320}}>
+                  {validation.invalid.slice(0,50).map((iv,i)=>(
+                    <div key={i} style={{fontSize:12,color:G.gray7,background:"#fef2f2",borderRadius:8,padding:"7px 10px"}}>
+                      <strong>{t("import_row")} {iv.rowNum}:</strong> {iv.errors.map((e,ei)=>(
+                        <span key={ei}>{t("import_field")} <code>{e.field}</code> = "{String(e.value)}" — {e.problem} ({e.suggestion}){ei<iv.errors.length-1?"; ":""}</span>
+                      ))}
+                    </div>
+                  ))}
+                  {validation.invalid.length>50&&<p style={{fontSize:11,color:G.gray5}}>{t("import_more_errors").replace("{n}",validation.invalid.length-50)}</p>}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {validation.valid.length>0&&(
+            <div style={{marginBottom:14}}>
+              <h4 style={{margin:"0 0 8px",fontSize:13,color:G.gray9}}>{t("import_preview_title")}</h4>
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:420}}>
+                  <thead><tr style={{textAlign:"left",color:G.gray5,borderBottom:`1px solid ${G.gray1}`}}>
+                    <th style={{padding:"6px 8px"}}>{t("import_row")}</th>
+                    <th style={{padding:"6px 8px"}}>{t("import_mode")}</th>
+                    {cfg.columns.slice(0,4).map(c=><th key={c} style={{padding:"6px 8px"}}>{c}</th>)}
+                  </tr></thead>
+                  <tbody>
+                    {validation.valid.slice(0,20).map((v,i)=>(
+                      <tr key={i} style={{borderBottom:`1px solid ${G.gray1}`}}>
+                        <td style={{padding:"6px 8px",color:G.gray5}}>{v.rowNum}</td>
+                        <td style={{padding:"6px 8px"}}><Badge color={v.mode==="create"?"green":"blue"}>{v.mode==="create"?t("import_mode_create"):t("import_mode_update")}</Badge></td>
+                        {cfg.columns.slice(0,4).map(c=><td key={c} style={{padding:"6px 8px",color:G.gray7}}>{String(v.row[c]??"")}</td>)}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                {validation.valid.length>20&&<p style={{fontSize:11,color:G.gray5,marginTop:6}}>{t("import_more_rows").replace("{n}",validation.valid.length-20)}</p>}
+              </div>
+            </div>
+          )}
+
+          {!result&&validation.valid.length>0&&(
+            <div style={{display:"flex",gap:9}}>
+              <Btn onClick={confirmImport} disabled={busy} icon={<Ic.check size={14}/>}>{busy?t("reg_submitting"):t("import_confirm")+` (${validation.valid.length})`}</Btn>
+              <Btn variant="secondary" onClick={reset} disabled={busy}>{t("prices_cancel")}</Btn>
+            </div>
+          )}
+          {result&&result.ok&&<div style={{background:"#f0fdf4",border:"1px solid #bbf7d0",borderRadius:G.r,padding:"12px 16px",color:"#166534",fontSize:13}}>{t("import_result_success").replace("{created}",result.created).replace("{updated}",result.updated)}</div>}
+          {result&&!result.ok&&<div style={{background:"#fef2f2",border:"1px solid #fecaca",borderRadius:G.r,padding:"12px 16px",color:"#991b1b",fontSize:13}}>{t("import_result_failure")} {result.error}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ════════════════════════════════════
+   ADMINS MANAGER (Phase 1a — Super Admin only)
+   Wires the 6 previously-unused admin RPCs (invite_admin,
+   accept_admin_invite [indirectly, via DB.login/restoreSession],
+   revoke_admin_invite, set_admin_active, update_admin_permissions,
+   delete_sub_admin) plus the new list_admins() function. This
+   component does its own is_super_admin-equivalent check before
+   loading any data (defense in depth — renderAdmin's tab gating
+   already keeps a Sub-Admin from reaching this tab in the first
+   place, and every RPC below re-checks is_super_admin() server-side
+   regardless of what this component does).
+════════════════════════════════════ */
+function AdminsManager({user,notify}){
+  const{t}=useLang();
+  const isSuperAdmin=user?.adminRole==="super_admin";
+  const[admins,setAdmins]=useState([]);
+  const[loading,setLoading]=useState(true);
+  const[loadErr,setLoadErr]=useState("");
+  const[showInvite,setShowInvite]=useState(false);
+  const[inviteEmail,setInviteEmail]=useState("");
+  const[invitePerms,setInvitePerms]=useState([]);
+  const[inviteBusy,setInviteBusy]=useState(false);
+  const[editPerms,setEditPerms]=useState(null); // admin row currently open in the permissions modal
+  const[editPermsValue,setEditPermsValue]=useState([]);
+  const[editBusy,setEditBusy]=useState(false);
+  const[rowBusy,setRowBusy]=useState(""); // id of the row currently mid-action (activate/deactivate/remove), disables its buttons only
+  const[confirmRemove,setConfirmRemove]=useState(null); // admin row pending removal confirmation
+  const[invites,setInvites]=useState([]);
+  const[invitesLoading,setInvitesLoading]=useState(true);
+  const[invitesErr,setInvitesErr]=useState("");
+  const[revokeBusy,setRevokeBusy]=useState("");
+
+  const reload=async()=>{
+    setLoading(true);setLoadErr("");
+    try{ setAdmins(await AdminTbl.list()); }
+    catch(e){ setLoadErr(e.message||"Could not load administrators"); }
+    finally{ setLoading(false); }
+  };
+  const reloadInvites=async()=>{
+    setInvitesLoading(true);setInvitesErr("");
+    try{ setInvites(await AdminTbl.listInvites()); }
+    catch(e){ setInvitesErr(e.message||"Could not load invitations"); }
+    finally{ setInvitesLoading(false); }
+  };
+  useEffect(()=>{ if(isSuperAdmin){ reload(); reloadInvites(); } }, [isSuperAdmin]);
+
+  const PERM_LABELS={
+    manage_farmers:t("admin_tab_farmers"), manage_businesses:t("admin_tab_businesses"),
+    manage_products:t("admin_tab_products"), manage_prices:t("admin_tab_prices"),
+    manage_tips:t("admin_tab_tips"), manage_pests:t("admin_tab_pests"),
+    manage_calendar:t("admin_tab_calendar"), manage_carousel:t("admin_tab_slideshow"),
+    manage_ads:t("admin_tab_ads"), manage_site_settings:t("admin_tab_site"),
+    manage_import_export:t("admin_tab_import"), view_activity_log:t("admin_tab_activity"),
+  };
+
+  // Not a Super Admin: never even attempt to load or render admin data,
+  // regardless of how this component was reached (belt-and-braces on top
+  // of renderAdmin's own tab gating).
+  if(!isSuperAdmin){
+    return(
+      <div style={{textAlign:"center",padding:60,color:G.gray5}}>
+        <Ic.admin size={36} color={G.gray3}/>
+        <p style={{marginTop:10}}>{t("admins_super_only")}</p>
+      </div>
+    );
+  }
+
+  const togglePerm=(list,perm)=>list.includes(perm)?list.filter(p=>p!==perm):[...list,perm];
+
+  const doInvite=async()=>{
+    if(inviteBusy)return;
+    const email=inviteEmail.trim();
+    if(!email||!email.includes("@")){notify(t("admins_invalid_email"),"error");return}
+    setInviteBusy(true);
+    try{
+      await AdminTbl.invite(email,invitePerms);
+      await AuditLog.log(user,"ADMIN_INVITED",`${email} — permissions: ${invitePerms.join(", ")||"(none)"}`);
+      notify(t("admins_invite_sent"));
+      setShowInvite(false);setInviteEmail("");setInvitePerms([]);
+      await reload();
+      await reloadInvites();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setInviteBusy(false); }
+  };
+
+  const doRevokeInvite=async invite=>{
+    setRevokeBusy(invite.id);
+    try{
+      await AdminTbl.revokeInvite(invite.id);
+      await AuditLog.log(user,"ADMIN_INVITE_REVOKED",`${invite.email}`);
+      notify(t("admins_invite_revoked"));
+      await reloadInvites();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRevokeBusy(""); }
+  };
+
+  const doSetActive=async(admin,active)=>{
+    setRowBusy(admin.id);
+    try{
+      await AdminTbl.setActive(admin.id,active);
+      await AuditLog.log(user,active?"ADMIN_ACTIVATED":"ADMIN_DEACTIVATED",`${admin.name||admin.email||admin.id}`);
+      notify(t("msg_updated"));
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRowBusy(""); }
+  };
+
+  const openEditPerms=admin=>{ setEditPerms(admin); setEditPermsValue(Array.isArray(admin.permissions)?admin.permissions:[]); };
+
+  const doSavePerms=async()=>{
+    if(editBusy||!editPerms)return;
+    setEditBusy(true);
+    try{
+      const oldPerms=Array.isArray(editPerms.permissions)?editPerms.permissions:[];
+      await AdminTbl.updatePermissions(editPerms.id,editPermsValue);
+      await AuditLog.log(user,"ADMIN_PERMISSIONS_CHANGED",`${editPerms.name||editPerms.email||editPerms.id} — old: [${oldPerms.join(", ")}] → new: [${editPermsValue.join(", ")}]`);
+      notify(t("msg_updated"));
+      setEditPerms(null);
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setEditBusy(false); }
+  };
+
+  const doRemove=async admin=>{
+    setRowBusy(admin.id);
+    try{
+      await AdminTbl.remove(admin.id);
+      await AuditLog.log(user,"ADMIN_REMOVED",`${admin.name||admin.email||admin.id}`);
+      notify(t("admins_removed"));
+      setConfirmRemove(null);
+      await reload();
+    }catch(e){ notify(e.message||t("admins_action_failed"),"error"); }
+    finally{ setRowBusy(""); }
+  };
+
+  return(
+    <div>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16,flexWrap:"wrap",gap:10}}>
+        <div>
+          <h3 style={{margin:0,fontFamily:FH,fontSize:16,display:"flex",alignItems:"center",gap:8}}><Ic.admin size={16} color={G.g6}/> {t("admin_tab_admins")}</h3>
+          <p style={{margin:"3px 0 0",fontSize:12,color:G.gray5}}>{t("admins_subtitle")}</p>
+        </div>
+        <Btn icon={<Ic.add size={14}/>} onClick={()=>setShowInvite(true)}>{t("admins_invite_admin")}</Btn>
+      </div>
+
+      {/* Phase 1a known limitation — see implementation report. Kept visible
+          in the UI itself, not just documented, since it directly affects
+          what a Super Admin should expect after clicking Invite. */}
+      <div style={{background:"#fffbea",border:"1px solid #fde68a",borderRadius:G.r,padding:"10px 14px",marginBottom:16,fontSize:12,color:"#92400e",display:"flex",gap:8,alignItems:"flex-start"}}>
+        <Ic.alert size={14} style={{flexShrink:0,marginTop:1}}/>
+        <span>{t("admins_invite_limitation")}</span>
+      </div>
+
+      {loading&&<div style={{textAlign:"center",padding:30,color:G.gray5}}>…</div>}
+      {!loading&&loadErr&&<div style={{textAlign:"center",padding:30,color:G.red}}>{loadErr}</div>}
+
+      {!loading&&!loadErr&&(
+        <div style={{display:"flex",flexDirection:"column",gap:8}}>
+          {admins.map(a=>{
+            const isSelf=a.id===user.id;
+            const isSuper=a.role==="super_admin";
+            const perms=Array.isArray(a.permissions)?a.permissions:[];
+            return(
+              <div key={a.id} style={{background:G.white,borderRadius:G.r,padding:"12px 14px",boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+                  <div style={{minWidth:0}}>
+                    <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center",marginBottom:3}}>
+                      <strong style={{fontSize:13,color:G.gray9}}>{a.name||a.email||a.id}</strong>
+                      <Badge color={isSuper?"gold":"blue"}>{isSuper?t("admins_role_super"):t("admins_role_sub")}</Badge>
+                      <Badge color={a.active?"green":"gray"}>{a.active?t("admins_active"):t("admins_inactive")}</Badge>
+                      {isSelf&&<Badge color="gray">{t("admins_you")}</Badge>}
+                    </div>
+                    <p style={{margin:"0 0 4px",fontSize:12,color:G.gray5}}>{a.email}{a.phone?` · ${a.phone}`:""}</p>
+                    <p style={{margin:0,fontSize:11,color:G.gray5}}>{t("admins_created")}: {a.created_at?new Date(a.created_at).toLocaleDateString():"—"}</p>
+                    {!isSuper&&(
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:7}}>
+                        {perms.length===0
+                          ?<span style={{fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_no_permissions")}</span>
+                          :perms.map(p=><Badge key={p} color="gray">{PERM_LABELS[p]||p}</Badge>)}
+                      </div>
+                    )}
+                    {isSuper&&<p style={{margin:"7px 0 0",fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_super_full_access")}</p>}
+                  </div>
+                  {/* Super Admin rows never get management buttons — the
+                      database itself refuses to target them (set_admin_active/
+                      update_admin_permissions/delete_sub_admin all raise an
+                      exception for role='super_admin'), and this UI never even
+                      offers the option, as a second, independent layer. */}
+                  {!isSuper&&(
+                    <div style={{display:"flex",gap:5,flexWrap:"wrap",flexShrink:0}}>
+                      <Btn size="sm" variant="secondary" onClick={()=>openEditPerms(a)} disabled={rowBusy===a.id} icon={<Ic.edit size={13}/>}>{t("admins_edit_permissions")}</Btn>
+                      <Btn size="sm" variant={a.active?"secondary":"primary"} onClick={()=>doSetActive(a,!a.active)} disabled={rowBusy===a.id}>{a.active?t("admins_deactivate"):t("admins_activate")}</Btn>
+                      <Btn size="sm" variant="danger" onClick={()=>setConfirmRemove(a)} disabled={rowBusy===a.id} icon={<Ic.delete size={13}/>}/>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {admins.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admins_none")}</div>}
+        </div>
+      )}
+
+      {/* Pending invitations — read directly from admin_invites (RLS already
+          restricts this table's rows to is_super_admin(), same as every
+          write on it — see admin_invites_super_all policy, unchanged from
+          Phase 0/1a), filtered client-side to not-yet-accepted/not-revoked. */}
+      <div style={{marginTop:26}}>
+        <h4 style={{margin:"0 0 10px",fontFamily:FH,fontSize:14,color:G.gray9}}>{t("admins_pending_invitations")}</h4>
+        {invitesLoading&&<div style={{textAlign:"center",padding:20,color:G.gray5}}>…</div>}
+        {!invitesLoading&&invitesErr&&<div style={{textAlign:"center",padding:20,color:G.red}}>{invitesErr}</div>}
+        {!invitesLoading&&!invitesErr&&(()=>{
+          const pending=invites.filter(i=>!i.accepted_at&&!i.revoked);
+          if(pending.length===0)return <div style={{textAlign:"center",padding:"18px",color:G.gray5,fontSize:12}}>{t("admins_no_pending_invitations")}</div>;
+          return(
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {pending.map(inv=>{
+                const perms=Array.isArray(inv.permissions)?inv.permissions:[];
+                // expires_at is NOT NULL on every row as of the expiration
+                // migration; a still-pending (not accepted/revoked) row can
+                // now be expired without yet being revoked — surface that
+                // distinctly rather than implying it's still acceptable.
+                const isExpired=inv.expires_at?new Date(inv.expires_at).getTime()<=Date.now():false;
+                return(
+                  <div key={inv.id} style={{background:G.white,borderRadius:G.r,padding:"10px 14px",boxShadow:G.sh,border:`1px solid ${G.gray1}`,display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+                    <div style={{minWidth:0}}>
+                      <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+                        <strong style={{fontSize:13,color:G.gray9}}>{inv.email}</strong>
+                        {isExpired&&<Badge color="gray">{t("admins_expired")}</Badge>}
+                      </div>
+                      <p style={{margin:"3px 0 0",fontSize:11,color:G.gray5}}>{t("admins_invited")}: {inv.created_at?new Date(inv.created_at).toLocaleDateString():"—"} · {isExpired?t("admins_expired_on"):t("admins_expires")}: {inv.expires_at?new Date(inv.expires_at).toLocaleDateString():"—"}</p>
+                      <div style={{display:"flex",gap:5,flexWrap:"wrap",marginTop:6}}>
+                        {perms.length===0
+                          ?<span style={{fontSize:11,color:G.gray5,fontStyle:"italic"}}>{t("admins_no_permissions")}</span>
+                          :perms.map(p=><Badge key={p} color="gray">{PERM_LABELS[p]||p}</Badge>)}
+                      </div>
+                    </div>
+                    <Btn size="sm" variant="danger" onClick={()=>doRevokeInvite(inv)} disabled={revokeBusy===inv.id} icon={<Ic.close size={13}/>}>{t("admins_revoke")}</Btn>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+      </div>
+
+      {/* Invite modal */}
+      <Modal open={showInvite} onClose={()=>{if(!inviteBusy){setShowInvite(false);setInviteEmail("");setInvitePerms([])}}} title={t("admins_invite_admin")} maxW={520}>
+        <Inp label={t("admins_email")} type="email" value={inviteEmail} onChange={e=>setInviteEmail(e.target.value)} placeholder="name@example.com"/>
+        <p style={{margin:"4px 0 8px",fontSize:12,fontWeight:600,color:G.gray7}}>{t("admins_permissions")}</p>
+        <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:14}}>
+          {ADMIN_PERMISSION_LIST.map(p=>(
+            <button key={p} type="button" onClick={()=>setInvitePerms(v=>togglePerm(v,p))}
+              style={{padding:"6px 12px",borderRadius:999,border:`1.5px solid ${invitePerms.includes(p)?G.g6:G.gray3}`,background:invitePerms.includes(p)?G.g6:G.white,color:invitePerms.includes(p)?G.white:G.gray7,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FB}}>
+              {PERM_LABELS[p]||p}
+            </button>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:9}}>
+          <Btn full onClick={doInvite} disabled={inviteBusy}>{inviteBusy?t("reg_submitting"):t("admins_send_invite")}</Btn>
+          <Btn variant="secondary" onClick={()=>{setShowInvite(false);setInviteEmail("");setInvitePerms([])}} disabled={inviteBusy}>{t("prices_cancel")}</Btn>
+        </div>
+      </Modal>
+
+      {/* Edit permissions modal */}
+      <Modal open={!!editPerms} onClose={()=>{if(!editBusy)setEditPerms(null)}} title={t("admins_edit_permissions")} maxW={520}>
+        {editPerms&&(<>
+          <p style={{margin:"0 0 10px",fontSize:13,color:G.gray7}}>{editPerms.name||editPerms.email}</p>
+          <div style={{display:"flex",flexWrap:"wrap",gap:7,marginBottom:14}}>
+            {ADMIN_PERMISSION_LIST.map(p=>(
+              <button key={p} type="button" onClick={()=>setEditPermsValue(v=>togglePerm(v,p))}
+                style={{padding:"6px 12px",borderRadius:999,border:`1.5px solid ${editPermsValue.includes(p)?G.g6:G.gray3}`,background:editPermsValue.includes(p)?G.g6:G.white,color:editPermsValue.includes(p)?G.white:G.gray7,fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:FB}}>
+                {PERM_LABELS[p]||p}
+              </button>
+            ))}
+          </div>
+          <div style={{display:"flex",gap:9}}>
+            <Btn full onClick={doSavePerms} disabled={editBusy}>{editBusy?t("reg_submitting"):t("admins_save_changes")}</Btn>
+            <Btn variant="secondary" onClick={()=>setEditPerms(null)} disabled={editBusy}>{t("prices_cancel")}</Btn>
+          </div>
+        </>)}
+      </Modal>
+
+      {/* Remove confirmation modal */}
+      <Modal open={!!confirmRemove} onClose={()=>{if(rowBusy!==confirmRemove?.id)setConfirmRemove(null)}} title={t("admins_remove_admin")} maxW={440}>
+        {confirmRemove&&(<>
+          <p style={{margin:"0 0 16px",fontSize:13,color:G.gray7}}>{t("admins_remove_confirm").replace("{name}",confirmRemove.name||confirmRemove.email||"")}</p>
+          <div style={{display:"flex",gap:9}}>
+            <Btn full variant="danger" onClick={()=>doRemove(confirmRemove)} disabled={rowBusy===confirmRemove.id}>{rowBusy===confirmRemove.id?t("reg_submitting"):t("admins_remove_admin")}</Btn>
+            <Btn variant="secondary" onClick={()=>setConfirmRemove(null)} disabled={rowBusy===confirmRemove.id}>{t("prices_cancel")}</Btn>
+          </div>
+        </>)}
+      </Modal>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════
    MAIN APP
 ════════════════════════════════════ */
 function AppInner(){
@@ -3514,6 +4622,35 @@ function AppInner(){
   const[showForm,setShowForm]=useState(false);const[editP,setEditP]=useState(null);const[delP,setDelP]=useState(null);
   const[detailFarmer,setDetailFarmer]=useState(null);
   const[adminTab,setAdminTab]=useState("dashboard");
+  // Explicit, user-initiated admin-invite acceptance (see renderAdmin's
+  // access-denied branch). Deliberately NOT wired into DB.login/
+  // restoreSession — see the Phase 1a report for why: this keeps the
+  // shared login path used by every user type completely untouched, and
+  // only ever runs when an already-logged-in, non-admin user explicitly
+  // clicks the button below, on the Admin page's own access-denied screen.
+  const[acceptInviteBusy,setAcceptInviteBusy]=useState(false);
+  const doAcceptAdminInvite=async()=>{
+    if(acceptInviteBusy)return;
+    setAcceptInviteBusy(true);
+    try{
+      const accepted=await AdminTbl.tryAcceptInvite();
+      if(accepted){
+        const newAdminUser={...accepted, role:"admin", adminRole:accepted.role, permissions:Array.isArray(accepted.permissions)?accepted.permissions:[]};
+        setUser(newAdminUser);
+        setAdminTab("dashboard");
+        // The authoritative ADMIN_INVITE_ACCEPTED audit_logs row is now
+        // written atomically inside accept_admin_invite() itself (see the
+        // migration) — unbypassable even if this RPC is called directly.
+        // Only the UI-facing kv_store log is written here, so the Activity
+        // tab shows this event without duplicating the audit_logs row.
+        await AuditLog.logUIOnly(newAdminUser,"ADMIN_INVITE_ACCEPTED",`${newAdminUser.email||newAdminUser.id}`);
+        notify(t("admins_invite_accepted"));
+      }else{
+        notify(t("admins_no_pending_invite"),"error");
+      }
+    }catch(e){ notify(e.message||t("admins_no_pending_invite"),"error"); }
+    finally{ setAcceptInviteBusy(false); }
+  };
   const[syncOk,setSyncOk]=useState(true);
   useEffect(()=>{ // lightweight poll so the admin badge reflects real Supabase health without wiring every save call
     if(!HAS_SUPABASE) return;
@@ -3521,10 +4658,15 @@ function AppInner(){
     return ()=>clearInterval(t);
   },[]);
   const[farmerFilter,setFarmerFilter]=useState(""); // "" | "pending" — set when a dashboard stat card is clicked
+  const[farmerPage,setFarmerPage]=useState(1); // admin Farmers list — render-level pagination only; filtering/search still runs over the full array, this just controls how many rows are shown at once
+  const[bizPage,setBizPage]=useState(1); // same pattern for admin Businesses list
+  const[prodPage,setProdPage]=useState(1); // admin Products/Listings list — display-only, does NOT affect the existing Export Excel button (that reads the full `allP`/`products` array directly, untouched)
+  useEffect(()=>{setFarmerPage(1)},[farmerFilter]); // avoid landing on an out-of-range empty page when the filter changes
   const[bizFilter,setBizFilter]=useState(""); // "" | "pending" — same pattern as farmerFilter, for the Admin Businesses tab
   const[bizSearch,setBizSearch]=useState(""); // free-text search — trading/legal name, phone, email (client-side over the already-fetched businesses array, see Admin Businesses tab)
   const[bizCatFilter,setBizCatFilter]=useState(""); // "" | one of BUSINESS_CATEGORY_CONFIG's keys
   const[bizSort,setBizSort]=useState("newest"); // "newest" | "oldest"
+  useEffect(()=>{setBizPage(1)},[bizFilter,bizCatFilter,bizSearch]); // avoid an out-of-range empty page when filters change
   const[detailBusiness,setDetailBusiness]=useState(null); // business row shown in the Admin detail modal
   const[editBusiness,setEditBusiness]=useState(null); // business row currently open in the Admin edit modal
   const[myProducts,setMyProducts]=useState([]); // the logged-in business's own business_products rows (real schema/RLS verified live via Supabase connector)
@@ -3544,6 +4686,11 @@ function AppInner(){
   const searchRef=useRef(null);
 
   const notify=(msg,type="success")=>{setToast({msg,type});setTimeout(()=>setToast(null),3500)};
+  useEffect(()=>{ // graceful session-expiry: SB's req() dispatches this on a hard 401
+    const onExpired=()=>{setUser(null);setPage("home");notify(t("session_expired")||"Your session expired — please sign in again.","warn")};
+    window.addEventListener("ik:session-expired",onExpired);
+    return ()=>window.removeEventListener("ik:session-expired",onExpired);
+  },[t]);
   const reload=useCallback(async()=>{
     const[f,p,a,s,w,b]=await Promise.all([DB.farmers(),DB.products(),DB.ads(),DB.site(),WS.getAll(),Biz.getAll()]);
     setFarmers(f);setProducts(p);setAds(a);setSite(s||DEFAULT_SITE);setWholesalers(w);setBusinesses(b);
@@ -3575,6 +4722,20 @@ function AppInner(){
   useEffect(()=>{
     if(user?.role==="admin"&&adminTab==="activity"){AuditLog.getAll().then(setActivityLog)}
   },[user?.role,adminTab]);
+  // Phase 1a defense-in-depth: if a Sub-Admin's permissions are edited by
+  // the Super Admin while they're sitting on a tab they no longer have
+  // access to (or somehow lands on "admins", which they should never be
+  // able to reach), drop them back to Dashboard rather than leaving a
+  // stale, now-unauthorized tab rendered. This is UI-navigation safety
+  // only — it does not substitute for the tab's own render-time gating
+  // above, nor for the database's own RLS/RPC checks.
+  useEffect(()=>{
+    if(user?.role!=="admin"||user?.adminRole==="super_admin")return;
+    if(adminTab==="admins"){setAdminTab("dashboard");return}
+    if(adminTab==="dashboard")return;
+    const perm=ADMIN_TAB_PERMISSIONS[adminTab];
+    if(perm&&!hasPerm(user,perm))setAdminTab("dashboard");
+  },[user,adminTab]);
   // Fetch the viewed business's products when the Admin opens its detail
   // modal — moderation (Phase 2): SELECT is public and DELETE/UPDATE
   // already permit is_admin() per the live-verified RLS, so no policy
@@ -4191,7 +5352,18 @@ function AppInner(){
         <div style={{textAlign:"center",padding:80}}>
           <div style={{display:"flex",justifyContent:"center",color:G.gray3}}><ShieldCheck size={48}/></div>
           <h2 style={{color:G.gray9,fontFamily:FH}}>{t("admin_access_required")}</h2>
-          <Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>{t("nav_signin")}</Btn>
+          {!user&&<Btn onClick={()=>setShowLogin(true)} style={{marginTop:11}}>{t("nav_signin")}</Btn>}
+          {/* Only for an already-logged-in, non-admin user (farmer/
+              wholesaler/business) — an explicit, opt-in action, never
+              automatic. Calls the existing accept_admin_invite() RPC via
+              AdminTbl.tryAcceptInvite(); does nothing to session/login
+              behavior for anyone who doesn't click it. */}
+          {user&&(
+            <div style={{marginTop:16,maxWidth:360,marginLeft:"auto",marginRight:"auto"}}>
+              <p style={{fontSize:12,color:G.gray5,marginBottom:9}}>{t("admins_invite_prompt")}</p>
+              <Btn variant="secondary" onClick={doAcceptAdminInvite} disabled={acceptInviteBusy}>{acceptInviteBusy?t("reg_submitting"):t("admins_check_invite")}</Btn>
+            </div>
+          )}
         </div>
       );
     }
@@ -4202,7 +5374,17 @@ function AppInner(){
     // up in "All Farmers" / Pending Approvals without touching the
     // underlying data or any delete/status function.
     const allF=farmers.filter(f=>f.role!=="admin");const allP=products;const allB=businesses;
-    const tabs=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["activity",t("admin_tab_activity"),Ic.hours]];
+    const tabsAll=[["dashboard",t("admin_tab_dashboard"),Ic.dashboard],["farmers",t("admin_tab_farmers"),Ic.farmer],["businesses",t("admin_tab_businesses"),Ic.marketplace],["products",t("admin_tab_products"),Ic.listings],["prices",t("admin_tab_prices"),Ic.prices],["tips",t("admin_tab_tips"),Ic.tips],["pests",t("admin_tab_pests"),Ic.pests],["calendar",t("admin_tab_calendar"),Ic.calendar],["carousel",t("admin_tab_slideshow"),Ic.image],["ads",t("admin_tab_ads"),Ic.notifications],["site",t("admin_tab_site"),Ic.edit],["import",t("admin_tab_import"),Ic.upload],["activity",t("admin_tab_activity"),Ic.hours]];
+    // Phase 1a tab-level permission gating. Super Admin (adminRole==="super_admin")
+    // always sees every existing tab plus the new Admins tab — permissions[]
+    // is never even consulted for a super admin. A Sub-Admin always sees
+    // Dashboard (never gated — "a Sub-Admin should always have a safe
+    // dashboard/home state even if their permissions array is empty") plus
+    // any tab whose mapped permission they hold; they never see Admins.
+    const isSuperAdmin=user?.adminRole==="super_admin";
+    const tabs=isSuperAdmin
+      ? [...tabsAll,["admins",t("admin_tab_admins"),Ic.admin]]
+      : tabsAll.filter(([tab])=>tab==="dashboard"||hasPerm(user,ADMIN_TAB_PERMISSIONS[tab]));
     return(
       <div style={{background:G.pageBg,minHeight:"60vh"}}>
         <div style={{maxWidth:1100,margin:"0 auto",padding:"28px 20px"}}>
@@ -4272,6 +5454,7 @@ function AppInner(){
 
           {adminTab==="farmers"&&(()=>{
             const shown=farmerFilter==="pending"?allF.filter(f=>f.status==="pending"):allF;
+            const pageRows=shown.slice((farmerPage-1)*ADMIN_PAGE_SIZE,farmerPage*ADMIN_PAGE_SIZE);
             return(
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
@@ -4279,7 +5462,7 @@ function AppInner(){
                 {farmerFilter&&<Btn size="sm" variant="ghost" onClick={()=>setFarmerFilter("")} icon={<Ic.close size={13}/>}>{t("admin_clear_filter")}</Btn>}
               </div>
               {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_farmers_match")}</div>}
-              {shown.map(f=>(
+              {pageRows.map(f=>(
                 <div key={f.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
                     <FarmerPhoto farmer={f} size={40} radius={10}/>
@@ -4299,6 +5482,128 @@ function AppInner(){
                   </div>
                 </div>
               ))}
+              <Pager page={farmerPage} setPage={setFarmerPage} total={shown.length}/>
+            </div>
+          );})()}
+
+          {adminTab==="activity"&&(()=>{
+            let shown=activityLog;
+            if(activitySearch.trim()){
+              const q=activitySearch.trim().toLowerCase();
+              shown=shown.filter(e=>
+                (e.action||"").toLowerCase().includes(q)||
+                (e.adminName||"").toLowerCase().includes(q)||
+                (e.details||"").toLowerCase().includes(q)
+              );
+            }
+            shown=[...shown].sort((a,b)=>{
+              const da=new Date(a.timestamp||0),db=new Date(b.timestamp||0);
+              return activitySort==="oldest"?da-db:db-da;
+            });
+            return(
+            <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>Admin Activity ({shown.length})</h3>
+              </div>
+              {/* Reads from the existing AuditLog/kv_store implementation —
+                  no new audit table was created (Phase 4: "do not create a
+                  new audit table unless the existing implementation
+                  genuinely cannot support this securely" — it can, now
+                  that kv_store's audit_log key is admin-only readable,
+                  verified live via the Supabase connector). */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:15}}>
+                <input value={activitySearch} onChange={e=>setActivitySearch(e.target.value)} placeholder="Search action, admin, details…" style={{flex:"1 1 200px",padding:"8px 12px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB,outline:"none"}}/>
+                <select value={activitySort} onChange={e=>setActivitySort(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </div>
+              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>No activity recorded yet — actions like approving or editing a business will appear here.</div>}
+              {shown.map(e=>(
+                <div key={e.id} style={{padding:"10px 0",borderBottom:`1px solid ${G.gray1}`}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap"}}>
+                    <Badge color="blue">{e.action}</Badge>
+                    <span style={{fontSize:11,color:G.gray5}}>{e.timestamp?new Date(e.timestamp).toLocaleString():""}</span>
+                  </div>
+                  <p style={{margin:"5px 0 0",fontSize:12,color:G.gray7}}>{e.adminName} — {e.details}</p>
+                </div>
+              ))}
+            </div>
+          );})()}
+
+          {adminTab==="businesses"&&(()=>{
+            let shown=bizFilter==="pending"?allB.filter(b=>b.status==="pending"):allB;
+            if(bizCatFilter)shown=shown.filter(b=>b.primary_category===bizCatFilter);
+            if(bizSearch.trim()){
+              const q=bizSearch.trim().toLowerCase();
+              shown=shown.filter(b=>
+                (b.trading_name||"").toLowerCase().includes(q)||
+                (b.legal_name||"").toLowerCase().includes(q)||
+                (b.phone||"").toLowerCase().includes(q)||
+                (b.email||"").toLowerCase().includes(q)
+              );
+            }
+            shown=[...shown].sort((a,b)=>{
+              const da=new Date(a.created_at||0),db=new Date(b.created_at||0);
+              return bizSort==="oldest"?da-db:db-da;
+            });
+            return(
+            <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
+              <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:8,marginBottom:15}}>
+                <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{bizFilter==="pending"?`⏳ ${t("admin_pending_businesses")} (${shown.length})`:`${t("admin_all_businesses")} (${shown.length})`}</h3>
+                {bizFilter&&<Btn size="sm" variant="ghost" onClick={()=>setBizFilter("")} icon={<Ic.close size={13}/>}>{t("admin_clear_filter")}</Btn>}
+              </div>
+              {/* Search / filter / sort — Section F. Client-side over the
+                  already-fetched `businesses` array (same array reload()
+                  populates), not a new server-side query — see the
+                  Performance section of the completion report for why
+                  server-side pagination/search wasn't introduced here. */}
+              <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:15}}>
+                <input value={bizSearch} onChange={e=>setBizSearch(e.target.value)} placeholder="Search name, phone, email…" style={{flex:"1 1 200px",padding:"8px 12px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB,outline:"none"}}/>
+                <select value={bizCatFilter} onChange={e=>setBizCatFilter(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="">All categories</option>
+                  {BUSINESS_CATEGORIES.map(c=><option key={c} value={c}>{c}</option>)}
+                </select>
+                <select value={bizSort} onChange={e=>setBizSort(e.target.value)} style={{padding:"8px 10px",borderRadius:G.r,border:`1px solid ${G.gray3}`,fontSize:12,fontFamily:FB}}>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
+              </div>
+              {shown.length===0&&<div style={{textAlign:"center",padding:"28px",color:G.gray5}}>{t("admin_no_businesses_match")}</div>}
+              {shown.slice((bizPage-1)*ADMIN_PAGE_SIZE,bizPage*ADMIN_PAGE_SIZE).map(b=>(
+                <div key={b.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
+                  <div onClick={()=>setDetailBusiness(b)} style={{display:"flex",gap:10,alignItems:"center",cursor:"pointer"}}>
+                    <div style={{width:40,height:40,borderRadius:10,overflow:"hidden",background:G.gray1,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+                      {b.image_url?<img src={cldThumb(b.image_url,80)} alt="" style={{width:"100%",height:"100%",objectFit:"cover"}}/>:<Ic.marketplace size={18} color={G.gray5}/>}
+                    </div>
+                    <div>
+                      <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginBottom:2}}>
+                        <strong style={{fontSize:13,color:G.gray9}}>{b.trading_name||b.contact_name}</strong>
+                        <Badge color="blue">{b.primary_category}</Badge>
+                        <Badge color={b.status==="approved"?"green":b.status==="blocked"?"red":"gold"}>{b.status==="approved"?<><Ic.check size={10}/> {t("admin_verified")}</>:b.status==="blocked"?<><Ic.close size={10}/> {t("admin_blocked")}</>:<><Ic.pending size={10}/> {t("admin_pending")}</>}</Badge>
+                      </div>
+                      <p style={{margin:0,fontSize:11,color:G.gray5,display:"flex",alignItems:"center",gap:4,flexWrap:"wrap"}}><Ic.contact size={11}/> {b.phone} <span>·</span> <Ic.location size={11}/> {b.district}, {b.sector}{b.created_at&&<span>· {new Date(b.created_at).toLocaleDateString()}</span>}</p>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                    <Btn size="sm" variant="secondary" onClick={()=>setEditBusiness(b)} icon={<Ic.edit size={13}/>}>{t("admin_edit")}</Btn>
+                    {b.status!=="approved"&&<Btn size="sm" onClick={async()=>{const r=await Biz._patchBusiness(b.id,{status:"approved"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_APPROVED",b.trading_name||b.contact_name);notify(t("msg_updated"))}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.check size={13}/>}>{t("admin_verify")}</Btn>}
+                    {b.status!=="blocked"&&<Btn size="sm" variant="ghost" onClick={async()=>{const r=await Biz._patchBusiness(b.id,{status:"blocked"});if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_BLOCKED",b.trading_name||b.contact_name)}else{notify(r.reason||"Could not update status","error")}}} icon={<Ic.close size={13}/>}>{t("admin_block")}</Btn>}
+                    <Btn size="sm" variant="danger" onClick={async()=>{
+                      // Same delete_business RPC + confirmation as the
+                      // Business Detail modal's Delete button below —
+                      // offered here too so Delete is reachable directly
+                      // from the list, not only after opening a business.
+                      const warn=`Delete this business permanently?\n\n"${b.trading_name||b.contact_name}" (${b.primary_category})\nID: ${b.id}\n\nThis cannot be undone. All of this business's products/services and compliance records will be deleted along with it. The business's login account itself is not deleted and would need separate handling.`;
+                      if(!confirm(warn))return;
+                      const r=await Biz.remove(b.id);
+                      if(r.ok){await reload();await AuditLog.log(user,"BUSINESS_DELETED",`${b.trading_name||b.contact_name} (${b.primary_category})`);if(detailBusiness?.id===b.id)setDetailBusiness(null);notify(t("msg_updated"))}
+                      else notify(r.reason||"Could not delete business","error");
+                    }} icon={<Ic.delete size={13}/>}>{t("admin_del")}</Btn>
+                  </div>
+                </div>
+              ))}
+              <Pager page={bizPage} setPage={setBizPage} total={shown.length}/>
             </div>
           );})()}
 
@@ -4426,9 +5731,13 @@ function AppInner(){
             <div style={{background:G.white,borderRadius:G.rL,padding:20,boxShadow:G.sh,border:`1px solid ${G.gray1}`}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:15}}>
                 <h3 style={{margin:0,fontFamily:FH,color:G.gray9}}>{t("admin_all_listings")} ({allP.length})</h3>
-                <Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn>
+                <div style={{display:"flex",gap:6}}><Btn size="sm" variant="secondary" icon={<Ic.download size={14}/>} onClick={()=>{const rows=allP.map(p=>[p.name,p.category||p.type,p.price||"",p.unit||"",p.fname||"",p.views||0,p.inStock?"In Stock":"Out of Stock",p.featured?"Yes":"No",p.status||"",p.district||"",p.sector||""]);DataMgr.downloadXLSX(rows,["Product","Category","Price (RWF)","Unit","Farmer/Wholesaler","Views","Stock","Featured","Status","District","Sector"],"Inkingi-Products.xlsx")}}>Export Excel</Btn><Btn size="sm" icon={<Ic.add size={14}/>} onClick={()=>{setEditP(null);setShowForm(true)}}>{t("admin_add")}</Btn></div>
               </div>
-              {allP.map(p=>(
+              {/* Display-only pagination — `allP` itself (the full product
+                  array) is untouched and still what the existing Export
+                  Excel button and DataMgr.downloadXLSX() above read from;
+                  only what's rendered here is sliced. */}
+              {allP.slice((prodPage-1)*ADMIN_PAGE_SIZE,prodPage*ADMIN_PAGE_SIZE).map(p=>(
                 <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 0",borderBottom:`1px solid ${G.gray1}`,flexWrap:"wrap",gap:9}}>
                   <div style={{display:"flex",gap:10,alignItems:"center"}}>
                     <div style={{width:46,height:38,borderRadius:7,overflow:"hidden",background:G.gray1,flexShrink:0}}>
@@ -4446,6 +5755,7 @@ function AppInner(){
                   </div>
                 </div>
               ))}
+              <Pager page={prodPage} setPage={setProdPage} total={allP.length}/>
             </div>
           )}
 
@@ -4456,6 +5766,8 @@ function AppInner(){
           {adminTab==="carousel"&&<CarouselManager notify={notify}/>}
           {adminTab==="ads"&&<AdManager notify={notify}/>}
           {adminTab==="site"&&<SiteSettingsManager notify={notify}/>}
+          {adminTab==="import"&&<BulkImportManager user={user} notify={notify}/>}
+          {adminTab==="admins"&&<AdminsManager user={user} notify={notify}/>}
         </div>
       </div>
     );
@@ -4601,8 +5913,8 @@ function AppInner(){
           </div>
           <div ref={searchRef} className="ik-navbar-search" style={{position:"relative",flex:1,maxWidth:400}}>
             <div style={{display:"flex",background:"rgba(255,255,255,.11)",border:"1.5px solid rgba(255,255,255,.18)",borderRadius:99,overflow:"hidden"}}>
-              <input value={searchQ} onChange={e=>handleSugInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder="Search products…" style={{flex:1,background:"none",border:"none",outline:"none",padding:"7px 13px",color:G.white,fontSize:12,fontFamily:FB}}/>
-              <button onClick={()=>doSearch()} style={{background:"rgba(255,255,255,.14)",border:"none",color:G.white,padding:"7px 11px",cursor:"pointer",display:"flex",alignItems:"center"}}><Ic.search size={14}/></button>
+              <input value={searchQ} onChange={e=>handleSugInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&doSearch()} placeholder={t("search_placeholder")||"Search products…"} aria-label={t("search_placeholder")||"Search products"} style={{flex:1,background:"none",border:"none",outline:"none",padding:"7px 13px",color:G.white,fontSize:12,fontFamily:FB}}/>
+              <button onClick={()=>doSearch()} aria-label={t("nav_search")||"Search"} style={{background:"rgba(255,255,255,.14)",border:"none",color:G.white,padding:"7px 11px",cursor:"pointer",display:"flex",alignItems:"center"}}><Ic.search size={14}/></button>
             </div>
             {showSugg&&sugg.length>0&&(
               <div style={{position:"absolute",top:"calc(100% + 4px)",left:0,right:0,background:G.white,borderRadius:G.r,boxShadow:G.shXL,overflow:"hidden",zIndex:300}}>
@@ -4918,6 +6230,41 @@ function AppInner(){
 // actual app (state, pages, all existing logic) is unchanged, just now
 // rendered inside the language context instead of being the default
 // export directly.
+
+/* ── ERROR BOUNDARY ──
+   Catches otherwise-uncaught render errors anywhere in the tree below it
+   (AppInner and everything it renders) so a single bad render doesn't blank
+   the entire app for the user. Deliberately minimal: no new state system,
+   no telemetry service — logs via the same AuditLog/monitoring hook the
+   rest of the app already uses (see logClientError below), and shows a
+   translated recovery screen with a reload button. Does not swallow or
+   alter normal application behavior — only activates when React itself
+   would otherwise unmount the whole tree. */
+class ErrorBoundary extends Component {
+  constructor(props){ super(props); this.state={hasError:false}; }
+  static getDerivedStateFromError(){ return {hasError:true}; }
+  componentDidCatch(error, info){
+    try{ logClientError("render_error", error?.message||String(error), info?.componentStack); }catch{}
+  }
+  render(){
+    if(this.state.hasError) return <ErrorBoundaryFallback onReload={()=>window.location.reload()}/>;
+    return this.props.children;
+  }
+}
+function ErrorBoundaryFallback({onReload}){
+  const{t}=useLang();
+  return(
+    <div style={{minHeight:"70vh",display:"flex",alignItems:"center",justifyContent:"center",padding:24,background:"#f7f9f7"}}>
+      <div style={{maxWidth:420,textAlign:"center",background:"#fff",borderRadius:16,padding:"32px 28px",boxShadow:"0 4px 24px rgba(0,0,0,.08)"}}>
+        <div style={{fontSize:38,marginBottom:10}}>⚠️</div>
+        <h2 style={{margin:"0 0 8px",fontSize:18,fontFamily:"Georgia,serif",color:"#1a1a1a"}}>{t("error_boundary_title")||"Something went wrong"}</h2>
+        <p style={{margin:"0 0 20px",fontSize:13.5,color:"#666",lineHeight:1.6}}>{t("error_boundary_body")||"This page ran into a problem. Reloading usually fixes it — your data has not been lost."}</p>
+        <button onClick={onReload} style={{background:"#2e7d32",color:"#fff",border:"none",borderRadius:10,padding:"11px 22px",fontWeight:700,fontSize:14,cursor:"pointer"}}>{t("error_boundary_reload")||"Reload page"}</button>
+      </div>
+    </div>
+  );
+}
+
 export default function App(){
-  return <LangProvider><AppInner/></LangProvider>;
+  return <LangProvider><ErrorBoundary><AppInner/></ErrorBoundary></LangProvider>;
 }
